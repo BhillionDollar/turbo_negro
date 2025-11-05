@@ -1,0 +1,25 @@
+[build]
+  command = ""
+  publish = "."
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Permissions-Policy = "geolocation=(self), microphone=(self), camera=(self)"
+
+[[headers]]
+  for = "/utils/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
+    Content-Security-Policy = "frame-ancestors 'self' https://*.netlify.app https://*.gamedistribution.com;"
+
+[[headers]]
+  for = "/scenes/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
