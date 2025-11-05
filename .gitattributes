@@ -1,0 +1,94 @@
+# ============================================================
+# Turbo Negro — Bhillion Dollar Productions
+# .gitattributes for cross-platform consistency & asset safety
+# ============================================================
+
+# === Text Files (Normalize line endings to LF) ===
+*.js      text eol=lf
+*.jsx     text eol=lf
+*.ts      text eol=lf
+*.json    text eol=lf
+*.html    text eol=lf
+*.css     text eol=lf
+*.scss    text eol=lf
+*.md      text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.xml     text eol=lf
+*.toml    text eol=lf
+*.txt     text eol=lf
+*.csv     text eol=lf
+*.env     text eol=lf
+*.py      text eol=lf
+*.cjs     text eol=lf
+*.mjs     text eol=lf
+
+# === Windows batch scripts (use CRLF) ===
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# === Shell scripts (use LF) ===
+*.sh      text eol=lf
+*.bash    text eol=lf
+
+# === Binary Assets (mark as binary to prevent corruption) ===
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.webp    binary
+*.ico     binary
+*.bmp     binary
+*.psd     binary
+*.ai      binary
+*.svg     binary
+*.tga     binary
+
+# === Audio / Video Files (binary, never diff) ===
+*.mp3     binary
+*.wav     binary
+*.ogg     binary
+*.flac    binary
+*.m4a     binary
+*.mp4     binary
+*.mov     binary
+*.avi     binary
+
+# === Game Data / Bundles ===
+*.zip     binary
+*.rar     binary
+*.7z      binary
+*.bin     binary
+*.atlas   binary
+*.pack    binary
+*.ttf     binary
+*.otf     binary
+
+# === Source Maps and Cache ===
+*.map     binary
+*.cache   binary
+
+# === Font files ===
+*.woff    binary
+*.woff2   binary
+*.eot     binary
+
+# === 3D / Sprite / Animation Sources ===
+*.blend   binary
+*.fbx     binary
+*.glb     binary
+*.gltf    binary
+*.kra     binary
+*.ase     binary
+
+# === License and Legal Docs (always text, LF normalized) ===
+LICENSE*  text eol=lf
+README*   text eol=lf
+
+# === GitHub Linguist overrides (for repo language stats) ===
+*.js linguist-language=JavaScript
+*.html linguist-language=HTML
+*.css linguist-language=CSS
+*.json linguist-language=JSON
+*.md linguist-documentation
+LICENSE* linguist-documentation
