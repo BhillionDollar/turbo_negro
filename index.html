@@ -28,666 +28,625 @@
     gtag('config', 'G-GFC2WF2CGJ');
     </script>
     <style>
-        /* Container for logo and title */
-        #logo-title-container {
-            display: flex;
-            flex-direction: column; /* Stack logo above title */
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            margin-top: 10px; /* Adjust spacing */
-        }
+    /* === LOGO & TITLE === */
+    #logo-title-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
+    }
 
-        /* Style for the logo */
-        #logo {
-            max-width: 25vw; /* Scale based on viewport width */
-            height: auto;
-        }
+    #logo {
+    height: auto;
+    max-width: 25vw;
+    }
 
-        /* Adjust logo size for smaller screens */
-        @media screen and (max-width: 768px) {
-            #logo {
-                max-width: 40vw;
-            }
-        }
+    @media screen and (max-width: 768px) {
+    #logo { max-width: 40vw; }
+    }
 
-        @media screen and (max-width: 480px) {
-            #logo {
-                max-width: 50vw;
-            }
-        }
+    @media screen and (max-width: 480px) {
+    #logo { max-width: 50vw; }
+    }
 
-        /* Adjust title styling */
-        #title {
-            font-style: italic;
-            font-family: 'Nosifer', cursive;
-            font-size: 6vw;
-            color: red;
-            text-shadow: 4px 4px 5px black;
-            text-align: center;
-            word-wrap: break-word;
-            max-width: 90%;
-        }
+    #title {
+    color: red;
+    font-family: 'Nosifer', cursive;
+    font-size: 6vw;
+    font-style: italic;
+    max-width: 90%;
+    text-align: center;
+    text-shadow: 4px 4px 5px black;
+    word-wrap: break-word;
+    }
 
-        /* Adjust font size for smaller screens */
-        @media screen and (max-width: 768px) {
-            #title {
-                font-size: 8vw;
-            }
-        }
+    @media screen and (max-width: 768px) {
+    #title { font-size: 8vw; }
+    }
 
-        @media screen and (max-width: 480px) {
-            #title {
-                font-size: 10vw;
-            }
-        }
- 
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            background-color: #121212;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Change from center to flex-start */
-            height: auto; /* Allow the content to define height */
-            overflow: auto; /* Enable scrolling */
-            touch-action: pinch-zoom pan-y; /* Allow zooming and vertical scrolling */
-            overscroll-behavior: none; /* Prevent overscrolling (e.g., bouncing on iOS) */
-        }
+    @media screen and (max-width: 480px) {
+    #title { font-size: 10vw; }
+    }
 
-        #warning {
-            color: red; /* Makes the text red */
-            font-family: 'Courier New', Courier, monospace; /* Sets a unique, monospaced font */
-            font-size: 18px; /* Adjust the font size as needed */
-            font-weight: bold; /* Makes the text bold */
-            text-align: center; /* Centers the text horizontally */
-            margin: 20px auto; /* Adds space around the text and centers it */
-            padding: 10px; /* Adds padding for better readability */
-            background-color: rgba(255, 0, 0, 0.1); /* Adds a light red background */
-            border: 2px solid red; /* Adds a red border for emphasis */
-            border-radius: 8px; /* Rounds the corners of the background */
-            max-width: 80%; /* Limits the width of the text block */
-        }
+    /* === GLOBAL BODY === */
+    body {
+    align-items: center;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+    height: auto;
+    justify-content: flex-start;
+    margin: 0;
+    overscroll-behavior: none;
+    overflow: auto;
+    touch-action: pinch-zoom pan-y;
+    }
 
-        /* Main Container */
-        #main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
+    /* === WARNING BOX === */
+    #warning {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 2px solid red;
+    border-radius: 8px;
+    color: red;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 20px auto;
+    max-width: 80%;
+    padding: 10px;
+    text-align: center;
+    }
 
-        /* UI Container Styling */
-        #ui-container {
-            display: inline-block;
-            justify-content: space-between;
-            align-items: center;
-            width: 90%;
-            max-width: 1100px;
-            padding: 10px;
-            box-sizing: border-box;
-            background: linear-gradient(90deg, #222, #333);
-            border: 2px solid #555;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-            margin-bottom: 10px;
-            text-align: center;
-        }
+    /* === MAIN CONTAINER === */
+    #main-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+    }
 
-        #ui-container h2, #ui-container h3 {
-            margin: 10px auto;
-        } 
+    /* === UI CONTAINER === */
+    #ui-container {
+    align-items: center;
+    background: linear-gradient(90deg, #222, #333);
+    border: 2px solid #555;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+    display: inline-block;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    max-width: 1100px;
+    padding: 10px;
+    text-align: center;
+    width: 90%;
+    }
 
-        #ui-container ul {
-            display: inline-block; /* To center the lists */
-            text-align:center
-        }
+    #ui-container h2,
+    #ui-container h3 {
+    margin: 10px auto;
+    }
 
-        #health-bar-container, #enemy-count {
-            display: flex;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 8px 15px;
-            background: rgba(50, 50, 50, 0.8);
-            border-radius: 8px;
-            color: #fff;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-            width: 96%;
-            margin: 2px;
-        }
+    #ui-container ul {
+    display: inline-block;
+    text-align: center;
+    }
 
-        #score-display {
-            display: flex;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 8px 15px;
-            background: rgba(50, 50, 50, 0.8);
-            border-radius: 8px;
-            color: gold;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-            width: 96%;
-            margin: 2px;
-            font-family: 'Metal Mania', cursive;
-        }
+    /* === STATUS DISPLAYS === */
+    #health-bar-container,
+    #enemy-count {
+    align-items: center;
+    background: rgba(50, 50, 50, 0.8);
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    justify-content: center;
+    margin: 2px;
+    padding: 8px 15px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    width: 96%;
+    }
 
-        #health-bar {
-            width: 75%;
-            height: 20px;
-            background-color: #770000;
-            border-radius: 12px;
-            border: 2px solid #444;
-            overflow: hidden;
-            margin-right: 2px;
-        }
+    #score-display {
+    align-items: center;
+    background: rgba(50, 50, 50, 0.8);
+    border-radius: 8px;
+    color: gold;
+    display: flex;
+    font-family: 'Metal Mania', cursive;
+    font-size: 18px;
+    font-weight: bold;
+    justify-content: center;
+    margin: 2px;
+    padding: 8px 15px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    width: 96%;
+    }
 
-        #health-bar-inner {
-            width: 100%;
-            height: 100%;
-            background-color: #00aa00;
-            transition: width 0.3s ease-in-out;
-        }
+    /* === HEALTH BARS === */
+    #health-bar,
+    #boss-health-bar {
+    background-color: #770000;
+    border: 2px solid #444;
+    border-radius: 12px;
+    height: 20px;
+    overflow: hidden;
+    width: 75%;
+    }
 
-        #game-container {
-            width: 100%;
-            max-width: 1100px;
-            aspect-ratio: 1100 / 500;
-            margin: 0 auto;
-            border-radius: 10px;
-            border: 2px solid #555;
-            background: linear-gradient(180deg, #111, #222);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-            position: relative;
-            overflow: hidden;
-        }
+    #health-bar { margin-right: 2px; }
+    #boss-health-bar { margin-left: 8px; }
 
-        #onscreen-controls {
-            position: relative;
-            width: 75%; /* 75% of the game screen width */
-            margin: 2px auto; /* Center horizontally */
-            display: flex;
-            justify-content: space-between; /* Space Out Completely */
-            align-items: center;
-            padding: 2px;
-            padding-left: 2px;
-            padding-right: 2px;
-            margin-top: -2px;
-            border-style: solid;
-            background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-            border-radius: 12px;
-            border: 2px solid #555;
-            align-items: center;
-        }
+    #health-bar-inner,
+    #boss-health-bar-inner {
+    background-color: #00aa00;
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+    width: 100%;
+    }
 
-        #joystick-area {
-            position: relative;
-            width: 125px;
-            height: 100px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #555 50%, #333 100%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-            touch-action: none;
-            margin-top: -10px;
-        }
+    #boss-health-bar-container {
+    align-items: center;
+    background: rgba(50, 50, 50, 0.8);
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    justify-content: center;
+    margin: 2px;
+    padding: 8px 15px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    width: 96%;
+    }
 
-        #joystick-knob {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(180deg, #777, #444);
-            position: absolute;
-            top: 50%; /* Centers the knob vertically */
-            left: 50%; /* Centers the knob horizontally */
-            transform: translate(-50%, -50%); /* Offsets by half the width/height */
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
-            transition: transform 0.1s ease;
-        }
+    /* === GAME CONTAINER === */
+    #game-container {
+    aspect-ratio: 1100 / 500;
+    background: linear-gradient(180deg, #111, #222);
+    border: 2px solid #555;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    margin: 0 auto;
+    max-width: 1100px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    }
 
-        #joystick {
-            display: none;
-        }
+    /* === ONSCREEN CONTROLS === */
+    #onscreen-controls {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #555;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    margin: 2px auto;
+    margin-top: -2px;
+    padding: 2px;
+    position: relative;
+    width: 75%;
+    }
 
-        /* Show the joystick label only on mobile devices */
-        @media screen and (max-width: 768px) {
-            #joystick {
-                display: block;
-                text-align: center;
-                color: white;
-                font-size: 10px;
-                justify-content: center;
-                align-items: center;
-            }
-        }
+    #joystick-area {
+    background: radial-gradient(circle, #555 50%, #333 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    height: 100px;
+    margin-top: -10px;
+    position: relative;
+    touch-action: none;
+    width: 125px;
+    }
 
-        #joystick-area:hover {
-            background: linear-gradient(180deg, #555, #777); /* Enhance hover effect */
-            transform: scale(1.05); /* Add slight scaling on hover */
-        }
+    #joystick-area:hover {
+    background: linear-gradient(180deg, #555, #777);
+    transform: scale(1.05);
+    }
 
-        .control-button {
-            background: linear-gradient(180deg, #333, #555);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-        }
+    #joystick-knob {
+    background: linear-gradient(180deg, #777, #444);
+    border-radius: 50%;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+    height: 40px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    width: 40px;
+    }
 
-        .control-button:hover {
-            background: linear-gradient(180deg, #555, #777);
-            transform: scale(1.05);
-        }
+    #joystick { display: none; }
 
-        .control-button:active {
-            background: #999;
-            transform: scale(1);
-        }
-
-        #attack-button {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background: linear-gradient(180deg, #333, #555);
+    @media screen and (max-width: 768px) {
+    #joystick {
+        align-items: center;
         color: white;
-        font-size: 14px;
-        font-weight: bold;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-        cursor: pointer;
-        display: flex;
+        display: block;
+        font-size: 10px;
         justify-content: center;
-        align-items: center;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.2s ease;
-        }
-
-        #attack-button:active {
-        background: #999;
-        transform: scale(1);
-        }
-
-        #attack-button:hover {
-            background: linear-gradient(180deg, #555, #777);
-            transform: scale(1.05);
-        }
-
-        .enemy-info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         text-align: center;
-        margin: 20px 0;
-        border: 1px solid #555;
-        padding: 10px;
-        border-radius: 8px;
-        background: rgba(0, 0, 0, 0.5);
-        }
+    }
+    }
 
-        .enemy-image {
-            max-width: 100px;
-            margin-bottom: 10px;
-        }
+    /* === BUTTONS === */
+    .control-button {
+    background: linear-gradient(180deg, #333, #555);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    }
 
-        .character-info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        margin: 20px auto;
-        padding: 20px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        text-shadow: #111;
-        }
+    .control-button:hover {
+    background: linear-gradient(180deg, #555, #777);
+    transform: scale(1.05);
+    }
 
-        .character-info img {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
+    .control-button:active {
+    background: #999;
+    transform: scale(1);
+    }
 
-        }
+    #attack-button {
+    align-items: center;
+    background: linear-gradient(180deg, #333, #555);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    font-weight: bold;
+    height: 100px;
+    justify-content: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    width: 100px;
+    }
 
-        .character-info h3 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+    #attack-button:hover {
+    background: linear-gradient(180deg, #555, #777);
+    transform: scale(1.05);
+    }
 
-        .character-info p {
-            margin: 5px 0;
-            font-size: 16px;
-            line-height: 1.5;
-        }
+    #attack-button:active {
+    background: #999;
+    transform: scale(1);
+    }
 
-        .character-info button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(180deg, #333, #555);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
+    /* === CONTENT SECTIONS (Enemies, Characters, Info) === */
+    .enemy-info,
+    .character-info {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #555;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    padding: 10px;
+    text-align: center;
+    }
 
-        .character-info button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(180deg, #555, #777);
-        }
+    .enemy-image {
+    margin-bottom: 10px;
+    max-width: 100px;
+    }
 
-        #bhilliondollar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        margin: 30px auto;
-        padding: 20px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        max-width: 600px;
-        font-size: 16px;
-        line-height: 1.5;
-        }
+    .character-info img {
+    height: auto;
+    margin-bottom: 15px;
+    max-width: 150px;
+    }
 
-        #bhilliondollar button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(180deg, #333, #555);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
+    .character-info h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    }
 
-        #bhilliondollar button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(180deg, #555, #777);
-        }
+    .character-info p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 5px 0;
+    }
 
-        #bhilliondollar button:active {
-            transform: scale(1);
-            background: #999;
-        }
+    .character-info button {
+    background: linear-gradient(180deg, #333, #555);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px 20px;
+    transition: transform 0.2s ease, background 0.2s ease;
+    }
 
-        #fullscreen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Center vertically */
-            align-items: center;    /* Center horizontally */
-            background: black;
-            transition: all 0.3s ease-in-out;
-            padding: 2px;
-        }
+    .character-info button:hover {
+    background: linear-gradient(180deg, #555, #777);
+    transform: scale(1.05);
+    }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
+    /* === BHILLION DOLLAR FOOTER === */
+    #bhilliondollar {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 30px auto;
+    max-width: 600px;
+    padding: 20px;
+    text-align: center;
+    }
 
-        #mobile-fullscreen-button {
-            display: none; /* Hidden by default */
-        }
+    #bhilliondollar button {
+    background: linear-gradient(180deg, #333, #555);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px 20px;
+    transition: transform 0.2s ease, background 0.2s ease;
+    }
 
-        @media screen and (max-width: 768px) {
-            #mobile-fullscreen-button {
-                display: block; /* Visible only for mobile screens */
-            }
-        }
+    #bhilliondollar button:hover {
+    background: linear-gradient(180deg, #555, #777);
+    transform: scale(1.05);
+    }
 
-        #mobile-fullscreen-button {
-            width: 60px;
-            height: 40px;
-            font-size: 8px;
-            color: white;
-            background-color: black;
-            border: 2px solid white;
-            border-radius: 5px;
-            text-align: center;
+    #bhilliondollar button:active {
+    background: #999;
+    transform: scale(1);
+    }
 
-            padding: 5px;
-            margin: 5px;
-            justify-content: center;
-        }
+    /* === FULLSCREEN + MOBILE === */
+    #fullscreen {
+    align-items: center;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    }
 
-        body, #game-container, #onscreen-controls, canvas {
-            touch-action: manipulation; /* Prevents double-tap zoom but allows normal interactions */
-            -webkit-user-select: none; /* Prevents long-press text selection */
-        }
+    canvas {
+    height: 100%;
+    width: 100%;
+    touch-action: none;
+    }
 
-        #ios-prompt {
-            display: none;
-            position: fixed;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 16px;
-            text-align: center;
-            z-index: 9999;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-        }
+    #mobile-fullscreen-button {
+    background-color: black;
+    border: 2px solid white;
+    border-radius: 5px;
+    color: white;
+    display: none;
+    font-size: 8px;
+    height: 40px;
+    justify-content: center;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+    width: 60px;
+    }
 
-        #ios-prompt img {
-            width: 16px;
-            height: 16px;
-            vertical-align: middle;
-        }
+    @media screen and (max-width: 768px) {
+    #mobile-fullscreen-button { display: block; }
+    }
 
-        #dismiss-ios-prompt {
-            background: red;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            margin-top: 8px;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+    /* === IOS PROMPT === */
+    #ios-prompt {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    bottom: 15px;
+    color: white;
+    display: none;
+    font-size: 16px;
+    left: 50%;
+    max-width: 350px;
+    padding: 12px 16px;
+    position: fixed;
+    text-align: center;
+    transform: translateX(-50%);
+    width: 90%;
+    z-index: 9999;
+    }
 
-        #boss-health-bar-container {
-            display: flex;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 8px 15px;
-            background: rgba(50, 50, 50, 0.8);
-            border-radius: 8px;
-            color: #fff;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-            width: 96%;
-            margin: 2px;
-        }
+    #ios-prompt img {
+    height: 16px;
+    vertical-align: middle;
+    width: 16px;
+    }
 
-        #boss-health-bar {
-            width: 75%;
-            height: 20px;
-            background-color: #770000;
-            border-radius: 12px;
-            border: 2px solid #444;
-            overflow: hidden;
-            margin-left: 8px;
-        }
+    #dismiss-ios-prompt {
+    background: red;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 6px 12px;
+    }
 
-        #boss-health-bar-inner {
-            width: 100%;
-            height: 100%;
-            background-color: #00aa00;
-            transition: width 0.3s ease-in-out;
-        }
+    /* === ADS === */
+    #ad-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid #555;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    margin: 20px auto;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 10px;
+    text-align: center;
+    }
 
-        #ad-container {
-            text-align: center;
-            margin: 20px auto;
-            max-width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2); /* Light background */
-            border: 2px solid #555;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-            overflow: hidden; /* Prevents ad overflow */
-        }
+    #ad-container ins {
+    display: block;
+    height: 280px;
+    margin: 10px auto;
+    max-width: 100%;
+    width: 336px;
+    }
 
-        /* Style for ad boxes */
-        #ad-container ins {
-            display: block;
-            margin: 10px auto;
-            width: 336px; /* Adjust size */
-            height: 280px;
-            max-width: 100%;
-        }
+    @media screen and (max-width: 768px) {
+    #ad-container ins {
+        height: auto !important;
+        width: 100% !important;
+    }
+    }
 
-        /* Make ads responsive */
-        @media screen and (max-width: 768px) {
-            #ad-container ins {
-                width: 100% !important;
-                height: auto !important;
-            }
-        }
+    /* === DESCRIPTION SCROLL === */
+    #descriptions {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 15px;
+    scrollbar-color: gold #222;
+    scrollbar-width: thin;
+    }
 
-        #descriptions {
-            max-height: 600px; /* limit height of the section */
-            overflow-y: auto;  /* enable scrolling */
-            padding: 15px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            scrollbar-width: thin;
-            scrollbar-color: gold #222;
-        }
+    @media (max-width: 768px) {
+    #descriptions { max-height: 400px; }
+    }
 
-        #toggleDescriptions {
-            display: inline-block;
-            margin-top: 10px;
-            background: gold;
-            color: black;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    #toggleDescriptions {
+    background: gold;
+    border: none;
+    border-radius: 6px;
+    color: black;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 6px 12px;
+    transition: all 0.3s ease;
+    }
 
-        #toggleDescriptions:hover {
-            background: #ffda44;
-        }
+    #toggleDescriptions:hover { background: #ffda44; }
 
-        /* Optional: hide scrollbar on mobile for a cleaner look */
-        @media (max-width: 768px) {
-            #descriptions {
-            max-height: 400px;
-            }
-        }
+    /* === INFO SECTIONS === */
+    .info-section {
+    margin: 30px auto;
+    max-width: 1100px;
+    text-align: center;
+    width: 100%;
+    }
 
-        /* === Character & Enemy Sections === */
-        .info-section {
-            width: 100%;
-            max-width: 1100px;
-            margin: 30px auto;
-            text-align: center;
-        }
+    .info-section h2 {
+    color: gold;
+    font-family: 'Metal Mania', cursive;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 5px black;
+    }
 
-        .info-section h2 {
-            font-family: 'Metal Mania', cursive;
-            color: gold;
-            text-shadow: 2px 2px 5px black;
-            margin-bottom: 15px;
-        }
+    /* === SCROLLING CARDS === */
+    .horizontal-scroll {
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #444;
+    border-radius: 10px;
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px;
+    scroll-behavior: smooth;
+    scrollbar-color: gold #222;
+    scrollbar-width: thin;
+    }
 
-        /* === Shared scroller styles === */
-        .horizontal-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            scroll-behavior: smooth;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #444;
-            border-radius: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: gold #222;
-        }
+    .horizontal-scroll::-webkit-scrollbar {
+    height: 10px;
+    }
 
-        .horizontal-scroll::-webkit-scrollbar {
-            height: 10px;
-        }
-        .horizontal-scroll::-webkit-scrollbar-thumb {
-            background: gold;
-            border-radius: 10px;
-        }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+    background: gold;
+    border-radius: 10px;
+    }
 
-        .horizontal-scroll::-webkit-scrollbar-track {
-            background: #222;
-        }
+    .horizontal-scroll::-webkit-scrollbar-track {
+    background: #222;
+    }
 
-        .character-card,
-        .enemy-card {
-            flex: 0 0 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #555;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-            transition: transform 0.2s ease;
-        }
+    .character-card,
+    .enemy-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #555;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    color: white;
+    flex: 0 0 300px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s ease;
+    }
 
-        .character-card:hover,
-        .enemy-card:hover {
-            transform: scale(1.05);
-        }
+    .character-card:hover,
+    .enemy-card:hover { transform: scale(1.05); }
 
-        .character-card img,
-        .enemy-card img {
-            width: 150px;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
+    .character-card img,
+    .enemy-card img {
+    border-radius: 8px;
+    height: auto;
+    margin-bottom: 10px;
+    width: 150px;
+    }
 
-        .character-card button {
-            margin-top: 10px;
-            background: gold;
-            color: black;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    .character-card button {
+    background: gold;
+    border: none;
+    border-radius: 8px;
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 8px 14px;
+    transition: all 0.2s ease;
+    }
 
-        .character-card button:hover {
-            background: #ffda44;
-        }
+    .character-card button:hover { background: #ffda44; }
+
+    /* === MOBILE OVERLAY === */
+    canvas { touch-action: none; }
+
+    @media (min-width: 1025px) {
+    #mobile-ui { display: none; }
+    }
     </style>
 
     <!-- Meta Pixel Code -->
@@ -712,100 +671,103 @@
 
 </head>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        function isInStandaloneMode() {
-            return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+        const fullscreenEl = document.getElementById("fullscreen");
+        const fullscreenBtn = document.getElementById("mobile-fullscreen-button");
+        const shareBtn = document.getElementById("ios-share-button");
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        const isStandalone =
+            window.matchMedia("(display-mode: standalone)").matches ||
+            window.navigator.standalone;
 
-        if (isInStandaloneMode()) {
-            // Adjust game container for iOS fullscreen
-            document.body.style.height = "100vh";
-            document.body.style.overflow = "hidden";
-
-            const gameContainer = document.getElementById("fullscreen");
-            gameContainer.style.position = "absolute";
-            gameContainer.style.top = "0";
-            gameContainer.style.left = "0";
-            gameContainer.style.width = "100vw";
-            gameContainer.style.height = "100vh";
-
-            // Hide fullscreen button since iOS standalone ignores requestFullscreen()
-            const fullscreenButton = document.getElementById("mobile-fullscreen-button");
-            if (fullscreenButton) {
-                fullscreenButton.style.display = "none";
-            }
-        }
-    });
-
-    </script> 
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-            
-            if (isIOS) {
-                document.getElementById("ios-share-button").style.display = "block"; // Show button for iOS users
-            }
-        
-            document.getElementById("ios-share-button").addEventListener("click", function () {
-                if (navigator.share) {
-                    navigator.share({
-                        title: "Turbo Negro - Saves The French Quarter!",
-                        text: "Play Turbo Negro now! Add it to your home screen for fullscreen mode.",
-                        url: window.location.href
-                    })
-                    .then(() => console.log("Shared successfully"))
-                    .catch((error) => console.log("Error sharing:", error));
-                } else {
-                    alert("Sharing is not supported on this browser. For the best experience, use Safari to add Turbo Negro to your home screen.");
-                }
+        // === 1️⃣ iOS Standalone Mode (Full Screen) ===
+        if (isStandalone && fullscreenEl) {
+            document.body.style.cssText = `
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            `;
+            Object.assign(fullscreenEl.style, {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
             });
+            if (fullscreenBtn) fullscreenBtn.style.display = "none";
+        }
+
+        // === 2️⃣ iOS Share Button Logic ===
+        if (isIOS && shareBtn) {
+            shareBtn.style.display = "block";
+            shareBtn.addEventListener("click", async () => {
+            if (navigator.share) {
+                try {
+                await navigator.share({
+                    title: "Turbo Negro - Saves The French Quarter!",
+                    text: "Play Turbo Negro now! Add it to your home screen for fullscreen mode.",
+                    url: window.location.href,
+                });
+                console.log("Shared successfully");
+                } catch (err) {
+                console.warn("Share failed:", err);
+                }
+            } else {
+                alert("Sharing not supported. Use Safari → Share → Add to Home Screen for fullscreen play.");
+            }
+            });
+        }
+
+        // === 3️⃣ Orientation + Fullscreen Adjustments ===
+        const adjustLayout = () => {
+            if (!isStandalone || !fullscreenEl) return;
+            const landscape = window.innerWidth > window.innerHeight;
+            Object.assign(document.body.style, {
+            position: "absolute",
+            width: "100vw",
+            height: "100vh",
+            overflow: "hidden",
+            });
+            Object.assign(fullscreenEl.style, {
+            position: "absolute",
+            top: "0",
+            left: "0",
+            width: "100vw",
+            height: "100vh",
+            justifyContent: landscape ? "center" : "flex-start",
+            alignItems: landscape ? "center" : "flex-start",
+            });
+        };
+
+        adjustLayout();
+        window.addEventListener("orientationchange", () =>
+            setTimeout(adjustLayout, 300)
+        );
         });
     </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function adjustForFullscreen() {
-                const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-                const isLandscape = window.innerWidth > window.innerHeight;
-
-                if (isStandalone && isLandscape) {
-                    document.body.style.position = "absolute";
-                    document.body.style.width = "100vw";
-                    document.body.style.height = "100vh";
-                    document.body.style.overflow = "hidden";
-
-                    const fullscreenElement = document.getElementById("fullscreen");
-                    if (fullscreenElement) {
-                        fullscreenElement.style.position = "absolute";
-                        fullscreenElement.style.top = "0";
-                        fullscreenElement.style.left = "0";
-                        fullscreenElement.style.width = "100vw";
-                        fullscreenElement.style.height = "100vh";
-                        fullscreenElement.style.justifyContent = "center";
-                        fullscreenElement.style.alignItems = "center";
-                    }
-                }
-            }
-
-            // Run adjustments on load and when rotating the screen
-            adjustForFullscreen();
-            window.addEventListener("orientationchange", () => {
-                setTimeout(adjustForFullscreen, 300);
-            });
-        });
-    </script>
-
+    <!-- iOS Prompt & Warning -->
     <div id="ios-prompt">
         <p><strong>Add Turbo Negro to your home screen for fullscreen mode!</strong></p>
-        <p>Tap the <strong>Share</strong> button <img src="assets/Logo/TurboNegro.png" alt="Share"> and then <strong>Add to Home Screen</strong></p>
+        <p>
+            Tap the <strong>Share</strong> button
+            <img src="assets/Logo/TurboNegro.png" alt="Share"> and then
+            <strong>Add to Home Screen</strong>
+        </p>
         <button id="dismiss-ios-prompt">Dismiss</button>
     </div>
 
-    <div id="warning">Warning!<br>
-        Updates will be continuing soon!</div>
+    <div id="warning">
+        <strong>Warning!</strong><br>
+        Updates will be continuing soon!
+        </div>
+
 
 <body>
+    <div id="mobile-ui"></div>
     <div id="main-container">
         <!-- UI and Game Container -->
         <div id="ui-container">
@@ -852,11 +814,11 @@
                     </div>
                 </div>
 
-
                 <div id="game-container"></div>
-
+                
                 <!-- On-Screen Controls -->
                 <div id="onscreen-controls">
+                    
                     <div>
                         <div id="joystick-area">
                             <h3 id="joystick">Joystick</h3>
@@ -1007,148 +969,91 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
     <script type="module">
-        import StartMenu from './src/scenes/startMenu.js';
-        import CharacterSelect from './src/scenes/characterSelect.js';
-        import Level1 from './src/scenes/level1.js';
-        import Level2 from './src/scenes/level2.js';
-        // import Level3 from './src/scenes/level3.js';
-        // import Level4 from './src/scenes/level4.js';
-        // import Level5 from './src/scenes/level5.js';
-        // import BossFight from './src/scenes/bossFight.js';
-        import VictoryScene from './src/scenes/victoryScene.js';
-        
-        import { setupJoystick } from './utils/joystickUtils.js';
-        import { enableTiltControls } from './utils/tiltUtils.js';
-        import { addFullscreenButton } from './utils/fullScreenUtils.js';
+    import StartMenu from './src/scenes/startMenu.js';
+    import CharacterSelect from './src/scenes/characterSelect.js';
+    import Level1 from './src/scenes/level1.js';
+    import Level2 from './src/scenes/level2.js';
+    // import Level3 from './src/scenes/level3.js';
+    // import Level4 from './src/scenes/level4.js';
+    // import Level5 from './src/scenes/level5.js';
+    // import BossFight from './src/scenes/bossFight.js';
+    import VictoryScene from './src/scenes/victoryScene.js';
 
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        let controlMode = 'joystick'; // Default to joystick
+    import { setupJoystick } from './utils/joystickUtils.js';
+    import { enableTiltControls, disableTiltControls, toggleTiltControls } from './utils/tiltUtils.js';
+    import { addFullscreenButton } from './utils/fullScreenUtils.js';
 
-        // Hide joystick and attack button on non-mobile devices
-        if (!isMobile) {
-            document.getElementById('joystick-area').style.display = 'none';
-            document.getElementById('attack-button').style.display = 'none';
+    // === DEVICE DETECTION ===
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let controlMode = 'joystick';
+    let playerRef = null;
+
+    // === UI SETUP ===
+    const mobileUI = document.getElementById('mobile-ui');
+    if (isMobile) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.id = 'toggle-control-mode';
+    toggleBtn.innerText = 'Switch to Tilt';
+    toggleBtn.style.cssText = `
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        background: linear-gradient(180deg, #333, #555);
+        color: white;
+        border: 2px solid gold;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.6);
+    `;
+    mobileUI.appendChild(toggleBtn);
+
+    toggleBtn.addEventListener('click', () => {
+        if (!playerRef) {
+        alert('Player not ready yet — start the level first!');
+        return;
         }
 
-        // Initialize Tilt Controls
-        function initTiltControl() {
-            const handleTilt = (event) => {
-                if (event.gamma !== null) {
-                    const sensitivity = 2;
-                    const clampedGamma = Math.max(-30, Math.min(30, event.gamma));
-                    const velocityX = clampedGamma * sensitivity;
+        const newMode = toggleTiltControls(null, playerRef);
+        controlMode = newMode;
+        toggleBtn.innerText = newMode === 'tilt' ? 'Switch to Joystick' : 'Switch to Tilt';
 
-                    if (typeof player !== 'undefined' && player.setVelocityX) {
-                        player.setVelocityX(velocityX);
-                    }
-                }
-            };
-            window.addEventListener('deviceorientation', handleTilt);
-        }
+        if (navigator.vibrate) navigator.vibrate(30); // subtle haptic feedback
+    });
+    }
 
-        function initializeControls() {
-            if (isMobile && /iPhone/i.test(navigator.userAgent)) {
-                const enableTilt = confirm(
-                    "This game supports tilt controls for iPhone. Enable 'Motion & Orientation Access' in Safari settings. Use tilt controls?"
-                );
-                if (enableTilt && typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission) {
-                    DeviceMotionEvent.requestPermission()
-                        .then((response) => {
-                            if (response === 'granted') {
-                                console.log('Tilt controls enabled!');
-                                controlMode = 'tilt';
-                                initTiltControl();
-                            } else {
-                                alert('Tilt controls denied. Using joystick instead.');
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Error enabling tilt:', err);
-                            alert('Tilt controls unavailable. Using joystick.');
-                        });
-                } else {
-                    alert('Tilt controls not supported. Using joystick.');
-                }
-            }
-        }
+    // === PHASER CONFIG ===
+    const config = {
+    type: Phaser.AUTO,
+    parent: 'game-container',
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
+    width: 1100,
+    height: 500,
+    physics: {
+        default: 'arcade',
+        arcade: { gravity: { y: 300 }, debug: false },
+    },
+    // 👇 include CharacterSelect between StartMenu and Level1
+    scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
+    };
 
-        document.addEventListener('DOMContentLoaded', initializeControls);
+    const game = new Phaser.Game(config);
 
-        const config = {
-            type: Phaser.AUTO,
-            parent: 'game-container',
-            scale: {
-                mode: Phaser.Scale.FIT,
-                autoCenter: Phaser.Scale.CENTER_BOTH,
-            },
-            width: 1100,
-            height: 500,
-            physics: {
-                default: 'arcade',
-                arcade: { gravity: { y: 300 }, debug: false },
-            },
-            // 👇 include CharacterSelect between StartMenu and Level1
-            scene: [StartMenu, CharacterSelect, Level1, Level2],
-
-        };
-
-        const game = new Phaser.Game(config);
-
+    // === PLAYER REFERENCE HANDLER ===
+    window.addEventListener('bdp-player-ready', (e) => {
+    playerRef = e.detail.player;
+    console.log('🎮 Player reference received for tilt controls');
+    if (controlMode === 'tilt') enableTiltControls(null, playerRef);
+    });
     </script>
 
-    <div id="bhilliondollar">
-        Made by Bhillion Dollar Productions. <br> An independent media company based in New Orleans, La, USA.<br> For more info, visit: 
-        <button onclick="window.open('https://bhilliondollar.com/', '_blank')">
-            www.bhilliondollar.com
-        </button>
-    </div>
-    <script>
-        window.onload = function () {
-            const gameHeight = document.body.scrollHeight; // Calculate the total height of the game
-            window.parent.postMessage({ height: gameHeight }, "*"); // Send the height to the parent site
-        };
-        window.addEventListener('resize', () => {
-            const fullscreenElement = document.getElementById('fullscreen');
-            const isLandscape = window.innerWidth > window.innerHeight;
-
-            if (isLandscape) {
-                fullscreenElement.style.justifyContent = 'center';
-                fullscreenElement.style.alignItems = 'center';
-            } else {
-                fullscreenElement.style.justifyContent = 'flex-start'; // Adjust for portrait mode
-            }
-        });
-
-        // Initial check
-        const isLandscape = window.innerWidth > window.innerHeight;
-        if (isLandscape) {
-            const fullscreenElement = document.getElementById('fullscreen');
-            fullscreenElement.style.justifyContent = 'center';
-            fullscreenElement.style.alignItems = 'center';
-        }
-
-    </script>
-
-    <script>
-        document.addEventListener("fullscreenchange", () => {
-            const onscreenControls = document.getElementById("onscreen-controls");
-            if (onscreenControls) {
-                onscreenControls.style.display = document.fullscreenElement ? "block" : "flex";
-            }
-        });
-    </script>
-        
-    <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                if (typeof window.adsbygoogle !== "undefined") {
-                    try {
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                    } catch (e) {
-                        console.error("AdSense error:", e);
-                    }
-                }
-            });
-    </script>
 
 </body>
 </html>
