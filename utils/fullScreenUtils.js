@@ -1,47 +1,36 @@
 // utils/fullScreenUtils.js
 // Manages fullscreen toggling and responsive layout for desktop + mobile orientation
 
-export function addFullscreenButton(scene) {
-  const fullscreenElement = document.getElementById("fullscreen");
-  if (!fullscreenElement) {
-    console.error("⚠️ Fullscreen element not found!");
-    return;
-  }
+export function addFullscreenButton() {
+  const fsButton = document.getElementById('mobile-fullscreen-button');
+  const fullscreenEl = document.getElementById('fullscreen');
 
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  if (!fsButton || !fullscreenEl) return;
 
-  if (isMobile) {
-    const mobileBtn = document.getElementById("mobile-fullscreen-button");
-    if (mobileBtn) {
-      mobileBtn.addEventListener("click", () => {
-        toggleFullscreen(fullscreenElement);
-      });
+  fsButton.addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await fullscreenEl.requestFullscreen();
+        fsButton.textContent = '[ exit ]';
+      } else {
+        await document.exitFullscreen();
+        fsButton.textContent = '[ fullscreen ]';
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
     }
+  });
 
-    // auto adjust when loaded or rotated
-    window.addEventListener("orientationchange", () => {
-      setTimeout(() => adjustForMobileFullscreen(fullscreenElement), 300);
-    });
-    window.addEventListener("resize", () =>
-      adjustForMobileFullscreen(fullscreenElement)
-    );
-  } else {
-    // 🖥️ Desktop fullscreen button inside Phaser
-    const fullscreenText = scene.add
-      .text(20, 20, "[ fullscreen ]", {
-        fontSize: "20px",
-        fill: "#fff",
-        backgroundColor: "#000",
-        padding: { left: 10, right: 10, top: 5, bottom: 5 },
-      })
-      .setInteractive();
+  // Sync layout when orientation changes
+  const adjustLayout = () => {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    fullscreenEl.style.justifyContent = isLandscape ? 'center' : 'flex-start';
+    fullscreenEl.style.alignItems = isLandscape ? 'center' : 'flex-start';
+  };
 
-    fullscreenText.on("pointerdown", () =>
-      toggleFullscreen(fullscreenElement)
-    );
-  }
+  window.addEventListener('orientationchange', () => setTimeout(adjustLayout, 300));
+  window.addEventListener('resize', adjustLayout);
+  adjustLayout();
 }
 
 // --- Core Toggle ---

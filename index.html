@@ -966,63 +966,83 @@
     </div>
 
     <!-- Phaser Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
-    <script type="module">
-    import StartMenu from './src/scenes/startMenu.js';
-    import CharacterSelect from './src/scenes/characterSelect.js';
-    import Level1 from './src/scenes/level1.js';
-    import Level2 from './src/scenes/level2.js';
-    // import Level3 from './src/scenes/level3.js';
-    // import Level4 from './src/scenes/level4.js';
-    // import Level5 from './src/scenes/level5.js';
-    // import BossFight from './src/scenes/bossFight.js';
-    import VictoryScene from './src/scenes/victoryScene.js';
-    
-    import { setupJoystick } from './utils/joystickUtils.js';
-    import { enableTiltControls } from './utils/tiltUtils.js';
-    import { addFullscreenButton } from './utils/fullScreenUtils.js';
+<script type="module">
+  import StartMenu from './src/scenes/startMenu.js';
+  import CharacterSelect from './src/scenes/characterSelect.js';
+  import Level1 from './src/scenes/level1.js';
+  import Level2 from './src/scenes/level2.js';
+  // import Level3 from './src/scenes/level3.js';
+  // import Level4 from './src/scenes/level4.js';
+  // import Level5 from './src/scenes/level5.js';
+  // import BossFight from './src/scenes/bossFight.js';
+  import VictoryScene from './src/scenes/victoryScene.js';
 
-    // 🔍 Detect if device is mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  import { setupMobileControls } from './utils/mobileControls.js';
+  import { addFullscreenButton } from './utils/fullScreenUtils.js';
+  import { ControlManager } from './utils/ControlManager.js';
 
-    if (!isMobile) {
-        // Hide joystick & attack for desktop
-        document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-    }
+  // === Detect Platform ===
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    let controlMode = 'joystick'; // Default to joystick on mobile
+  // === Hide UI Elements on Desktop ===
+  if (!isMobile) {
+    document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+  }
 
-
-    // === PHASER CONFIG ===
-    const config = {
+  // === Phaser Config ===
+  const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
     scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     width: 1100,
     height: 500,
     physics: {
-        default: 'arcade',
-        arcade: { gravity: { y: 300 }, debug: false },
+      default: 'arcade',
+      arcade: { gravity: { y: 300 }, debug: false },
     },
-    // 👇 include CharacterSelect between StartMenu and Level1
     scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
-    };
+  };
 
-    const game = new Phaser.Game(config);
+  const game = new Phaser.Game(config);
 
-    // === PLAYER REFERENCE HANDLER ===
-    window.addEventListener('bdp-player-ready', (e) => {
-    playerRef = e.detail.player;
-    console.log('🎮 Player reference received for tilt controls');
-    if (controlMode === 'tilt') enableTiltControls(null, playerRef);
-    });
-    </script>
+  // === Fullscreen Setup ===
+  window.addEventListener('load', () => {
+    addFullscreenButton(); // sets up the [ fullscreen ] button + orientation handling
+  });
+
+  // === Mobile Control Setup ===
+  window.addEventListener('bdp-player-ready', (e) => {
+    const player = e.detail.player;
+    const activeScene = e.detail.scene;
+    if (!isMobile) return;
+
+    // Build manager and controls
+    const controlManager = new ControlManager(activeScene, player, 'joystick');
+    controlManager.setup();
+
+    // Attach hybrid toggle
+    setupMobileControls(activeScene, player);
+  });
+
+  // === Resize / Orientation Adaptation ===
+  window.addEventListener('orientationchange', () => {
+    const fullscreenEl = document.getElementById('fullscreen');
+    if (!fullscreenEl) return;
+    setTimeout(() => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      fullscreenEl.style.justifyContent = isLandscape ? 'center' : 'flex-start';
+      fullscreenEl.style.alignItems = isLandscape ? 'center' : 'flex-start';
+    }, 300);
+  });
+
+</script>
 
 
 </body>
