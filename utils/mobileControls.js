@@ -1,152 +1,158 @@
-import { setupJoystick, applyJoystickForce } from './joystickUtils.js';
-import { enableTiltControls } from './tiltUtils.js';
+// utils/mobileControls.js
+// Hybrid mobile controls with a persistent Joystick ↔ Tilt toggle.
 
+import * as J from './joystickUtils.js';
+import * as T from './tiltUtils.js';
+
+const UA_IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+function el(id) { return document.getElementById(id); }
+
+function ensureMobileUiRoot() {
+  let root = el('mobile-ui');
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'mobile-ui';
+    document.body.appendChild(root);
+  }
+  // Base styles so it never blocks gameplay visuals
+  Object.assign(root.style, {
+    position: 'fixed',
+    inset: '0',
+    pointerEvents: 'none',       // children re-enable as needed
+    zIndex: 1000
+  });
+  return root;
+}
+
+function makeToggleButton(currentMode) {
+  let btn = el('control-toggle');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'control-toggle';
+    el('mobile-ui').appendChild(btn);
+  }
+  btn.type = 'button';
+  btn.textContent = currentMode === 'tilt' ? '🌀 Tilt' : '🎮 Joystick';
+  Object.assign(btn.style, {
+    position: 'absolute',
+    right: '12px',
+    bottom: '12px',
+    padding: '10px 14px',
+    fontSize: '14px',
+    borderRadius: '10px',
+    border: 'none',
+    pointerEvents: 'auto',
+    backdropFilter: 'blur(6px)',
+    background: 'rgba(0,0,0,0.4)',
+    color: '#fff',
+    boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+  });
+  return btn;
+}
+
+/**
+ * Public: attach controls for mobile. No-op on desktop.
+ * - Adds a persistent toggle for Joystick/Tilt (localStorage: controlMode).
+ * - Wires update loop to whichever mode is active.
+ */
 export function setupMobileControls(scene, player) {
-    // Initialize tilt and joystick controls together
-    initializeTiltControls(scene, player);
-    initializeJoystick(scene, player);
+  if (!UA_IS_MOBILE) return; // Desktop: skip
 
-    // Add swipe-to-jump functionality
-    setupSwipeJump(scene, player);
+  ensureMobileUiRoot();
 
-    // Add tap-to-attack functionality
-    setupTapAttack(scene, player);
+  // read preference (default: joystick)
+  let mode = localStorage.getItem('controlMode') || 'joystick';
 
-    // Add attack button functionality
-    setupAttackButton(scene, player);
+  // state holders
+  let joystick = null;
+  let tilt = null;
 
-    // Ensure the joystick and attack button don't interfere
-    document.getElementById("joystick-area").addEventListener("touchstart", (event) => {
-        event.stopPropagation(); // Prevent touches from affecting the attack button
-    });
+  const activateJoystick = () => {
+    // disable tilt if active
+    if (tilt) { tilt.disable(); tilt = null; }
+    if (!joystick) joystick = J.createJoystick({ parent: el('mobile-ui') });
+    J.showJoystick(joystick);
+    mode = 'joystick';
+    localStorage.setItem('controlMode', mode);
+    refreshToggleUi();
+  };
 
-    document.getElementById("attack-button").addEventListener("touchstart", (event) => {
-        event.stopPropagation(); // Prevent attack button from interfering with movement
-    });
-}
+  const activateTilt = async () => {
+    // clean joystick if active
+    if (joystick) J.hideJoystick(joystick);
+    // enable tilt (requests permission on iOS if needed)
+    if (!tilt) tilt = T.enableTilt();
+    mode = 'tilt';
+    localStorage.setItem('controlMode', mode);
+    refreshToggleUi();
+  };
 
-function initializeTiltControls(scene, player) {
-    if (window.DeviceOrientationEvent) {
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            // iOS-specific permission request
-            DeviceOrientationEvent.requestPermission()
-                .then(permissionState => {
-                    if (permissionState === 'granted') {
-                        enableTiltControls(scene, player);
-                    } else {
-                        console.warn("Motion access denied. Enabling joystick as fallback.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error requesting motion permission:", error);
-                });
-        } else {
-            // Non-iOS or older versions
-            enableTiltControls(scene, player);
-        }
+  const toggleBtn = makeToggleButton(mode);
+  toggleBtn.onclick = async () => {
+    if (mode === 'joystick') {
+      await activateTilt();
     } else {
-        console.warn("Tilt controls unavailable.");
+      activateJoystick();
     }
-}
+  };
 
-function initializeJoystick(scene, player) {
-    setupJoystick(scene, player);
+  function refreshToggleUi() {
+    toggleBtn.textContent = mode === 'tilt' ? '🌀 Tilt' : '🎮 Joystick';
+  }
 
-    scene.events.on('update', () => {
-        if (!player || !player.body) return;
+  // Initialize preferred mode
+  if (mode === 'tilt') {
+    activateTilt();
+  } else {
+    activateJoystick();
+  }
 
-        const movingLeft = scene.joystickForceX < -0.1;
-        const movingRight = scene.joystickForceX > 0.1;
-        const isJumping = scene.joystickForceY < -0.5;
-        const onGround = player.body.blocked.down || player.body.touching.down;
-        const combinedForceX = scene.joystickForceX * 160;
+  // Map control vectors into player movement on every frame
+  const updateHandler = () => {
+    if (!player || !player.body) return;
 
-        // Apply movement
-        player.setVelocityX(combinedForceX);
-
-        // Ensure direction flip
-        if (movingLeft) {
-            player.setFlipX(true);
-        } else if (movingRight) {
-            player.setFlipX(false);
-        }
-
-        // **Fix: Prevent idle from stopping walking animation**
-        if (isJumping && onGround) {
-            player.setVelocityY(-500);
-            player.play('jump', true);
-        } else if ((movingLeft || movingRight) && onGround) {
-            if (!player.anims.isPlaying || player.anims.currentAnim.key !== 'walk') {
-                console.log("🚶 Joystick walk animation triggered");
-                player.play('walk', true);
-            }
-        } else if (onGround && scene.joystickForceX === 0) {
-            if (!player.anims.isPlaying || player.anims.currentAnim.key !== 'idle') {
-                console.log("🛑 Joystick idle animation triggered");
-                player.play('idle', true);
-            }
-        }
-    });
-}
-
-function setupSwipeJump(scene, player) {
-    let startY = null;
-
-    scene.input.on('pointerdown', (pointer) => {
-        startY = pointer.y;
-    });
-
-    scene.input.on('pointerup', (pointer) => {
-        if (startY !== null && pointer.y < startY - 50 && player.body.touching.down) {
-            player.setVelocityY(-500);
-            player.play('jump', true);
-        }
-        startY = null;
-    });
-}
-
-function setupTapAttack(scene, player) {
-    scene.input.on('pointerdown', (pointer) => {
-        if (!pointer.wasTouch) return; // Ensure it's a touch event
-        fireProjectile(scene, player);
-    });
-}
-
-function setupAttackButton(scene, player) {
-    const attackButton = document.getElementById('attack-button');
-    if (attackButton) {
-        attackButton.addEventListener('click', () => {
-            fireProjectile(scene, player);
-        });
-    } else {
-        console.warn("Attack button not found in DOM.");
+    if (mode === 'joystick' && joystick) {
+      const v = J.getVector(joystick); // { x, y, mag }
+      // Horizontal
+      if (Math.abs(v.x) > 0.08) {
+        player.setVelocityX(v.x * (player.speed || 220));
+        if (v.x < 0) player._setFacing?.(-1);
+        if (v.x > 0) player._setFacing?.(1);
+      } else {
+        // let existing keyboard or inertia handle if needed; otherwise stop
+        if (!player.isAttacking) player.setVelocityX(0);
+      }
+      // Jump on upward drag (optional: simple threshold)
+      if (v.y < -0.65 && player.body.blocked.down) {
+        player.jump?.();
+      }
     }
-}
 
-function fireProjectile(scene, player) {
-    if (!scene || !scene.projectiles) return;
-
-    console.log("🔥 Mobile fireProjectile() called!");
-
-    // Create projectile
-    const projectile = scene.projectiles.create(player.x, player.y, 'projectileCD');
-    if (projectile) {
-        console.log("🎯 Mobile projectile spawned!");
-
-        projectile.setVelocityX(player.flipX ? -500 : 500); // Fire direction
-        projectile.body.setAllowGravity(false);
-        scene.sound.play('playerProjectileFire');
-
-        // ✅ Ensure projectiles collide with the boss
-        if (scene.boss) {
-            scene.physics.add.overlap(projectile, scene.boss, () => {
-                console.log("💥 Mobile projectile hit boss!");
-                scene.takeBossDamage(1);
-                projectile.destroy();
-            });
-        }
+    if (mode === 'tilt' && tilt) {
+      const ax = T.getAxisX(); // -1..+1
+      if (Math.abs(ax) > 0.05) {
+        player.setVelocityX(ax * (player.speed || 220));
+        if (ax < 0) player._setFacing?.(-1);
+        if (ax > 0) player._setFacing?.(1);
+      } else {
+        if (!player.isAttacking) player.setVelocityX(0);
+      }
+      // Jump with quick "jerk up" gesture if you want later (currently off)
     }
+  };
+
+  scene.events.on('update', updateHandler);
+
+  // Cleanup on scene shutdown/destroy
+  const cleanup = () => {
+    scene.events.off('update', updateHandler);
+    if (joystick) { J.destroyJoystick(joystick); joystick = null; }
+    if (tilt) { tilt.disable(); tilt = null; }
+    toggleBtn?.remove?.();
+  };
+  scene.events.once('shutdown', cleanup);
+  scene.events.once('destroy', cleanup);
 }
 
-
-
+export default { setupMobileControls };

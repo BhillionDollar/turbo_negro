@@ -36,15 +36,18 @@ functions-logs/
 # Keep Netlify _headers if manually created
 !_headers
 
-# === Audio + Video Caches ===
+# === Audio + Video Assets (Keep Game Audio) ===
+# Ignore random audio caches or temp exports, but keep all in /assets/Audio/
 *.wav
-*.mp3
-*.mp4
 *.ogg
-*.avi
-*.mov
 *.flac
 *.m4a
+*.aiff
+*.aif
+
+# Don’t ignore the actual game’s audio folder
+!assets/Audio/**
+!assets/Audio/**/*.mp3
 
 # === Image + Frame Caches ===
 *.psd
