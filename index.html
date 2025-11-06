@@ -978,53 +978,23 @@
     // import Level5 from './src/scenes/level5.js';
     // import BossFight from './src/scenes/bossFight.js';
     import VictoryScene from './src/scenes/victoryScene.js';
-
+    
     import { setupJoystick } from './utils/joystickUtils.js';
-    import { enableTiltControls, disableTiltControls, toggleTiltControls } from './utils/tiltUtils.js';
+    import { enableTiltControls } from './utils/tiltUtils.js';
     import { addFullscreenButton } from './utils/fullScreenUtils.js';
 
-    // === DEVICE DETECTION ===
+    // 🔍 Detect if device is mobile
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    let controlMode = 'joystick';
-    let playerRef = null;
 
-    // === UI SETUP ===
-    const mobileUI = document.getElementById('mobile-ui');
-    if (isMobile) {
-    const toggleBtn = document.createElement('button');
-    toggleBtn.id = 'toggle-control-mode';
-    toggleBtn.innerText = 'Switch to Tilt';
-    toggleBtn.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        background: linear-gradient(180deg, #333, #555);
-        color: white;
-        border: 2px solid gold;
-        border-radius: 10px;
-        padding: 10px 18px;
-        font-size: 14px;
-        font-weight: bold;
-        text-shadow: 1px 1px 2px black;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.6);
-    `;
-    mobileUI.appendChild(toggleBtn);
-
-    toggleBtn.addEventListener('click', () => {
-        if (!playerRef) {
-        alert('Player not ready yet — start the level first!');
-        return;
-        }
-
-        const newMode = toggleTiltControls(null, playerRef);
-        controlMode = newMode;
-        toggleBtn.innerText = newMode === 'tilt' ? 'Switch to Joystick' : 'Switch to Tilt';
-
-        if (navigator.vibrate) navigator.vibrate(30); // subtle haptic feedback
-    });
+    if (!isMobile) {
+        // Hide joystick & attack for desktop
+        document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
     }
+
+    let controlMode = 'joystick'; // Default to joystick on mobile
+
 
     // === PHASER CONFIG ===
     const config = {
