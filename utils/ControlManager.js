@@ -22,7 +22,9 @@ export class ControlManager {
       setupMobileControls(this.scene, this.player);
 
       // Handle tilt preference restore
-      if (this.mode === 'tilt') enableTiltControls(this.scene, this.player);
+      if (this.mode === 'tilt') {
+        enableTiltControls(this.scene, this.player);
+      }
     }
 
     // Hook updates
@@ -40,15 +42,7 @@ export class ControlManager {
   }
 }
 
-// === Auto-register global listener for emitted events ===
-window.addEventListener('bdp-player-ready', (e) => {
-  const { scene, player } = e.detail;
-  const manager = new ControlManager(scene, player);
-  manager.setup();
-  window.currentControlManager = manager;
-});
-
-// === ✅ Exported function for manual init from index.html ===
+// ✅ Exportable init hook for manual call in index.html
 export function initControlManager() {
   window.addEventListener('bdp-player-ready', (e) => {
     const { scene, player } = e.detail;
