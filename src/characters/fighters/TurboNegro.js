@@ -1,5 +1,6 @@
 import BaseFighter from '../fighters/BaseFighter.js';
-import CD from '../../projectiles/cd/CD.js';
+import CD from '../projectiles/cd.js'; // ✅ Correct
+
 
 export default class TurboNegro extends BaseFighter {
   static preload(scene) {
