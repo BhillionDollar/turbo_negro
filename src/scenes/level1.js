@@ -6,7 +6,7 @@ import { applyJoystickForce } from '../../utils/joystickUtils.js';
 import TurboNegro from '../characters/fighters/TurboNegro.js';
 import ReReMarie from '../characters/fighters/ReReMarie.js';
 import MardiGrasZombie from '../characters/enemies/MardiGrasZombie.js';
-import CD from '../projectiles/cd.js'; // ✅ Correct
+import CD from '../projectiles/cd/cd.js'; // ✅ Correct
 
 
 export default class Level1 extends Phaser.Scene {
