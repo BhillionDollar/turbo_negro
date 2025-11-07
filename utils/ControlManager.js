@@ -40,10 +40,20 @@ export class ControlManager {
   }
 }
 
-// === Auto-register global listener ===
+// === Auto-register global listener for emitted events ===
 window.addEventListener('bdp-player-ready', (e) => {
   const { scene, player } = e.detail;
   const manager = new ControlManager(scene, player);
   manager.setup();
   window.currentControlManager = manager;
 });
+
+// === ✅ Exported function for manual init from index.html ===
+export function initControlManager() {
+  window.addEventListener('bdp-player-ready', (e) => {
+    const { scene, player } = e.detail;
+    const manager = new ControlManager(scene, player);
+    manager.setup();
+    window.currentControlManager = manager;
+  });
+}

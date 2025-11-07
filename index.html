@@ -1046,25 +1046,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
     <script type="module">
-    import StartMenu from './src/scenes/startMenu.js';
-    import CharacterSelect from './src/scenes/characterSelect.js';
-    import Level1 from './src/scenes/level1.js';
-    import Level2 from './src/scenes/level2.js';
-    // import Level3 from './src/scenes/level3.js';
-    // import Level4 from './src/scenes/level4.js';
-    // import Level5 from './src/scenes/level5.js';
-    // import BossFight from './src/scenes/bossFight.js';
-    import VictoryScene from './src/scenes/victoryScene.js';
-    import './utils/ControlManager.js';
+        import StartMenu from './src/scenes/startMenu.js';
+        import CharacterSelect from './src/scenes/characterSelect.js';
+        import Level1 from './src/scenes/level1.js';
+        import Level2 from './src/scenes/level2.js';
+        // import Level3 from './src/scenes/level3.js';
+        // import Level4 from './src/scenes/level4.js';
+        // import Level5 from './src/scenes/level5.js';
+        // import BossFight from './src/scenes/bossFight.js';
+        import VictoryScene from './src/scenes/victoryScene.js';
+        import './utils/ControlManager.js'; // ⬅️ Mounts global init
 
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (!isMobile) {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (!isMobile) {
         document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
         document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
         document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-    }
+        }
 
-    const config = {
+        const config = {
         type: Phaser.AUTO,
         parent: 'game-container',
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
@@ -1072,10 +1072,15 @@
         height: 500,
         physics: { default: 'arcade', arcade: { gravity: { y: 300 }, debug: false } },
         scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
-    };
+        };
 
-    new Phaser.Game(config);
+        const game = new Phaser.Game(config);
+
+        // ✅ Hook fullscreen, tilt, joystick — in one clean call
+        initControlManager();
     </script>
+
+
 
 
 </body>
