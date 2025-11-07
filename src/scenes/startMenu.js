@@ -1,4 +1,5 @@
 // scenes/startMenu.js
+import Phaser from 'phaser';
 import { addFullscreenButton } from '../../utils/fullScreenUtils.js';
 
 export default class StartMenu extends Phaser.Scene {
@@ -17,8 +18,8 @@ export default class StartMenu extends Phaser.Scene {
     const height = 500;
 
     this.input.once('pointerdown', () => {
-    this.sound.context.resume();
-  });
+      this.sound.context.resume();
+    });
 
     // Background
     const background = this.add.image(width / 2, height / 2, 'startBackground');
@@ -56,10 +57,20 @@ export default class StartMenu extends Phaser.Scene {
       strokeThickness: 5,
     }).setOrigin(0.5).setInteractive();
 
-    this.tweens.add({ targets: startButton, alpha: 0, duration: 500, yoyo: true, repeat: -1 });
+    this.tweens.add({
+      targets: startButton,
+      alpha: 0,
+      duration: 500,
+      yoyo: true,
+      repeat: -1
+    });
 
-    startButton.on('pointerover', () => startButton.setStyle({ fill: '#ffffff', backgroundColor: '#ff0000' }));
-    startButton.on('pointerout', () => startButton.setStyle({ fill: '#FFD700', backgroundColor: '#000000' }));
+    startButton.on('pointerover', () =>
+      startButton.setStyle({ fill: '#ffffff', backgroundColor: '#ff0000' })
+    );
+    startButton.on('pointerout', () =>
+      startButton.setStyle({ fill: '#FFD700', backgroundColor: '#000000' })
+    );
 
     startButton.on('pointerdown', () => {
       this.sound.stopAll();
