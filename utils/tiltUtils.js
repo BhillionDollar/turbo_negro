@@ -1,116 +1,50 @@
 // utils/tiltUtils.js
-// ============================================================
-// Bhillion Dollar — Turbo Negro Tilt Control Utility
-// Enhanced version with iOS permission support, smoothing, and toggle logic
-// ============================================================
+// Handles motion-based (tilt) controls for mobile platforms
 
-let tiltEnabled = false;
-let currentTiltHandler = null;
+let state = {
+  scene: null,
+  player: null,
+  enabled: false,
+  sensitivity: 2,
+  listener: null,
+};
 
-/**
- * Enable tilt controls for the given scene + player.
- * Adds deviceorientation listener with smoothing and safe permission handling.
- */
 export function enableTiltControls(scene, player) {
-  if (!player) {
-    console.warn('⚠️ TiltControls: No player object found.');
-    return;
-  }
+  if (state.enabled) return;
 
-  // Prevent multiple listeners
-  if (tiltEnabled && currentTiltHandler) {
-    window.removeEventListener('deviceorientation', currentTiltHandler);
-  }
+  state.scene = scene;
+  state.player = player;
 
-  let smoothedTilt = 0;
-  const smoothingFactor = 0.2;
+  const handleTilt = (event) => {
+    if (!state.player || !state.player.body) return;
+    const gamma = event.gamma;
+    if (gamma === null || gamma === undefined) return;
 
-  currentTiltHandler = (event) => {
-    const isLandscape = window.innerWidth > window.innerHeight;
-    const isClockwise = screen.orientation?.angle === 90;
+    const clamped = Math.max(-30, Math.min(30, gamma));
+    const velocityX = clamped * state.sensitivity;
+    state.player.setVelocityX(velocityX);
 
-    let tilt = isLandscape ? event.beta : event.gamma;
-    if (tilt == null) return;
-
-    const maxTilt = isLandscape ? 20 : 90;
-    const deadZone = 6;
-    const baseVelocity = 320;
-    const velocityMultiplier = isLandscape ? 1 : 1.75;
-    const adjustedVelocity = baseVelocity * velocityMultiplier;
-
-    // Clamp tilt range
-    tilt = Math.max(-maxTilt, Math.min(maxTilt, tilt));
-    if (isLandscape && !isClockwise) tilt = -tilt;
-
-    // Smooth transition
-    smoothedTilt += (tilt - smoothedTilt) * smoothingFactor;
-
-    // Apply movement based on smoothed tilt
-    if (smoothedTilt > deadZone) {
-      player.setVelocityX(
-        ((smoothedTilt - deadZone) / (maxTilt - deadZone)) * adjustedVelocity
-      );
+    // Optional: flip and walk animation logic
+    const grounded = player.body.blocked.down || player.body.touching.down;
+    if (velocityX > 0) {
       player.setFlipX(false);
-      if (player.anims?.currentAnim?.key !== 'walk') player.play('walk', true);
-    } else if (smoothedTilt < -deadZone) {
-      player.setVelocityX(
-        ((smoothedTilt + deadZone) / (maxTilt - deadZone)) * adjustedVelocity
-      );
+      if (grounded) player.anims.play('walk', true);
+    } else if (velocityX < 0) {
       player.setFlipX(true);
-      if (player.anims?.currentAnim?.key !== 'walk') player.play('walk', true);
+      if (grounded) player.anims.play('walk', true);
     } else {
-      player.setVelocityX(0);
-      if (player.anims?.currentAnim?.key !== 'idle') player.play('idle', true);
+      if (grounded) player.anims.play('idle', true);
     }
   };
 
-  // 🔐 Handle iOS 13+ permission requirement
-  if (
-    typeof DeviceMotionEvent !== 'undefined' &&
-    DeviceMotionEvent.requestPermission
-  ) {
-    DeviceMotionEvent.requestPermission()
-      .then((response) => {
-        if (response === 'granted') {
-          console.log('✅ Tilt controls enabled with permission.');
-          window.addEventListener('deviceorientation', currentTiltHandler);
-          tiltEnabled = true;
-        } else {
-          console.warn('🚫 Tilt access denied. Using joystick fallback.');
-          tiltEnabled = false;
-        }
-      })
-      .catch((err) => {
-        console.error('❌ Tilt permission error:', err);
-        tiltEnabled = false;
-      });
-  } else {
-    // Android / desktop browsers
-    window.addEventListener('deviceorientation', currentTiltHandler);
-    tiltEnabled = true;
-  }
+  state.listener = handleTilt;
+  window.addEventListener('deviceorientation', handleTilt);
+  state.enabled = true;
 }
 
-/**
- * Disable active tilt controls and remove listener.
- */
 export function disableTiltControls() {
-  if (tiltEnabled && currentTiltHandler) {
-    window.removeEventListener('deviceorientation', currentTiltHandler);
-    tiltEnabled = false;
-    console.log('🛑 Tilt controls disabled.');
-  }
-}
-
-/**
- * Toggle between joystick and tilt controls.
- */
-export function toggleTiltControls(scene, player) {
-  if (tiltEnabled) {
-    disableTiltControls();
-    return 'joystick';
-  } else {
-    enableTiltControls(scene, player);
-    return 'tilt';
-  }
+  if (!state.enabled) return;
+  window.removeEventListener('deviceorientation', state.listener);
+  state.listener = null;
+  state.enabled = false;
 }

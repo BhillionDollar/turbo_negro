@@ -1,32 +1,78 @@
 // utils/fullScreenUtils.js
-// Handles fullscreen toggle + orientation + control persistence
+// Unified fullscreen handling across iOS, Android, and desktop
 
 export function addFullscreenButton() {
-  const fsBtn = document.getElementById('mobile-fullscreen-button');
+  const btn = document.getElementById('mobile-fullscreen-button');
   const fsContainer = document.getElementById('fullscreen');
-  if (!fsBtn || !fsContainer) return;
 
-  fsBtn.addEventListener('click', async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await fsContainer.requestFullscreen();
-        fsBtn.textContent = '[ exit ]';
-      } else {
-        await document.exitFullscreen();
-        fsBtn.textContent = '[ fullscreen ]';
-      }
-    } catch (err) {
-      console.error('Fullscreen request failed:', err);
+  if (!btn || !fsContainer) return;
+
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone;
+
+  if (isIOS && isStandalone) {
+    // In iOS PWA mode, no need for fullscreen button
+    btn.style.display = 'none';
+    document.body.style.cssText = `
+      height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+    `;
+    Object.assign(fsContainer.style, {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+    });
+    return;
+  }
+
+  // Show and hook button for other mobile devices
+  btn.style.display = 'flex';
+  btn.addEventListener('click', () => {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    } else if (el.msRequestFullscreen) {
+      el.msRequestFullscreen();
     }
   });
 
-  const adjust = () => {
-    const landscape = window.innerWidth > window.innerHeight;
-    fsContainer.style.justifyContent = landscape ? 'center' : 'flex-start';
-    fsContainer.style.alignItems = landscape ? 'center' : 'flex-start';
+  // Adjust layout on orientation change
+  const adjustLayout = () => {
+    if (!fsContainer || !document.fullscreenElement) return;
+
+    const isLandscape = window.innerWidth > window.innerHeight;
+    Object.assign(document.body.style, {
+      position: 'absolute',
+      width: '100vw',
+      height: '100vh',
+      overflow: 'hidden',
+    });
+
+    Object.assign(fsContainer.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
+      justifyContent: isLandscape ? 'center' : 'flex-start',
+      alignItems: isLandscape ? 'center' : 'flex-start',
+    });
   };
 
-  window.addEventListener('orientationchange', () => setTimeout(adjust, 300));
-  window.addEventListener('resize', adjust);
-  adjust();
+  window.addEventListener('orientationchange', () => {
+    setTimeout(adjustLayout, 300);
+  });
+
+  document.addEventListener('fullscreenchange', adjustLayout);
+  adjustLayout(); // initial run
 }

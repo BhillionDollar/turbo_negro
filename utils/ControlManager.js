@@ -5,6 +5,8 @@ import { setupMobileControls } from './mobileControls.js';
 import { addFullscreenButton } from './fullScreenUtils.js';
 import { enableTiltControls, disableTiltControls } from './tiltUtils.js';
 
+let controlManagerInstance = null;
+
 export class ControlManager {
   constructor(scene, player) {
     this.scene = scene;
@@ -18,22 +20,16 @@ export class ControlManager {
     addFullscreenButton();
 
     if (this.isMobile) {
-      // Always set up joystick + toggle logic via mobileControls
       setupMobileControls(this.scene, this.player);
-
-      // Handle tilt preference restore
-      if (this.mode === 'tilt') {
-        enableTiltControls(this.scene, this.player);
-      }
+      if (this.mode === 'tilt') enableTiltControls(this.scene, this.player);
     }
 
-    // Hook updates
     this.scene.events.on('update', this.updateHandler);
     this.scene.events.once('shutdown', () => this.disable());
   }
 
   updateHandler() {
-    // Optional shared update logic if needed in the future
+    // Reserved for future joystick/tilt updates per frame
   }
 
   disable() {
@@ -42,12 +38,14 @@ export class ControlManager {
   }
 }
 
-// ✅ Exportable init hook for manual call in index.html
+// ✅ Auto-inits when window dispatches "bdp-player-ready"
 export function initControlManager() {
+  if (controlManagerInstance) return;
+
   window.addEventListener('bdp-player-ready', (e) => {
     const { scene, player } = e.detail;
-    const manager = new ControlManager(scene, player);
-    manager.setup();
-    window.currentControlManager = manager;
+    controlManagerInstance = new ControlManager(scene, player);
+    controlManagerInstance.setup();
+    window.currentControlManager = controlManagerInstance;
   });
 }
