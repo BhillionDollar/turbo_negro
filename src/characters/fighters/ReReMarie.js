@@ -13,7 +13,7 @@
 // ===============================
 
 import BaseFighter from '../fighters/BaseFighter.js';
-import CD from '../../projectiles/cd/CD.js';
+import CD from '../projectiles/cd.js';
 
 export default class ReReMarie extends BaseFighter {
   static preload(scene) {
