@@ -1049,6 +1049,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
     <script type="module">
+    import Phaser from 'https://cdn.skypack.dev/phaser';
+
     import StartMenu from './src/scenes/startMenu.js';
     import CharacterSelect from './src/scenes/characterSelect.js';
     import Level1 from './src/scenes/level1.js';
@@ -1065,29 +1067,29 @@
 
     // Hide onscreen UI for desktop
     if (!isMobile) {
-        document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
     }
 
     // Phaser Config
     const config = {
-        type: Phaser.AUTO,
-        parent: 'game-container',
-        scale: {
+    type: Phaser.AUTO,
+    parent: 'game-container',
+    scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        },
-        width: 1100,
-        height: 500,
-        physics: {
+    },
+    width: 1100,
+    height: 500,
+    physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
-            debug: false
+        gravity: { y: 300 },
+        debug: false
         }
-        },
-        scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene]
+    },
+    scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene]
     };
 
     const game = new Phaser.Game(config);
@@ -1096,9 +1098,5 @@
     initControlManager();
     </script>
 
-
-
-
-
-</body>
+    </body>
 </html>
