@@ -1,54 +1,52 @@
 // utils/mobileControls.js
-// Wires joystick + tilt + swipe jump + tap attack for mobile.
+// 🌀 Unified mobile controls — joystick, tilt, swipe-jump, tap attack, with live toggle support.
 
-import { setupJoystick } from './joystickUtils.js';
-import { enableTiltControls } from './tiltUtils.js';
+import { setupJoystick, destroyJoystick } from './joystickUtils.js';
+import { enableTiltControls, disableTiltControls } from './tiltUtils.js';
 
 export function setupMobileControls(scene, player) {
-  // Joystick
-  setupJoystick(scene, player);
+  // === Determine active control mode from storage ===
+  const mode = localStorage.getItem('controlMode') || 'joystick';
 
-  // Tilt (graceful; does nothing if permission denied)
-  enableTiltControls(scene, player);
+  // === Initial setup based on saved mode ===
+  if (mode === 'tilt') {
+    hideJoystickUI(true);
+    enableTiltControls(scene, player);
+  } else {
+    hideJoystickUI(false);
+    setupJoystick(scene, player);
+  }
 
-  // Swipe-to-jump
+  // === Swipe Jump + Tap Attack + Dedicated Button ===
   setupSwipeJump(scene, player);
-
-  // Tap-to-attack anywhere on canvas (but not on joystick/attack button)
   setupTapAttack(scene, player);
-
-  // Dedicated attack button
   setupAttackButton(scene, player);
 
-  // Keep touch for joystick/attack from bubbling to page scroll
+  // === Stop scroll behavior on UI elements ===
   stopScrollOnControl('joystick-area');
   stopScrollOnControl('attack-button');
 
-  // Drive movement from joystick each frame (tilt sets velocity directly)
+  // === Drive movement each frame (tilt modifies velocity directly) ===
   const updateFromJoystick = () => {
-    if (!player?.body) return;
-
+    if (!player?.body || mode === 'tilt') return; // skip if tilt mode
     const forceX = scene.joystickForceX || 0;
     const forceY = scene.joystickForceY || 0;
-
-    // Move
-    const vx = forceX * 160; // tune speed
+    const vx = forceX * 160;
     player.setVelocityX(vx);
 
-    // Face direction
     if (forceX < -0.1) player.setFlipX(true);
     else if (forceX > 0.1) player.setFlipX(false);
 
     const onGround = player.body.blocked.down || player.body.touching.down;
-    const wantJump = forceY > 0.55; // joystick pushed up
+    const wantJump = forceY > 0.55;
 
     if (wantJump && onGround) {
       player.setVelocityY(-500);
-      player.play('jump', true);
+      player.playSafe(`${player.texture.key}_jump`, true);
     } else if (Math.abs(forceX) > 0.1 && onGround) {
-      if (player.anims.currentAnim?.key !== 'walk') player.play('walk', true);
+      player.playSafe(`${player.texture.key}_walk`, true);
     } else if (onGround && Math.abs(forceX) <= 0.1) {
-      if (player.anims.currentAnim?.key !== 'idle') player.play('idle', true);
+      player.playSafe(`${player.texture.key}_idle`, true);
     }
   };
 
@@ -56,74 +54,83 @@ export function setupMobileControls(scene, player) {
   scene.events.once('shutdown', () => {
     scene.events.off('update', updateFromJoystick);
   });
+
+  // === Listen for ControlManager tilt toggle ===
+  window.addEventListener('bdp-toggle-tilt', (e) => {
+    const newMode = e.detail.mode;
+    localStorage.setItem('controlMode', newMode);
+
+    if (newMode === 'tilt') {
+      console.log('[mobileControls] Switching to Tilt');
+      destroyJoystick?.();
+      hideJoystickUI(true);
+      enableTiltControls(scene, player);
+    } else {
+      console.log('[mobileControls] Switching to Joystick');
+      disableTiltControls();
+      hideJoystickUI(false);
+      setupJoystick(scene, player);
+    }
+  });
 }
 
+// === Swipe up to jump ===
 function setupSwipeJump(scene, player) {
   let startY = null;
-  scene.input.on('pointerdown', (p) => { startY = p.y; });
-  scene.input.on('pointerup',   (p) => {
+  scene.input.on('pointerdown', (p) => (startY = p.y));
+  scene.input.on('pointerup', (p) => {
     if (startY == null) return;
     const onGround = player.body?.blocked.down || player.body?.touching.down;
     if (p.y < startY - 50 && onGround) {
       player.setVelocityY(-500);
-      player.play('jump', true);
+      player.playSafe(`${player.texture.key}_jump`, true);
     }
     startY = null;
   });
 }
 
+// === Tap screen to attack ===
 function setupTapAttack(scene, player) {
-  scene.input.on('pointerdown', (pointer, currentlyOver) => {
-    // If touching UI controls, skip
-    const hitUI = (pointer?.event?.target && (
-      pointer.event.target.id === 'joystick-area' ||
-      pointer.event.target.id === 'joystick-knob' ||
-      pointer.event.target.id === 'attack-button'
-    ));
-    if (hitUI) return;
-
-    // Only treat as touch on mobile
-    if (pointer.wasTouch) fireProjectile(scene, player);
+  scene.input.on('pointerdown', (pointer) => {
+    const target = pointer?.event?.target?.id;
+    if (['joystick-area', 'joystick-knob', 'attack-button'].includes(target)) return;
+    if (pointer.wasTouch && player?.attack) player.attack();
   });
 }
 
+// === Attack button ===
 function setupAttackButton(scene, player) {
   const btn = document.getElementById('attack-button');
   if (!btn) return;
-  const fire = (e) => { e.preventDefault(); fireProjectile(scene, player); };
+  const fire = (e) => {
+    e.preventDefault();
+    player?.attack?.();
+  };
   btn.addEventListener('touchstart', fire, { passive: false });
   btn.addEventListener('click', fire, { passive: false });
 }
 
+// === Prevent touch scroll on joystick + attack ===
 function stopScrollOnControl(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const stop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
   el.addEventListener('touchstart', stop, { passive: false });
-  el.addEventListener('touchmove',  stop, { passive: false });
-  el.addEventListener('touchend',   (e)=>e.stopPropagation(), { passive: false });
+  el.addEventListener('touchmove', stop, { passive: false });
+  el.addEventListener('touchend', (e) => e.stopPropagation(), { passive: false });
   el.addEventListener('gesturestart', stop, { passive: false });
 }
 
-function fireProjectile(scene, player) {
-  if (!scene?.projectiles || !player) return;
-
-  // Spawn
-  const projectile = scene.projectiles.create(player.x, player.y, 'projectileCD');
-  if (!projectile) return;
-
-  // Direction + physics
-  projectile.setVelocityX(player.flipX ? -500 : 500);
-  projectile.body?.setAllowGravity(false);
-
-  // SFX (ignore if missing)
-  try { scene.sound?.play?.('playerProjectileFire'); } catch {}
-
-  // Boss overlap (if present)
-  if (scene.boss) {
-    scene.physics.add.overlap(projectile, scene.boss, () => {
-      if (typeof scene.takeBossDamage === 'function') scene.takeBossDamage(1);
-      projectile.destroy();
-    });
-  }
+// === Toggle joystick visibility when tilt is active ===
+function hideJoystickUI(hide) {
+  const area = document.getElementById('joystick-area');
+  const knob = document.getElementById('joystick-knob');
+  const label = document.getElementById('joystick');
+  if (!area) return;
+  area.style.display = hide ? 'none' : 'block';
+  if (knob) knob.style.display = hide ? 'none' : 'block';
+  if (label) label.style.display = hide ? 'none' : 'block';
 }

@@ -898,31 +898,43 @@
                 <div id="game-container">
                     <!-- On-Screen Controls (anchored to this container in landscape) -->
                     <div id="onscreen-controls">
-                        <div>
                         <div id="joystick-area">
                             <h3 id="joystick">Joystick</h3>
                             <div id="joystick-knob"></div>
                         </div>
+
+                        <!-- 🌀 Tilt Toggle Inline -->
+                        <div id="tilt-toggle-container" style="
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            color: gold;
+                            font-family: 'Metal Mania', cursive;
+                            font-size: 13px;">
+                            <label for="tilt-toggle">Tilt:</label>
+                            <input type="checkbox" id="tilt-toggle" style="width: 18px; height: 18px; cursor: pointer;">
                         </div>
+
                         <button id="mobile-fullscreen-button">[ fullscreen ]</button>
                         <button id="attack-button">Attack</button>
-                    </div>
-                    </div>
+                        </div>
 
+                </div>
 
-            <div id="ad-container">
-                <ins class="adsbygoogle"
-                    style="display:block; text-align:center;"
-                    data-ad-client="ca-pub-5144521343709974"
-                    data-ad-slot="7476734608"
-                    data-ad-format="rectangle"
-                    data-full-width-responsive="true">
-                </ins>
-            </div>
-            
+                <div id="ad-container">
+                    <ins class="adsbygoogle"
+                        style="display:block; text-align:center;"
+                        data-ad-client="ca-pub-5144521343709974"
+                        data-ad-slot="7476734608"
+                        data-ad-format="rectangle"
+                        data-full-width-responsive="true">
+                    </ins>
+                </div>
+        
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
+
                 <!-- Game Instructions -->
                 <div id="instructions"> 
                     <h2>Game Instructions:</h2>
@@ -1092,6 +1104,25 @@
 
     // ✅ Init mobile/desktop controls
     initControlManager();
+
+    // === Tilt Toggle Setup ===
+    document.addEventListener('DOMContentLoaded', () => {
+    const tiltToggle = document.getElementById('tilt-toggle');
+    if (!tiltToggle) return;
+
+    // Restore saved state
+    const savedMode = localStorage.getItem('controlMode');
+    if (savedMode === 'tilt') tiltToggle.checked = true;
+
+    tiltToggle.addEventListener('change', () => {
+        const useTilt = tiltToggle.checked;
+        localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
+
+        // Dispatch event to ControlManager
+        window.dispatchEvent(new CustomEvent('bdp-toggle-tilt', { detail: { mode: useTilt ? 'tilt' : 'joystick' } }));
+    });
+    });
+
     </script>
 
     <script>

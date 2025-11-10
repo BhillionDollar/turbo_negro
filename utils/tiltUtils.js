@@ -1,50 +1,155 @@
-// utils/tiltUtils.js
-// Handles motion-based (tilt) controls for mobile — unified 2025 version
+// utils/ControlManager.js
+// ✨ Modern hybrid ControlManager for Turbo Negro (2025 update)
+// Handles joystick, tilt, and keyboard with automatic fullscreen + mobile setup
+// ✅ Added: live tilt toggle support + smooth switching
 
-let state = {
-  scene: null,
-  player: null,
-  enabled: false,
-  sensitivity: 6, // ← tuned to feel identical to joystick speed 180
-  listener: null,
-};
+import { setupMobileControls } from './mobileControls.js';
+import { addFullscreenButton } from './fullScreenUtils.js';
+import { enableTiltControls, disableTiltControls } from './tiltUtils.js';
+import { setupJoystick, applyJoystickForce, destroyJoystick } from './joystickUtils.js';
 
-export function enableTiltControls(scene, player) {
-  if (state.enabled) return;
+let controlManagerInstance = null;
 
-  state.scene = scene;
-  state.player = player;
+export class ControlManager {
+  constructor(scene, player) {
+    this.scene = scene;
+    this.player = player;
 
-  const handleTilt = (event) => {
-    if (!state.player?.body) return;
-    const gamma = event.gamma;
-    if (gamma == null) return;
+    // === Device Detection ===
+    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
 
-    const clamped = Math.max(-30, Math.min(30, gamma));
-    const velocityX = (clamped / 30) * (state.sensitivity * 30); // normalized curve
-    player.setVelocityX(velocityX);
+    // === Saved mode (fallback to joystick on mobile, keyboard on desktop) ===
+    this.mode =
+      localStorage.getItem('controlMode') ||
+      (this.isMobile ? 'joystick' : 'keyboard');
 
-    const grounded = player.body.blocked.down || player.body.touching.down;
+    // === Internal state ===
+    this.joystickEnabled = false;
+    this.tiltEnabled = false;
+    this.keyboardEnabled = false;
+    this.updateHandler = this.updateHandler.bind(this);
+  }
 
-    if (velocityX > 1) {
-      player.setFlipX(false);
-      if (grounded) player.playSafe(`${player.texture.key}_walk`, true);
-    } else if (velocityX < -1) {
-      player.setFlipX(true);
-      if (grounded) player.playSafe(`${player.texture.key}_walk`, true);
+  // 🧩 Setup controls based on current mode
+  setup() {
+    addFullscreenButton();
+
+    if (this.isMobile) {
+      if (this.mode === 'tilt') {
+        this.enableTilt();
+      } else if (this.mode === 'joystick') {
+        this.enableJoystick();
+      } else {
+        setupMobileControls(this.scene, this.player);
+      }
     } else {
-      if (grounded) player.playSafe(`${player.texture.key}_idle`, true);
+      this.enableKeyboard();
     }
-  };
 
-  state.listener = handleTilt;
-  window.addEventListener('deviceorientation', handleTilt);
-  state.enabled = true;
+    // Listen for live toggle events
+    window.addEventListener('bdp-toggle-tilt', (e) => {
+      const mode = e.detail.mode;
+      this.switchMode(mode);
+    });
+
+    this.scene.events.on('update', this.updateHandler);
+    this.scene.events.once('shutdown', () => this.disable());
+  }
+
+  // === Individual setup methods ===
+  enableTilt() {
+    console.log('[ControlManager] Enabling Tilt Controls');
+    this.tiltEnabled = true;
+    disableTiltControls(); // ensure clean start
+    destroyJoystick?.();
+    enableTiltControls(this.scene, this.player);
+  }
+
+  enableJoystick() {
+    console.log('[ControlManager] Enabling Joystick Controls');
+    this.joystickEnabled = true;
+    disableTiltControls();
+    setupJoystick(this.scene, this.player);
+    this.scene.events.on('update', () => applyJoystickForce(this.scene, this.player));
+  }
+
+  enableKeyboard() {
+    console.log('[ControlManager] Enabling Keyboard Controls');
+    this.keyboardEnabled = true;
+    this.cursors = this.scene.input.keyboard.createCursorKeys();
+    this.attackKey = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
+  }
+
+  // === Update per frame (keyboard only) ===
+  updateHandler() {
+    if (this.keyboardEnabled) {
+      const onGround = this.player.body?.blocked?.down || this.player.body?.touching?.down;
+
+      if (this.cursors.left.isDown) {
+        this.player.setVelocityX(-160);
+        this.player.setFlipX(true);
+        if (onGround) this.player.playSafe(`${this.player.texture.key}_walk`, true);
+      } else if (this.cursors.right.isDown) {
+        this.player.setVelocityX(160);
+        this.player.setFlipX(false);
+        if (onGround) this.player.playSafe(`${this.player.texture.key}_walk`, true);
+      } else {
+        this.player.setVelocityX(0);
+        if (onGround) this.player.playSafe(`${this.player.texture.key}_idle`, true);
+      }
+
+      if (this.cursors.up.isDown && onGround) {
+        this.player.setVelocityY(-500);
+        this.player.playSafe(`${this.player.texture.key}_jump`, true);
+      }
+
+      if (Phaser.Input.Keyboard.JustDown(this.attackKey)) {
+        this.player.attack?.();
+      }
+    }
+  }
+
+  // === Disable everything ===
+  disable() {
+    console.log('[ControlManager] Disabling all controls');
+    this.scene.events.off('update', this.updateHandler);
+    disableTiltControls();
+    destroyJoystick?.();
+
+    this.tiltEnabled = false;
+    this.joystickEnabled = false;
+    this.keyboardEnabled = false;
+  }
+
+  // === Allow runtime switching ===
+  switchMode(newMode) {
+    if (this.mode === newMode) return;
+
+    console.log(`[ControlManager] Switching to ${newMode}`);
+    this.disable();
+    this.mode = newMode;
+    localStorage.setItem('controlMode', newMode);
+
+    if (newMode === 'tilt') this.enableTilt();
+    else if (newMode === 'joystick') this.enableJoystick();
+    else if (newMode === 'keyboard') this.enableKeyboard();
+  }
 }
 
-export function disableTiltControls() {
-  if (!state.enabled) return;
-  window.removeEventListener('deviceorientation', state.listener);
-  state.listener = null;
-  state.enabled = false;
+// ✅ Global initializer: waits for the player to be ready
+export function initControlManager() {
+  if (controlManagerInstance) return;
+
+  window.addEventListener('bdp-player-ready', (e) => {
+    const { scene, player } = e.detail;
+    controlManagerInstance = new ControlManager(scene, player);
+    controlManagerInstance.setup();
+    window.currentControlManager = controlManagerInstance;
+
+    console.log('[ControlManager] Initialized:', controlManagerInstance.mode);
+  });
 }
