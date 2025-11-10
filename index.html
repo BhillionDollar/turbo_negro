@@ -24,9 +24,9 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-GFC2WF2CGJ');
     </script>
+
     <style>
     /* === LOGO & TITLE === */
     #logo-title-container {
@@ -209,50 +209,51 @@
     }
 
     /* === GAME CONTAINER === */
+    /* Ensure the game area can anchor absolutely-positioned children */
     #game-container {
-    aspect-ratio: 1100 / 500;
-    background: linear-gradient(180deg, #111, #222);
-    border: 2px solid #555;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-    margin: 0 auto;
-    max-width: 1100px;
-    overflow: hidden;
-    position: relative;
+    position: relative;            /* ⬅ important */
     width: 100%;
+    max-width: 1100px;
+    aspect-ratio: 1100 / 500;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: 2px solid #555;
+    background: linear-gradient(180deg, #111, #222);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    overflow: hidden;              /* keeps controls inside the rounded edge */
     }
 
     /* === ONSCREEN CONTROLS === */
+    /* Default: controls sit under the canvas in portrait */
     #onscreen-controls {
-        align-items: center;
-        background: rgba(0, 0, 0, 0.6);
-        border: 2px solid #555;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        margin: 2px auto;
-        margin-top: -2px;
-        padding: 2px;
-        position: relative;
-        width: 75%;
-        max-width: 900px;
-        transition: all 0.3s ease;
-        z-index: 10;
+    position: relative;            /* flow under game in portrait */
+    width: 75%;
+    max-width: 900px;              /* soft cap */
+    margin: 2px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 2px;
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #555;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    z-index: 20;                   /* above canvas */
     }
-
-    /* Keep inside fullscreen — absolute in landscape */
+    /* Landscape (phones/tablets): lock controls to bottom INSIDE the game container */
     @media screen and (orientation: landscape) and (max-width: 1024px) {
-        #onscreen-controls {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #444;
-            padding: 8px 12px;
-            width: 90%;
-            justify-content: space-around;
-        }
+    #onscreen-controls {
+        position: absolute;          /* ⬅ anchor to #game-container */
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        width: calc(100% - 24px);    /* follow canvas width with a tiny gutter */
+        max-width: 1000px;           /* hard cap so buttons don’t stretch too far */
+        background: rgba(0,0,0,0.55);
+        border: 2px solid #444;
+        padding: 8px 12px;
+        justify-content: space-around;
+    }
     }
 
     /* Joystick container */
@@ -300,6 +301,10 @@
             text-align: center;
         }
     }
+
+    /* Small smoothing so the joystick feels “snapped” */
+    #joystick-area { transition: transform 0.2s ease; }
+    #joystick-area:hover { transform: scale(1.05); }
 
     /* Attack button styling */
     #attack-button {
@@ -736,17 +741,16 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '932990387396685'); // Use your Pixel ID here
+    fbq('init', '932990387396685');
     fbq('track', 'PageView');
     </script>
     <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=932990387396685&ev=PageView&noscript=1"/>
+      <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=932990387396685&ev=PageView&noscript=1"/>
     </noscript>
     <!-- End Meta Pixel Code -->
-  
-
 </head>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
         const fullscreenEl = document.getElementById("fullscreen");
@@ -891,22 +895,20 @@
                     </div>
                 </div>
 
-                <div id="game-container"></div>
-                
-                <!-- On-Screen Controls -->
-                <div id="onscreen-controls">
-                    
-                    <div>
+                <div id="game-container">
+                    <!-- On-Screen Controls (anchored to this container in landscape) -->
+                    <div id="onscreen-controls">
+                        <div>
                         <div id="joystick-area">
                             <h3 id="joystick">Joystick</h3>
                             <div id="joystick-knob"></div>
                         </div>
-                        
+                        </div>
+                        <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+                        <button id="attack-button">Attack</button>
                     </div>
-                    <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-                    <button id="attack-button">Attack</button>
-                </div>
-            </div>
+                    </div>
+
 
             <div id="ad-container">
                 <ins class="adsbygoogle"
@@ -1042,6 +1044,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+
     <script type="module">
     import StartMenu from './src/scenes/startMenu.js';
     import CharacterSelect from './src/scenes/characterSelect.js';
@@ -1088,6 +1092,67 @@
 
     // ✅ Init mobile/desktop controls
     initControlManager();
+    </script>
+
+    <script>
+    // === Keep onscreen-controls sized to the canvas ===
+    (function attachControlSizer() {
+        const container = document.getElementById('game-container');
+        const controls  = document.getElementById('onscreen-controls');
+
+        if (!container || !controls) return;
+
+        const resizeControls = () => {
+        // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
+        const landscape = window.innerWidth > window.innerHeight;
+        if (landscape) {
+            const w = container.clientWidth;                // actual canvas box width
+            const target = Math.min(w - 24, 1000);          // match CSS calc/max
+            controls.style.width = target + 'px';
+            controls.style.left  = '50%';
+            controls.style.transform = 'translateX(-50%)';
+        } else {
+            // reset and let CSS manage portrait (75%)
+            controls.style.width = '';
+            controls.style.left = '';
+            controls.style.transform = '';
+        }
+        };
+
+        // Run on load + resize + orientation changes
+        window.addEventListener('load', resizeControls);
+        window.addEventListener('resize', resizeControls);
+        window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
+
+        // If Phaser adjusts after a tick, recalc once more
+        setTimeout(resizeControls, 300);
+    })();
+
+    // === Stop touch scrolling from stealing joystick/attack input ===
+    (function hardenTouch() {
+        const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+        const bind = (el) => {
+        if (!el) return;
+        el.addEventListener('touchstart', stop, { passive: false });
+        el.addEventListener('touchmove',  stop, { passive: false });
+        el.addEventListener('touchend',   (e)=>e.stopPropagation(), { passive: false });
+        el.addEventListener('gesturestart', stop, { passive: false });
+        };
+
+        bind(document.getElementById('joystick-area'));
+        bind(document.getElementById('attack-button'));
+    })();
+
+    // === (Optional but recommended) Show/hide mobile controls on desktop ===
+    (function toggleDesktopUI() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (!isMobile) {
+        document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+        }
+    })();
     </script>
 
 
