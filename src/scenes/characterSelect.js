@@ -1,4 +1,10 @@
-// src/scenes/characterSelect.js
+// scenes/characterSelect.js
+// ✅ 2025-compatible with BaseFighter architecture
+// ✅ Uses correct idle animations: turboIdle / rereIdle
+// ✅ Safe texture guards to prevent undefined texture errors
+
+import TurboNegro from '../characters/fighters/TurboNegro.js';
+import ReReMarie from '../characters/fighters/ReReMarie.js';
 
 export default class CharacterSelect extends Phaser.Scene {
   constructor() {
@@ -6,58 +12,92 @@ export default class CharacterSelect extends Phaser.Scene {
   }
 
   preload() {
-    // Load character thumbnails and assets (spritesheets, etc.)
-    this.load.image('turbonegro', 'assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png');
-    this.load.image('reremarie', 'assets/Characters/fighters/reremarie/standing/Standingwithbackground.png');
-    // Add more if needed
+    TurboNegro.preload(this);
+    ReReMarie.preload(this);
   }
 
   create() {
-    const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.centerY;
+    const { width, height } = this.scale;
+    const groundY = Math.round(height * 0.78);
+    const nameY = groundY + 28;
 
-    // Title
-    this.add.text(centerX, 60, 'Select Your Fighter', {
-      fontFamily: 'Metal Mania, sans-serif',
+    // === Title ===
+    this.add.text(width / 2, 80, 'Select Your Fighter', {
+      fontFamily: 'Metal Mania',
       fontSize: '48px',
-      color: '#ffffff',
+      color: '#FFD700',
       stroke: '#000',
       strokeThickness: 6,
+      shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 8 },
     }).setOrigin(0.5);
 
-    // Turbo Negro thumbnail
-    const turbo = this.add.image(centerX - 150, centerY + 20, 'turbonegro')
-      .setInteractive({ useHandCursor: true })
-      .setScale(0.6);
-    
-    this.add.text(turbo.x, turbo.y + 110, 'Turbo Negro', {
-      fontSize: '20px',
-      color: '#fff',
-    }).setOrigin(0.5);
+    // Register animations
+    TurboNegro.registerAnimations(this);
+    ReReMarie.registerAnimations(this);
 
-    turbo.on('pointerdown', () => {
-      localStorage.setItem('selectedCharacter', 'TurboNegro');
-      this.scene.start('Level1');
+    this.add.rectangle(width / 2, groundY, width * 0.7, 4, 0xffffff, 0.08);
+
+    // === TURBO NEGRO ===
+    const turbo = this.add.sprite(width / 3, groundY, 'turboStanding1').setOrigin(0.5, 1);
+    if (turbo.height > 0) turbo.setScale(150 / turbo.height);
+
+    // Safe idle animation play
+    this.textures.once(Phaser.Textures.Events.ONLOAD, () => {
+      if (this.anims.exists('turboIdle') && turbo.texture?.key) {
+        turbo.play('turboIdle', true);
+      }
     });
 
-    // Rere Marie thumbnail
-    const rere = this.add.image(centerX + 150, centerY + 20, 'reremarie')
-      .setInteractive({ useHandCursor: true })
-      .setScale(0.6);
-
-    this.add.text(rere.x, rere.y + 110, 'ReRe Marie', {
-      fontSize: '20px',
-      color: '#fff',
+    this.add.text(turbo.x, nameY, 'TURBO NEGRO', {
+      fontFamily: 'Nosifer',
+      fontSize: '28px',
+      color: '#ff0000',
+      stroke: '#000',
+      strokeThickness: 4,
     }).setOrigin(0.5);
 
-    rere.on('pointerdown', () => {
-      localStorage.setItem('selectedCharacter', 'ReReMarie');
-      this.scene.start('Level1');
+    turbo.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      this.selectFighter('TurboNegro');
     });
 
-    // Optional: back to start menu
-    this.input.keyboard.once('keydown-ESC', () => {
-      this.scene.start('StartMenu');
+    // === RE RE MARIE ===
+    const rere = this.add.sprite((2 * width) / 3, groundY, 'rereIdle1').setOrigin(0.5, 1);
+    if (rere.height > 0) rere.setScale(150 / rere.height);
+
+    this.textures.once(Phaser.Textures.Events.ONLOAD, () => {
+      if (this.anims.exists('rereIdle') && rere.texture?.key) {
+        rere.play('rereIdle', true);
+      }
+    });
+
+    this.add.text(rere.x, nameY, 'RE RE MARIE', {
+      fontFamily: 'Nosifer',
+      fontSize: '28px',
+      color: '#ff00ff',
+      stroke: '#000',
+      strokeThickness: 4,
+    }).setOrigin(0.5);
+
+    rere.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      this.selectFighter('ReReMarie');
+    });
+
+    // === Floating idle motion ===
+    this.tweens.add({
+      targets: [turbo, rere],
+      y: '+=8',
+      duration: 1500,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  selectFighter(character) {
+    this.sound.stopAll();
+    this.cameras.main.fadeOut(400, 0, 0, 0);
+    this.time.delayedCall(400, () => {
+      this.scene.start('Level1', { character });
     });
   }
 }
