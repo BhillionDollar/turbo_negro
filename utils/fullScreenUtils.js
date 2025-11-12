@@ -1,10 +1,10 @@
 // utils/fullScreenUtils.js
-// ✅ Hybrid version combining Bhillion Dollar original logic + new iOS refinements
+// ✅ Hybrid version — Bhillion Dollar original logic + proper game-container fullscreen focus
 
 export function addFullscreenButton(scene) {
-    const fullscreenElement = document.getElementById('fullscreen');
+    const fullscreenElement = document.getElementById('game-container'); // ⬅️ changed target
     if (!fullscreenElement) {
-        console.error("⚠️ Fullscreen element not found!");
+        console.error("⚠️ Game container not found!");
         return;
     }
 
@@ -48,7 +48,6 @@ export function addFullscreenButton(scene) {
 
     // === iOS STANDALONE ===
     if (isIOS && isStandalone) {
-        // iOS Add-to-Home behavior — do NOT force fullscreen on load
         fullscreenElement.style.position = "absolute";
         fullscreenElement.style.top = "0";
         fullscreenElement.style.left = "0";
@@ -59,7 +58,6 @@ export function addFullscreenButton(scene) {
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.overflow = "hidden";
 
-        // hide fullscreen button (since fullscreen API doesn't work anyway)
         if (mobileFullscreenButton) mobileFullscreenButton.style.display = "none";
     }
 
@@ -96,33 +94,40 @@ function toggleFullscreen(element) {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (element.requestFullscreen) element.requestFullscreen();
         else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+        console.log("🟢 Entering fullscreen...");
     } else {
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        console.log("🔵 Exiting fullscreen...");
     }
 }
 
 function adjustScreenForLandscapeFullscreen() {
-    const fullscreenElement = document.getElementById('fullscreen');
+    const fullscreenElement = document.getElementById('game-container');
     if (!fullscreenElement) return;
 
     const isLandscape = window.innerWidth > window.innerHeight;
     const isStandalone =
         window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
 
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (isFullscreen) {
         fullscreenElement.style.position = "fixed";
         fullscreenElement.style.top = "0";
         fullscreenElement.style.left = "0";
         fullscreenElement.style.width = "100vw";
         fullscreenElement.style.height = "100vh";
+        fullscreenElement.style.zIndex = "9999";
         fullscreenElement.style.display = "flex";
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.overflow = "hidden";
+
+        if (window.game && window.game.scale) {
+            window.game.scale.resize(window.innerWidth, window.innerHeight);
+        }
     } else if (isMobile && isLandscape) {
-        console.log("📱 Adjusting layout for mobile landscape (non-fullscreen)");
         fullscreenElement.style.position = "fixed";
         fullscreenElement.style.top = "0";
         fullscreenElement.style.left = "0";
@@ -144,6 +149,7 @@ function adjustScreenForLandscapeFullscreen() {
         fullscreenElement.style.height = "auto";
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
+        fullscreenElement.style.zIndex = "";
     }
 }
 
