@@ -1,105 +1,174 @@
 // utils/fullScreenUtils.js
-// Unified fullscreen handling across iOS, Android, and desktop
-// Works both with Phaser scenes and direct DOM button (mobile)
+// ✅ Hybrid version combining Bhillion Dollar original logic + new iOS refinements
 
 export function addFullscreenButton(scene) {
-  const btn = document.getElementById('mobile-fullscreen-button');
-  const fsContainer = document.getElementById('fullscreen');
+    const fullscreenElement = document.getElementById('fullscreen');
+    if (!fullscreenElement) {
+        console.error("⚠️ Fullscreen element not found!");
+        return;
+    }
 
-  // --- In-game button for desktop / web full-screen ---
-  if (scene && scene.add) {
-    const fullscreenButton = scene.add.text(1060, 20, '[⛶]', {
-      fontFamily: 'Metal Mania',
-      fontSize: '24px',
-      fill: '#FFD700',
-      backgroundColor: '#000',
-      padding: { left: 6, right: 6, top: 3, bottom: 3 },
-    })
-      .setOrigin(1, 0)
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 
-    fullscreenButton.on('pointerdown', () => {
-      if (!scene.scale.isFullscreen) {
-        scene.scale.startFullscreen();
-        fullscreenButton.setText('[×]');
-      } else {
-        scene.scale.stopFullscreen();
-        fullscreenButton.setText('[⛶]');
-      }
+    // === MOBILE FULLSCREEN BUTTON ===
+    const mobileFullscreenButton = document.getElementById('mobile-fullscreen-button');
+    if (isMobile && mobileFullscreenButton) {
+        mobileFullscreenButton.style.display = "flex";
+        mobileFullscreenButton.addEventListener("click", () => {
+            toggleFullscreen(fullscreenElement);
+            setTimeout(() => {
+                adjustScreenForLandscapeFullscreen();
+                restoreOriginalUI();
+            }, 400);
+        });
+    }
+
+    // === DESKTOP PHASER BUTTON ===
+    if (!isMobile && scene && scene.add) {
+        const fullscreenButton = scene.add.text(20, 20, '[ fullscreen ]', {
+            fontSize: '20px',
+            fill: '#ffffff',
+            backgroundColor: '#000000',
+            padding: { left: 10, right: 10, top: 5, bottom: 5 },
+        }).setInteractive();
+
+        fullscreenButton.on('pointerdown', () => {
+            toggleFullscreen(fullscreenElement);
+            setTimeout(() => {
+                adjustScreenForLandscapeFullscreen();
+                restoreOriginalUI();
+            }, 400);
+        });
+
+        return fullscreenButton;
+    }
+
+    // === iOS STANDALONE ===
+    if (isIOS && isStandalone) {
+        // iOS Add-to-Home behavior — do NOT force fullscreen on load
+        fullscreenElement.style.position = "absolute";
+        fullscreenElement.style.top = "0";
+        fullscreenElement.style.left = "0";
+        fullscreenElement.style.width = "100vw";
+        fullscreenElement.style.height = "100vh";
+        fullscreenElement.style.display = "flex";
+        fullscreenElement.style.justifyContent = "center";
+        fullscreenElement.style.alignItems = "center";
+        fullscreenElement.style.overflow = "hidden";
+
+        // hide fullscreen button (since fullscreen API doesn't work anyway)
+        if (mobileFullscreenButton) mobileFullscreenButton.style.display = "none";
+    }
+
+    // === Listeners ===
+    window.addEventListener("resize", () => {
+        adjustScreenForLandscapeFullscreen();
+        restoreOriginalUI();
     });
 
-    fullscreenButton.on('pointerover', () =>
-      fullscreenButton.setStyle({ fill: '#FFFFFF' })
-    );
-    fullscreenButton.on('pointerout', () =>
-      fullscreenButton.setStyle({ fill: '#FFD700' })
-    );
-  }
-
-  // --- DOM-level fullscreen (for mobile browsers) ---
-  if (!btn || !fsContainer) return;
-
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone;
-
-  if (isIOS && isStandalone) {
-    // In iOS PWA mode, hide button and pin layout
-    btn.style.display = 'none';
-    document.body.style.cssText = `
-      height: 100vh;
-      overflow: hidden;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-    `;
-    Object.assign(fsContainer.style, {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
+    window.addEventListener("orientationchange", () => {
+        console.log("🔄 Orientation changed.");
+        resetPlayerIfNeeded();
+        setTimeout(() => {
+            adjustScreenForLandscapeFullscreen();
+            restoreOriginalUI();
+            if (window.game && window.game.scale) {
+                window.game.scale.resize(window.innerWidth, window.innerHeight);
+            }
+        }, 400);
     });
-    return;
-  }
 
-  // Other mobile browsers: show and hook button
-  btn.style.display = 'flex';
-  btn.onclick = () => {
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.msRequestFullscreen) el.msRequestFullscreen();
-  };
+    document.addEventListener("fullscreenchange", () => {
+        adjustScreenForLandscapeFullscreen();
+        restoreOriginalUI();
+    });
+    document.addEventListener("webkitfullscreenchange", () => {
+        adjustScreenForLandscapeFullscreen();
+        restoreOriginalUI();
+    });
+}
 
-  // Adjust layout after orientation/fullscreen changes
-  const adjustLayout = () => {
-    if (!fsContainer || !document.fullscreenElement) return;
+// === CORE HELPERS ===
+function toggleFullscreen(element) {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (element.requestFullscreen) element.requestFullscreen();
+        else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+}
+
+function adjustScreenForLandscapeFullscreen() {
+    const fullscreenElement = document.getElementById('fullscreen');
+    if (!fullscreenElement) return;
+
     const isLandscape = window.innerWidth > window.innerHeight;
+    const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    Object.assign(document.body.style, {
-      position: 'absolute',
-      width: '100vw',
-      height: '100vh',
-      overflow: 'hidden',
-    });
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        fullscreenElement.style.position = "fixed";
+        fullscreenElement.style.top = "0";
+        fullscreenElement.style.left = "0";
+        fullscreenElement.style.width = "100vw";
+        fullscreenElement.style.height = "100vh";
+        fullscreenElement.style.display = "flex";
+        fullscreenElement.style.justifyContent = "center";
+        fullscreenElement.style.alignItems = "center";
+        fullscreenElement.style.overflow = "hidden";
+    } else if (isMobile && isLandscape) {
+        console.log("📱 Adjusting layout for mobile landscape (non-fullscreen)");
+        fullscreenElement.style.position = "fixed";
+        fullscreenElement.style.top = "0";
+        fullscreenElement.style.left = "0";
+        fullscreenElement.style.width = "100vw";
+        fullscreenElement.style.height = "100vh";
+        fullscreenElement.style.display = "flex";
+        fullscreenElement.style.justifyContent = "center";
+        fullscreenElement.style.alignItems = "center";
+        fullscreenElement.style.overflow = "hidden";
+    } else if (isMobile && isStandalone) {
+        fullscreenElement.style.position = "absolute";
+        fullscreenElement.style.width = "100vw";
+        fullscreenElement.style.height = "100vh";
+        fullscreenElement.style.justifyContent = "center";
+        fullscreenElement.style.alignItems = "center";
+    } else {
+        fullscreenElement.style.position = "relative";
+        fullscreenElement.style.width = "100%";
+        fullscreenElement.style.height = "auto";
+        fullscreenElement.style.justifyContent = "center";
+        fullscreenElement.style.alignItems = "center";
+    }
+}
 
-    Object.assign(fsContainer.style, {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      width: '100vw',
-      height: '100vh',
-      justifyContent: isLandscape ? 'center' : 'flex-start',
-      alignItems: isLandscape ? 'center' : 'flex-start',
-    });
-  };
+function restoreOriginalUI() {
+    const onscreenControls = document.getElementById('onscreen-controls');
+    if (!onscreenControls) return;
 
-  window.addEventListener('orientationchange', () => setTimeout(adjustLayout, 300));
-  document.addEventListener('fullscreenchange', adjustLayout);
-  adjustLayout();
+    onscreenControls.style.display = "flex";
+    onscreenControls.style.position = "relative";
+    onscreenControls.style.bottom = "auto";
+    onscreenControls.style.left = "auto";
+    onscreenControls.style.transform = "none";
+    onscreenControls.style.zIndex = "10";
+}
+
+function resetPlayerIfNeeded() {
+    if (window.game && window.game.scene) {
+        const currentScene = window.game.scene.getScenes(true)[0];
+        if (currentScene && currentScene.player) {
+            currentScene.player.setVelocityX(0);
+            currentScene.player.anims.play('idle', true);
+        }
+    }
+    if (window.game) {
+        window.game.joystickForceX = 0;
+        window.game.joystickForceY = 0;
+    }
 }
