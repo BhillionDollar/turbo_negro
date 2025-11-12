@@ -1,127 +1,105 @@
-// utils/fullScreenUtils.js
-// ✅ Bhillion Dollar Hybrid Version — optimized for fullscreen HUD + bottom controls positioning
-
 export function addFullscreenButton(scene) {
-    const fullscreenElement = document.getElementById('game-container');
+    const fullscreenElement = document.getElementById('fullscreen');
+    const gameIframe = document.getElementById('game-iframe');
+
     if (!fullscreenElement) {
-        console.error("⚠️ Game container not found!");
+        console.error("⚠️ Fullscreen element not found!");
         return;
     }
 
-    const hud = document.getElementById('hud-wrapper');
-    const onscreenControls = document.getElementById('onscreen-controls');
-
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 
-    // === MOBILE FULLSCREEN BUTTON ===
-    const mobileFullscreenButton = document.getElementById('mobile-fullscreen-button');
-    if (isMobile && mobileFullscreenButton) {
-        mobileFullscreenButton.style.display = "flex";
-        mobileFullscreenButton.addEventListener("click", () => {
-            toggleFullscreen(fullscreenElement);
-            setTimeout(() => {
-                adjustScreenForLandscapeFullscreen();
-                positionHUDandControls();
-            }, 400);
-        });
-    }
-
-    // === DESKTOP PHASER BUTTON ===
-    if (!isMobile && scene && scene.add) {
+    if (isMobile) {
+        console.log("📱 Mobile detected. Adding fullscreen button.");
+        const mobileFullscreenButton = document.getElementById('mobile-fullscreen-button');
+        if (mobileFullscreenButton) {
+            mobileFullscreenButton.addEventListener('click', () => {
+                exitIframeFullscreen(() => {
+                    toggleFullscreen(fullscreenElement);
+                    setTimeout(() => {
+                        adjustScreenForLandscapeFullscreen();
+                        restoreOriginalUI(); // Ensures UI layout remains consistent
+                    }, 500);
+                });
+            });
+        }
+    } else {
+        console.log("🖥️ Desktop detected. Adding fullscreen button.");
         const fullscreenButton = scene.add.text(20, 20, '[ fullscreen ]', {
             fontSize: '20px',
             fill: '#ffffff',
             backgroundColor: '#000000',
             padding: { left: 10, right: 10, top: 5, bottom: 5 },
+            borderRadius: '5px',
         }).setInteractive();
 
         fullscreenButton.on('pointerdown', () => {
-            toggleFullscreen(fullscreenElement);
-            setTimeout(() => {
-                adjustScreenForLandscapeFullscreen();
-                positionHUDandControls();
-            }, 400);
+            exitIframeFullscreen(() => {
+                toggleFullscreen(fullscreenElement);
+                setTimeout(() => {
+                    adjustScreenForLandscapeFullscreen();
+                    restoreOriginalUI(); // Ensures UI layout remains consistent
+                }, 500);
+            });
         });
 
         return fullscreenButton;
     }
+}
 
-    // === iOS STANDALONE ===
-    if (isIOS && isStandalone) {
+function exitIframeFullscreen(callback) {
+    const iframe = document.getElementById('game-iframe');
+    
+    if (document.fullscreenElement === iframe || document.webkitFullscreenElement === iframe) {
+        console.log("🔄 Exiting iframe fullscreen before entering game fullscreen...");
+        document.exitFullscreen().then(() => {
+            setTimeout(() => {
+                iframe.style.width = `${window.innerWidth}px`;
+                iframe.style.height = `${window.innerHeight}px`;
+                callback();
+            }, 500);
+        }).catch((err) => {
+            console.error("❌ Error exiting iframe fullscreen:", err);
+            callback();
+        });
+    } else {
+        callback();
+    }
+}
+
+function toggleFullscreen(element) {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        }
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function adjustScreenForLandscapeFullscreen() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const fullscreenElement = document.getElementById('fullscreen');
+
+    if (!fullscreenElement) return;
+
+    if (isMobile && isStandalone) {
+        console.log("🚀 Adjusting fullscreen for standalone mode...");
         fullscreenElement.style.position = "absolute";
         fullscreenElement.style.top = "0";
         fullscreenElement.style.left = "0";
         fullscreenElement.style.width = "100vw";
         fullscreenElement.style.height = "100vh";
-        fullscreenElement.style.display = "flex";
-        fullscreenElement.style.justifyContent = "center";
-        fullscreenElement.style.alignItems = "center";
-        fullscreenElement.style.overflow = "hidden";
-
-        if (mobileFullscreenButton) mobileFullscreenButton.style.display = "none";
-    }
-
-    // === EVENT LISTENERS ===
-    window.addEventListener("resize", () => {
-        adjustScreenForLandscapeFullscreen();
-        positionHUDandControls();
-    });
-
-    window.addEventListener("orientationchange", () => {
-        console.log("🔄 Orientation changed.");
-        resetPlayerIfNeeded();
-        setTimeout(() => {
-            adjustScreenForLandscapeFullscreen();
-            positionHUDandControls();
-            if (window.game && window.game.scale) {
-                window.game.scale.resize(window.innerWidth, window.innerHeight);
-            }
-        }, 400);
-    });
-
-    document.addEventListener("fullscreenchange", positionHUDandControls);
-    document.addEventListener("webkitfullscreenchange", positionHUDandControls);
-}
-
-// === CORE HELPERS ===
-function toggleFullscreen(element) {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (element.requestFullscreen) element.requestFullscreen();
-        else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
-        console.log("🟢 Entering fullscreen...");
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        console.log("🔵 Exiting fullscreen...");
-    }
-}
-
-// === MAIN RESPONSIVE HANDLER ===
-function adjustScreenForLandscapeFullscreen() {
-    const fullscreenElement = document.getElementById('game-container');
-    if (!fullscreenElement) return;
-
-    const isLandscape = window.innerWidth > window.innerHeight;
-    const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-
-    if (isFullscreen) {
-        fullscreenElement.style.position = "fixed";
-        fullscreenElement.style.top = "0";
-        fullscreenElement.style.left = "0";
-        fullscreenElement.style.width = "100vw";
-        fullscreenElement.style.height = "100vh";
-        fullscreenElement.style.zIndex = "9999";
         fullscreenElement.style.display = "flex";
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.overflow = "hidden";
     } else if (isMobile && isLandscape) {
+        console.log("📱 Adjusting fullscreen for mobile landscape mode...");
         fullscreenElement.style.position = "fixed";
         fullscreenElement.style.top = "0";
         fullscreenElement.style.left = "0";
@@ -131,70 +109,61 @@ function adjustScreenForLandscapeFullscreen() {
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.overflow = "hidden";
-    } else if (isMobile && isStandalone) {
-        fullscreenElement.style.position = "absolute";
-        fullscreenElement.style.width = "100vw";
-        fullscreenElement.style.height = "100vh";
-        fullscreenElement.style.justifyContent = "center";
-        fullscreenElement.style.alignItems = "center";
     } else {
+        console.log("🔄 Adjusting fullscreen for normal mode...");
         fullscreenElement.style.position = "relative";
         fullscreenElement.style.width = "100%";
         fullscreenElement.style.height = "auto";
+        fullscreenElement.style.display = "flex";
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
-        fullscreenElement.style.zIndex = "";
+        fullscreenElement.style.overflow = "hidden";
     }
 
-    if (window.game && window.game.scale) {
-        window.game.scale.resize(window.innerWidth, window.innerHeight);
-    }
+    restoreOriginalUI(); // Keeps UI in original layout
 }
 
-// === HUD & CONTROLS POSITIONING ===
-function positionHUDandControls() {
-    const hud = document.getElementById('hud-wrapper');
-    const controls = document.getElementById('onscreen-controls');
-    const fullscreenElement = document.getElementById('game-container');
+function restoreOriginalUI() {
+    const onscreenControls = document.getElementById('onscreen-controls');
+    if (!onscreenControls) return;
 
-    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-
-    if (isFullscreen) {
-        if (hud) {
-            hud.style.position = "absolute";
-            hud.style.top = "10px";
-            hud.style.left = "50%";
-            hud.style.transform = "translateX(-50%)";
-            hud.style.width = "90%";
-            hud.style.zIndex = "10000";
-        }
-        if (controls) {
-            controls.style.position = "absolute";
-            controls.style.bottom = "12px";
-            controls.style.left = "50%";
-            controls.style.transform = "translateX(-50%)";
-            controls.style.width = "90%";
-            controls.style.maxWidth = "1000px";
-            controls.style.zIndex = "10000";
-        }
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        console.log("📺 Fullscreen Mode Active - Keeping UI original");
+        onscreenControls.style.display = "flex"; 
+        onscreenControls.style.position = "relative";
+        onscreenControls.style.bottom = "auto";
+        onscreenControls.style.left = "auto";
+        onscreenControls.style.transform = "none";
+        onscreenControls.style.zIndex = "10";
     } else {
-        if (hud) {
-            hud.style.position = "static";
-            hud.style.transform = "none";
-            hud.style.zIndex = "";
-        }
-        if (controls) {
-            controls.style.position = "relative";
-            controls.style.bottom = "auto";
-            controls.style.left = "auto";
-            controls.style.transform = "none";
-            controls.style.zIndex = "10";
-        }
+        console.log("🔄 Exiting Fullscreen - Resetting UI to original layout");
+        onscreenControls.style.display = "flex"; 
+        onscreenControls.style.position = "relative";
+        onscreenControls.style.bottom = "auto";
+        onscreenControls.style.left = "auto";
+        onscreenControls.style.transform = "none";
     }
 }
 
-// === PLAYER RESET ===
-function resetPlayerIfNeeded() {
+// Listen for fullscreen and orientation changes
+document.addEventListener("fullscreenchange", () => {
+    adjustScreenForLandscapeFullscreen();
+    restoreOriginalUI(); // Ensures UI remains unchanged
+});
+
+document.addEventListener("webkitfullscreenchange", () => {
+    adjustScreenForLandscapeFullscreen();
+    restoreOriginalUI(); // Ensures UI remains unchanged
+});
+
+window.addEventListener("resize", () => {
+    adjustScreenForLandscapeFullscreen();
+    restoreOriginalUI(); // Ensures UI remains unchanged
+});
+
+window.addEventListener("orientationchange", () => {
+    console.log("🔄 Orientation changed. Resetting controls...");
+
     if (window.game && window.game.scene) {
         const currentScene = window.game.scene.getScenes(true)[0];
         if (currentScene && currentScene.player) {
@@ -202,8 +171,18 @@ function resetPlayerIfNeeded() {
             currentScene.player.anims.play('idle', true);
         }
     }
+
+    // Reset joystick and tilt input
     if (window.game) {
         window.game.joystickForceX = 0;
         window.game.joystickForceY = 0;
     }
-}
+
+    setTimeout(() => {
+        adjustScreenForLandscapeFullscreen();
+        restoreOriginalUI(); // Keeps UI elements in place
+        if (window.game && window.game.scale) {
+            window.game.scale.resize(window.innerWidth, window.innerHeight);
+        }
+    }, 500);
+});
