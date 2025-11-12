@@ -1,653 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="touch-action" content="manipulation">
-    <title>Turbo Negro - Saves The French Quarter!</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="touch-action" content="manipulation" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Turbo Negro" />
+  <title>Turbo Negro – Saves The French Quarter!</title>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFC2WF2CGJ"></script>
-    
-    <link rel="icon" href="assets/Logo/TurboNegro.png">
-    <link rel="apple-touch-icon" href="assets/Logo/TurboNegro.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Turbo Negro">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet"> 
-    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+  <!-- === ICONS & MANIFEST === -->
+  <link rel="icon" href="assets/Logo/TurboNegro.png" />
+  <link rel="apple-touch-icon" href="assets/Logo/TurboNegro.png" />
+  <link rel="manifest" href="manifest.json" />
 
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-GFC2WF2CGJ');
-    </script>
+  <!-- === GOOGLE & META PIXEL === -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFC2WF2CGJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFC2WF2CGJ');
+  </script>
 
-    <style>
-        :root { --vh: 100%; }
-
-        /* === LOGO & TITLE === */
-        #logo-title-container {
-        display:flex; flex-direction:column; align-items:center; justify-content:center;
-        width:100%; margin-top:10px;
-        }
-        #logo { max-width:25vw; height:auto; }
-        @media(max-width:768px){ #logo{max-width:40vw;} }
-        @media(max-width:480px){ #logo{max-width:50vw;} }
-
-        #title {
-        font-family:'Nosifer',cursive; font-style:italic;
-        font-size:6vw; color:red; text-shadow:4px 4px 5px black;
-        text-align:center; word-wrap:break-word; max-width:90%;
-        }
-        @media(max-width:768px){#title{font-size:8vw;}}
-        @media(max-width:480px){#title{font-size:10vw;}}
-
-        /* === GLOBAL BODY === */
-        body{
-        margin:0; background:#121212; color:#fff;
-        display:flex; flex-direction:column; align-items:center;
-        justify-content:flex-start; font-family:Arial,sans-serif;
-        height:auto; overflow:auto; overscroll-behavior:none;
-        touch-action:pinch-zoom pan-y;
-        }
-
-        /* === WARNING BOX === */
-        #warning{
-        background:rgba(255,0,0,.1); border:2px solid red; border-radius:8px;
-        color:red; font:700 18px/1.4 'Courier New',monospace;
-        text-align:center; padding:10px; margin:20px auto; max-width:80%;
-        }
-
-        /* === MAIN CONTAINER === */
-        #main-container{
-        display:flex; flex-direction:column; align-items:center; width:100%;
-        }
-
-        /* === UI CONTAINER === */
-        #ui-container{
-        background:linear-gradient(90deg,#222,#333);
-        border:2px solid #555; border-radius:8px;
-        box-shadow:0 4px 8px rgba(0,0,0,.6);
-        box-sizing:border-box; width:90%; max-width:1100px;
-        padding:10px; text-align:center; margin-bottom:10px;
-        }
-
-        /* === FULLSCREEN WRAPPER === */
-        #fullscreen{
-        position:relative;
-        display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-        background:black; width:100%;
-        height:calc(var(--vh,1vh)*100);
-        overflow:hidden; transition:all .3s ease-in-out;
-        }
-        #hud-wrapper{
-        width:100%; max-width:1100px;
-        display:flex; flex-direction:column; align-items:center;
-        justify-content:flex-start; padding-top:6px; z-index:5;
-        }
-
-        /* === STATUS (Health/Enemy/Score/Boss) === */
-        #health-bar-container,#enemy-count,#score-display,#boss-health-bar-container{
-        display:flex; align-items:center; justify-content:center;
-        background:rgba(50,50,50,.8); border-radius:8px; color:#fff;
-        font-size:16px; font-weight:700;
-        padding:8px 15px; margin:2px; width:96%;
-        text-shadow:1px 1px 4px rgba(0,0,0,.8);
-        }
-        #score-display{color:gold;font-family:'Metal Mania',cursive;font-size:18px;}
-
-        #health-bar,#boss-health-bar{
-        background:#770000; border:2px solid #444; border-radius:12px;
-        height:20px; width:75%; overflow:hidden;
-        }
-        #health-bar-inner,#boss-health-bar-inner{
-        height:100%; width:100%; background:#00aa00;
-        transition:width .3s ease-in-out;
-        }
-
-        /* === GAME CANVAS CONTAINER === */
-        #game-container{
-        width:100%; max-width:1100px; aspect-ratio:1100/500;
-        border:2px solid #555; border-radius:10px;
-        background:linear-gradient(180deg,#111,#222);
-        box-shadow:0 4px 12px rgba(0,0,0,.8);
-        position:relative; overflow:hidden;
-        }
-
-        /* === ONSCREEN CONTROLS === */
-        #onscreen-controls{
-        position:relative; width:75%; margin:2px auto;
-        display:flex; justify-content:space-between; align-items:center;
-        background:rgba(0,0,0,.6); border:2px solid #555; border-radius:12px;
-        padding:2px 4px;
-        }
-        #center-controls{
-        display:flex; flex-direction:column; align-items:center; justify-content:center;
-        gap:4px;
-        }
-        #tilt-toggle-label{
-        display:flex; align-items:center; justify-content:center;
-        font:700 12px/1 Arial; color:#fff;
-        background:linear-gradient(180deg,#333,#555);
-        border:2px solid #777; border-radius:6px;
-        padding:4px 8px; cursor:pointer; user-select:none;
-        }
-        #tilt-toggle-label input{margin-right:5px;}
-        @media(max-width:768px){
-        #center-controls{gap:2px;}
-        #tilt-toggle-label{font-size:10px;padding:3px 6px;}
-        }
-
-        /* Landscape adjustment */
-        @media(orientation:landscape) and (max-width:1024px){
-        #onscreen-controls{
-            position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
-            width:calc(100% - 24px); max-width:1000px;
-            background:rgba(0,0,0,.55); border:2px solid #444;
-            padding:8px 12px; justify-content:space-around;
-        }
-        }
-
-        /* === JOYSTICK === */
-        #joystick-area{
-        position:relative; width:125px; height:100px; border-radius:50%;
-        background:radial-gradient(circle,#555 50%,#333 100%);
-        box-shadow:0 4px 10px rgba(0,0,0,.8); touch-action:none;
-        transition:transform .2s ease; margin-top:-10px;
-        }
-        #joystick-area:hover{background:linear-gradient(180deg,#555,#777);transform:scale(1.05);}
-        #joystick-knob{
-        width:40px; height:40px; border-radius:50%;
-        background:linear-gradient(180deg,#777,#444);
-        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        box-shadow:inset 0 2px 5px rgba(0,0,0,.6); transition:transform .1s ease;
-        }
-        #joystick{display:none;}
-        @media(max-width:768px){
-        #joystick{display:block;color:white;font-size:10px;text-align:center;}
-        }
-
-        /* === ATTACK BUTTON === */
-        #attack-button{
-        width:100px;height:100px;border-radius:50%;
-        background:linear-gradient(180deg,#333,#555);color:white;
-        display:flex;align-items:center;justify-content:center;
-        font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;
-        border:none;box-shadow:0 4px 6px rgba(0,0,0,.6);
-        cursor:pointer;transition:all .2s ease;
-        }
-        #attack-button:hover{background:linear-gradient(180deg,#555,#777);transform:scale(1.05);}
-        #attack-button:active{background:#999;transform:scale(1);}
-
-        /* === MOBILE FULLSCREEN BUTTON === */
-        #mobile-fullscreen-button{
-        background:black;border:2px solid white;border-radius:6px;
-        color:white;font-size:10px;font-weight:bold;
-        height:50px;width:80px;margin:5px;
-        display:none;align-items:center;justify-content:center;
-        transition:all .2s ease;
-        }
-        #mobile-fullscreen-button:hover{background:#222;transform:scale(1.05);}
-        @media(max-width:768px){#mobile-fullscreen-button{display:flex;}}
-
-        /* === ADS === */
-        #ad-container{
-        text-align:center;margin:20px auto;max-width:100%;
-        background:rgba(0,0,0,.2);border:2px solid #555;border-radius:10px;
-        box-shadow:0 4px 6px rgba(0,0,0,.4);padding:10px;overflow:hidden;
-        }
-        #ad-container ins{display:block;width:336px;height:280px;max-width:100%;margin:10px auto;}
-        @media(max-width:768px){#ad-container ins{width:100%!important;height:auto!important;}}
-
-        /* === FOOTER === */
-        #bhilliondollar{
-        background:rgba(255,255,255,.1);border-radius:12px;
-        box-shadow:0 4px 10px rgba(0,0,0,.8);
-        display:flex;flex-direction:column;align-items:center;text-align:center;
-        font-size:16px;line-height:1.5;margin:30px auto;max-width:600px;padding:20px;
-        }
-        #bhilliondollar button{
-        margin-top:10px;padding:10px 20px;font-weight:bold;font-size:16px;
-        color:white;background:linear-gradient(180deg,#333,#555);
-        border:none;border-radius:8px;cursor:pointer;
-        transition:transform .2s ease,background .2s ease;
-        }
-        #bhilliondollar button:hover{background:linear-gradient(180deg,#555,#777);transform:scale(1.05);}
-        #bhilliondollar button:active{background:#999;transform:scale(1);}
-    </style>
-
-    <!-- Meta Pixel Code -->
-    <script>
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '932990387396685');
-        fbq('track', 'PageView');
-    </script>
-
-    <noscript>
-      <img height="1" width="1" style="display:none"
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window,document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','932990387396685');
+    fbq('track','PageView');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=932990387396685&ev=PageView&noscript=1"/>
-    </noscript>
-    <!-- End Meta Pixel Code -->
+  </noscript>
+
+  <!-- === FONTS === -->
+  <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet" /> 
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+
+  <!-- === STYLES === -->
+  <style>
+    :root { --vh: 100%; }
+
+    body {
+      margin:0; background:#121212; color:#fff;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:flex-start; font-family:Arial,sans-serif;
+      height:auto; overflow:auto; overscroll-behavior:none;
+      touch-action:pinch-zoom pan-y;
+    }
+
+    #logo-title-container {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      width:100%; margin-top:10px;
+    }
+    #logo { max-width:25vw; height:auto; }
+    @media(max-width:768px){ #logo{max-width:40vw;} }
+    @media(max-width:480px){ #logo{max-width:50vw;} }
+    #title {
+      font-family:'Nosifer',cursive; font-style:italic;
+      font-size:6vw; color:red; text-shadow:4px 4px 5px black;
+      text-align:center; word-wrap:break-word; max-width:90%;
+    }
+    @media(max-width:768px){#title{font-size:8vw;}}
+    @media(max-width:480px){#title{font-size:10vw;}}
+
+    #warning {
+      background:rgba(255,0,0,.1); border:2px solid red; border-radius:8px;
+      color:red; font:700 18px/1.4 'Courier New',monospace;
+      text-align:center; padding:10px; margin:20px auto; max-width:80%;
+    }
+
+    #main-container { display:flex; flex-direction:column; align-items:center; width:100%; }
+
+    #ui-container {
+      background:linear-gradient(90deg,#222,#333);
+      border:2px solid #555; border-radius:8px;
+      box-shadow:0 4px 8px rgba(0,0,0,.6);
+      box-sizing:border-box; width:90%; max-width:1100px;
+      padding:10px; text-align:center; margin-bottom:10px;
+    }
+
+    #fullscreen {
+      position:relative;
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+      background:black; width:100%;
+      height:calc(var(--vh,1vh)*100);
+      overflow:hidden; transition:all .3s ease-in-out;
+    }
+    #hud-wrapper {
+      width:100%; max-width:1100px;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:flex-start; padding-top:6px; z-index:5;
+    }
+
+    #health-bar-container,#enemy-count,#score-display,#boss-health-bar-container {
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(50,50,50,.8); border-radius:8px; color:#fff;
+      font-size:16px; font-weight:700;
+      padding:8px 15px; margin:2px; width:96%;
+      text-shadow:1px 1px 4px rgba(0,0,0,.8);
+    }
+    #score-display { color:gold;font-family:'Metal Mania',cursive;font-size:18px; }
+
+    #health-bar,#boss-health-bar {
+      background:#770000; border:2px solid #444; border-radius:12px;
+      height:20px; width:75%; overflow:hidden;
+    }
+    #health-bar-inner,#boss-health-bar-inner {
+      height:100%; width:100%; background:#00aa00; transition:width .3s ease-in-out;
+    }
+
+    #game-container {
+      width:100%; max-width:1100px; aspect-ratio:1100/500;
+      border:2px solid #555; border-radius:10px;
+      background:linear-gradient(180deg,#111,#222);
+      box-shadow:0 4px 12px rgba(0,0,0,.8);
+      position:relative; overflow:hidden;
+    }
+
+    #onscreen-controls {
+      position:relative; width:75%; margin:2px auto;
+      display:flex; justify-content:space-between; align-items:center;
+      background:rgba(0,0,0,.6); border:2px solid #555; border-radius:12px;
+      padding:2px 4px;
+    }
+    #center-controls { display:flex; flex-direction:column; align-items:center; gap:4px; }
+    #tilt-toggle-label {
+      display:flex; align-items:center; justify-content:center;
+      font:700 12px/1 Arial; color:#fff;
+      background:linear-gradient(180deg,#333,#555);
+      border:2px solid #777; border-radius:6px;
+      padding:4px 8px; cursor:pointer; user-select:none;
+    }
+    #tilt-toggle-label input{margin-right:5px;}
+
+    #joystick-area {
+      position:relative; width:125px; height:100px; border-radius:50%;
+      background:radial-gradient(circle,#555 50%,#333 100%);
+      box-shadow:0 4px 10px rgba(0,0,0,.8); touch-action:none;
+      transition:transform .2s ease; margin-top:-10px;
+    }
+    #joystick-knob {
+      width:40px; height:40px; border-radius:50%;
+      background:linear-gradient(180deg,#777,#444);
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      box-shadow:inset 0 2px 5px rgba(0,0,0,.6); transition:transform .1s ease;
+    }
+
+    #attack-button {
+      width:100px;height:100px;border-radius:50%;
+      background:linear-gradient(180deg,#333,#555);color:white;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+      border:none;box-shadow:0 4px 6px rgba(0,0,0,.6);
+      cursor:pointer;transition:all .2s ease;
+    }
+
+    #mobile-fullscreen-button {
+      background:black;border:2px solid white;border-radius:6px;
+      color:white;font-size:10px;font-weight:bold;
+      height:50px;width:80px;margin:5px;
+      display:none;align-items:center;justify-content:center;
+      transition:all .2s ease;
+    }
+    @media(max-width:768px){#mobile-fullscreen-button{display:flex;}}
+
+    #ad-container, .ad-container-secondary {
+      text-align:center;margin:20px auto;max-width:100%;
+      background:rgba(0,0,0,.2);border:2px solid #555;border-radius:10px;
+      box-shadow:0 4px 6px rgba(0,0,0,.4);padding:10px;overflow:hidden;
+    }
+  </style>
+
+  <!-- === PHASER LIBRARY === -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+
+  <script type="importmap">
+    { "imports": { "phaser": "https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js" } }
+  </script>
 </head>
 
-    <div id="warning">
-        <strong>Warning!</strong><br>
-        Updates will be continuing soon!
-        </div>
-
 <body>
-    <!-- iOS Prompt & Warning -->
-    <div id="ios-prompt">
-        <p><strong>Add Turbo Negro to your home screen for fullscreen mode!</strong></p>
-        <p>
-            Tap the <strong>Share</strong> button
-            <img src="assets/Logo/TurboNegro.png" alt="Share"> and then
-            <strong>Add to Home Screen</strong>
-        </p>
-        <button id="dismiss-ios-prompt">Dismiss</button>
-    </div>
+  <div id="warning"><strong>Warning!</strong><br>Updates will be continuing soon!</div>
 
-    <div id="mobile-ui"></div>
+  <div id="ios-prompt">
+    <p><strong>Add Turbo Negro to your home screen for fullscreen mode!</strong></p>
+    <p>Tap the <strong>Share</strong> button
+      <img src="assets/Logo/TurboNegro.png" alt="Share" width="20" height="20" />
+      and then <strong>Add to Home Screen</strong>.
+    </p>
+    <button id="dismiss-ios-prompt">Dismiss</button>
+  </div>
 
-    <div id="main-container">
-        <!-- UI and Game Container -->
-        <div id="ui-container">
-            <div id="logo-title-container">
-                <img id="logo" src="assets/Logo/TurboNegro.png" alt="Turbo Negro Logo">
-                <h1 id="title">Saves The French Quarter!</h1>
-            </div>
+  <div id="main-container">
+    <div id="ui-container">
 
-            <div id="fullscreen">
-                <!-- === HUD (top) === -->
-                <div id="hud-wrapper">
-                    <div id="health-bar-container">
-                    Health:
-                    <div id="health-bar">
-                        <div id="health-bar-inner"></div>
-                    </div>
-                    <div id="enemy-count">Enemies Left: 0</div>
-                    <div id="score-display">Score: 0</div>
-                    <div id="boss-health-bar-container" style="display:none;">
-                        Boss Health:
-                        <div id="boss-health-bar">
-                        <div id="boss-health-bar-inner"></div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
+      <div id="logo-title-container">
+        <img id="logo" src="assets/Logo/TurboNegro.png" alt="Turbo Negro Logo" />
+        <h1 id="title">Saves The French Quarter!</h1>
+      </div>
 
-                <!-- === GAME CANVAS === -->
-                <div id="game-container">
-                    <div id="onscreen-controls">
-                    <div id="joystick-wrap">
-                        <div id="joystick-area">
-                        <h3 id="joystick">Joystick</h3>
-                        <div id="joystick-knob"></div>
-                        </div>
-                    </div>
-
-                    <div id="center-controls">
-                        <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-                        <label id="tilt-toggle-label">
-                        <input type="checkbox" id="tilt-toggle"> Tilt
-                        </label>
-                    </div>
-
-                    <button id="attack-button">Attack</button>
-                    </div>
-                </div>
-            </div>
-
-                <div id="health-bar-container">
-                    Health:
-                    <div id="health-bar">
-                        <div id="health-bar-inner"></div>
-                    </div>
-
-                    <!-- iOS Share Button -->
-                    <button id="ios-share-button" style="
-                        display: none;
-                        width: 120px;
-                        height: 40px;
-                        font-size: 14px;
-                        color: white;
-                        background-color: #ffffff;
-                        border: 2px solid white;
-                        border-radius: 5px;
-                        text-align: center;
-                        padding: 5px;
-                        margin: 5px;
-                        cursor: pointer;">
-                        <img src="assets/Logo/apple-share-icon.png" alt="Share" width="20px" height="20px">
-                    </button>
-
-                    <div id="enemy-count">Enemies Left: 0</div>
-
-                    <!-- 🟡 SCORE DISPLAY -->
-                    <div id="score-display">Score: 0</div>
-
-                    <div id="boss-health-bar-container" style="display: none;">
-                        Boss Health:
-                        <div id="boss-health-bar">
-                            <div id="boss-health-bar-inner"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="game-container">
-                    <!-- On-Screen Controls (anchored to this container in landscape) -->
-                    <div id="onscreen-controls">
-                        <!-- LEFT: Joystick -->
-                        <div id="joystick-wrap">
-                            <div id="joystick-area">
-                                <h3 id="joystick">Joystick</h3>
-                                <div id="joystick-knob"></div>
-                            </div>
-                        </div>
-
-                        <!-- CENTER: Fullscreen + Tilt Toggle -->
-                        <div id="center-controls">
-                            <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-                            <label id="tilt-toggle-label">
-                                <input type="checkbox" id="tilt-toggle">
-                                Tilt
-                            </label>
-                        </div>
-
-                        <!-- RIGHT: Attack -->
-                        <button id="attack-button">Attack</button>
-                    </div>
-                </div>
-
-                <div id="ad-container">
-                    <ins class="adsbygoogle"
-                        style="display:block; text-align:center;"
-                        data-ad-client="ca-pub-5144521343709974"
-                        data-ad-slot="7476734608"
-                        data-ad-format="rectangle"
-                        data-full-width-responsive="true">
-                    </ins>
-                </div>
-        
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-
-                <!-- Game Instructions -->
-                <div id="instructions"> 
-                    <h2>Game Instructions:</h2>
-                    <h3>Mobile Controls:</h3>
-                    <ul>
-                        <li><strong>Tilt</strong> your device left or right to move in that direction.</li>
-                        <li><strong>Swipe</strong> up anywhere on the screen to jump.</li>
-                        <li><strong>Tap</strong> the attack button or <strong>Tap</strong> anywhere on the game screen to attack and defeat enemies.</li>
-                        <li><strong>Tap</strong> Game Screen to Move to next level upon Level Completion</li>
-                        <li><strong>Tap</strong> Game Screen to restart level upon Game Over</li>
-                    </ul>
-                    <h3>Desktop Controls:</h3>
-                    <ul>
-                        <li>Use the <strong>Arrow Keys</strong> to move left or right and jump.</li>
-                        <li>Press the <strong>SPACEBAR</strong> to attack enemies.</li>
-                        <li>Press <strong>SPACEBAR</strong> to Move to next level upon Level Completion</li>
-                        <li>Press <strong>SPACEBAR</strong> to restart current level upon Game Over</li>
-                    </ul>
-
-                    <div id="ad-container">
-                        <ins class="adsbygoogle"
-                            style="display:block; text-align:center;"
-                            data-ad-client="ca-pub-5144521343709974"
-                            data-ad-slot="7476734608"
-                            data-ad-format="rectangle"
-                            data-full-width-responsive="true">
-                        </ins>
-                    </div>
-                    
-                    <h3>📲 How to Enable Fullscreen on iOS:</h3>
-                    <p><strong>To play Turbo Negro in fullscreen mode on iPhone/iPad, follow these steps:</strong></p>
-                    <ol>
-                        <li><strong>Open Safari</strong> and go to <strong>https://turbonegrogame.netlify.app/</strong>.</li>
-                        <li><strong>Tap the Share Button</strong> <img src="assets/Logo/apple-share-icon.png" alt="Share" width="20px" height="20px"> in the browser bar, next to the web address.</li>
-                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
-                        <li><strong>Rename it (optional)</strong> and tap <strong>"Add"</strong> in the top right corner.</li>
-                        <li><strong>Find the Turbo Negro icon</strong> on your home screen and tap it to open.</li>
-                        <li>The game will <strong>now launch in fullscreen mode!</strong> 🎉</li>
-                    </ol>
-                    <p>🚨 <strong>Note:</strong> If you've already added the game to your home screen but still see the Safari browser bar, <strong>delete it</strong> from your home screen and repeat these steps.</p>
-                    <p><strong>Tips:</strong></p>
-                    <ul>
-                        <li>Avoid obstacles and defeat enemies to progress through levels.</li>
-                        <li>Keep an eye on your health bar and the number of enemies left.</li>
-                        <li>Master your timing for attacks and jumps to avoid taking damage.</li>
-                        <li>You can not attack with the attack button while using the joystick due to touch screen limitations<small>...but you can tap the game screen</small></li>
-                        <li><small>...you can also enter fullscreen on mobile/touch screen devices by turning your device from portrait mode to landscape mode while on the game's website...</small></li>
-                    </ul>
-                </div>
-                <div id="warning">Warning!<br>
-                    IOS and Android users may not have the proper permissions for the tilt to move function to work. <br>In that case, please, use joystick for movement.</div>
-                <!-- === CHARACTERS === -->
-                <div class="info-section">
-                <h2>🎮 Character Profiles</h2>
-                <div class="horizontal-scroll">
-                    <div class="character-card">
-                    <img src="assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png" alt="Turbo Negro">
-                    <h3><strong>Brandon Joseph Hillard</strong></h3>
-                    <p><strong>Birthdate:</strong> September 9th, 1993</p>
-                    <p><strong>Nicknames:</strong> Turbo Negro</p>
-                    <p><strong>Origin:</strong> Born and raised in New Orleans East. A father, brother, husband — attacked by the infected while visiting the French Quarter.</p>
-                    <p><strong>Attacks:</strong> Shoots unlimited CD projectiles.</p>
-                    <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">
-                        Read Turbo Negro Lore
-                    </button>
-                    </div>
-                    <!-- Add other characters here if needed later -->
-                </div>
-                </div>
-
-                <!-- === ENEMIES === -->
-                <div class="info-section">
-                <h2>💀 Enemy Descriptions & Attack Patterns</h2>
-                <div class="horizontal-scroll">
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie">
-                    <h3>Mardi Gras Zombie</h3>
-                    <p>A colorful zombie that walks toward the player and attacks.</p>
-                    <p><strong>Origin:</strong> Corrupted by Dark Matter after eating King Cake before festival season.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton">
-                    <h3>Trumpet Skeleton</h3>
-                    <p>Leaps toward the player, then runs blindly in that direction.</p>
-                    <p><strong>Origin:</strong> Corrupted by Dark Matter after seeking attention before mastering their craft.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp">
-                    <h3>Mardi Gras Blimp</h3>
-                    <p>Flies across the screen firing plastic beads from above.</p>
-                    <p><strong>Origin:</strong> Corrupted parade blimp throwing beads too hard for too long.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion">
-                    <h3>Beignet Minion</h3>
-                    <p>Walks and shoots beignets at the player to infect them.</p>
-                    <p><strong>Origin:</strong> Dark Matter from too many Cafe Du Monde beignets.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster">
-                    <h3>Beignet Monster</h3>
-                    <p>A heavier, stronger enemy that patrols aimlessly.</p>
-                    <p><strong>Origin:</strong> Consumed excessive Dark Matter beignets — now roams the Quarter endlessly.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss">
-                    <h3>Beignet Boss</h3>
-                    <p>The final boss — summons minions and fires projectiles.</p>
-                    <p><strong>Origin:</strong> Ate the legendary “W” beignet meant for Jameis Winston. Fueled by chaos.</p>
-                    </div>
-                </div>
-                </div>
+      <div id="fullscreen">
+        <div id="hud-wrapper">
+          <div id="health-bar-container">
+            Health:<div id="health-bar"><div id="health-bar-inner"></div></div>
+          </div>
+          <div id="enemy-count">Enemies Left: 0</div>
+          <div id="score-display">Score: 0</div>
+          <div id="boss-health-bar-container" style="display:none;">
+            Boss Health:<div id="boss-health-bar"><div id="boss-health-bar-inner"></div></div>
+          </div>
         </div>
+
+        <div id="game-container">
+          <div id="onscreen-controls">
+            <div id="joystick-wrap">
+              <div id="joystick-area"><div id="joystick-knob"></div></div>
+            </div>
+            <div id="center-controls">
+              <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+              <label id="tilt-toggle-label"><input type="checkbox" id="tilt-toggle" /> Tilt</label>
+            </div>
+            <button id="attack-button">Attack</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="ad-container">
+        <ins class="adsbygoogle"
+          style="display:block; text-align:center;"
+          data-ad-client="ca-pub-5144521343709974"
+          data-ad-slot="7476734608"
+          data-ad-format="rectangle"
+          data-full-width-responsive="true"></ins>
+      </div>
+
+      <div id="instructions">
+        <h2>Game Instructions:</h2>
+        <h3>Mobile Controls:</h3>
+        <ul>
+          <li><strong>Tilt</strong> left or right to move.</li>
+          <li><strong>Swipe up</strong> to jump.</li>
+          <li><strong>Tap attack</strong> or game screen to strike.</li>
+        </ul>
+        <h3>Desktop Controls:</h3>
+        <ul>
+          <li>Use <strong>Arrow Keys</strong> to move/jump.</li>
+          <li>Press <strong>SPACEBAR</strong> to attack or continue.</li>
+        </ul>
+        <div class="ad-container-secondary">
+          <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-client="ca-pub-5144521343709974"
+            data-ad-slot="7476734608"
+            data-ad-format="rectangle"
+            data-full-width-responsive="true"></ins>
+        </div>
+      </div>
+
+      <div id="warning">
+        Warning!<br>Mobile devices may block tilt permissions; use joystick instead.
+      </div>
+
+      <div class="info-section">
+        <h2>🎮 Character Profiles</h2>
+        <div class="horizontal-scroll">
+          <div class="character-card">
+            <img src="assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png" alt="Turbo Negro">
+            <h3><strong>Brandon Joseph Hillard</strong></h3>
+            <p><strong>Birthdate:</strong> September 9th, 1993</p>
+            <p><strong>Nicknames:</strong> Turbo Negro</p>
+            <p><strong>Origin:</strong> Born in New Orleans East; attacked while visiting the French Quarter.</p>
+            <p><strong>Attack:</strong> Shoots unlimited CD projectiles.</p>
+            <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">Read Lore</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h2>💀 Enemy Descriptions & Attack Patterns</h2>
+        <div class="horizontal-scroll">
+          <div class="enemy-card"><img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie"><h3>Mardi Gras Zombie</h3><p>Walks toward the player.</p></div>
+          <div class="enemy-card"><img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton"><h3>Trumpet Skeleton</h3><p>Leaps then runs blindly.</p></div>
+          <div class="enemy-card"><img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp"><h3>Mardi Gras Blimp</h3><p>Flies overhead firing beads.</p></div>
+          <div class="enemy-card"><img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion"><h3>Beignet Minion</h3><p>Shoots beignets to infect.</p></div>
+          <div class="enemy-card"><img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster"><h3>Beignet Monster</h3><p>Heavy patrol enemy.</p></div>
+          <div class="enemy-card"><img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss"><h3>Beignet Boss</h3><p>Summons minions, fires projectiles.</p></div>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <script type="importmap">
-        {
-        "imports": {
-            "phaser": "https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"
+  <script type="module">
+    import { addFullscreenButton } from './utils/fullScreenUtils.js';
+    import { initControlManager } from './utils/ControlManager.js';
+    import StartMenu from './src/scenes/startMenu.js';
+    import CharacterSelect from './src/scenes/characterSelect.js';
+    import Level1 from './src/scenes/level1.js';
+    import Level2 from './src/scenes/level2.js';
+    import VictoryScene from './src/scenes/victoryScene.js';
+
+    const isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if(!isMobile){
+      ['onscreen-controls','attack-button','joystick-area'].forEach(id=>{
+        document.getElementById(id)?.style.setProperty('display','none','important');
+      });
+    }
+
+    const config={
+      type:Phaser.AUTO,
+      parent:'game-container',
+      scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},
+      width:1100,height:500,
+      physics:{default:'arcade',arcade:{gravity:{y:300},debug:false}},
+      scene:[StartMenu,CharacterSelect,Level1,Level2,VictoryScene],
+    };
+
+    const game=new Phaser.Game(config);
+    initControlManager();
+    window.addEventListener('load',()=>addFullscreenButton(window.game?.scene?.getScenes(true)[0]));
+  </script>
+
+  <script>
+    (function attachControlSizer(){
+      const c=document.getElementById('game-container');
+      const o=document.getElementById('onscreen-controls');
+      if(!c||!o)return;
+      const resize=()=>{
+        const land=window.innerWidth>window.innerHeight;
+        if(land){
+          const w=c.clientWidth;const target=Math.min(w-24,1000);
+          o.style.width=target+'px';o.style.left='50%';o.style.transform='translateX(-50%)';
+        }else{o.style.width='';o.style.left='';o.style.transform='';}
+      };
+      window.addEventListener('resize',resize);
+      window.addEventListener('orientationchange',()=>setTimeout(resize,150));
+      window.addEventListener('load',resize);
+      setTimeout(resize,300);
+    })();
+
+    (function hardenTouch(){
+      const stop=e=>{e.preventDefault();e.stopPropagation();};
+      ['joystick-area','attack-button'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){
+          el.addEventListener('touchstart',stop,{passive:false});
+          el.addEventListener('touchmove',stop,{passive:false});
+          el.addEventListener('touchend',e=>e.stopPropagation(),{passive:false});
+          el.addEventListener('gesturestart',stop,{passive:false});
         }
-        }
-    </script>
+      });
+    })();
 
-    <script type="module">
-        import { addFullscreenButton } from './utils/fullScreenUtils.js';
-
-        window.addEventListener('load', () => {
-            // Phaser is already booted at this point in your existing async script.
-            // So you can attach the fullscreen handler right away.
-            addFullscreenButton(window.game?.scene?.getScenes(true)[0]);
-        });
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
-
-    <script>
-        (async () => {
-        // === Dynamically import your scenes and utilities ===
-        const StartMenu = (await import('./src/scenes/startMenu.js')).default;
-        const CharacterSelect = (await import('./src/scenes/characterSelect.js')).default;
-        const Level1 = (await import('./src/scenes/level1.js')).default;
-        const Level2 = (await import('./src/scenes/level2.js')).default;
-        const VictoryScene = (await import('./src/scenes/victoryScene.js')).default;
-        const { initControlManager } = await import('./utils/ControlManager.js');
-
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        // Hide onscreen UI for desktop
-        if (!isMobile) {
-            document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-            document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-            document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-        }
-
-        // === Phaser config (Phaser is global from CDN) ===
-        const config = {
-            type: Phaser.AUTO,
-            parent: 'game-container',
-            scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            },
-            width: 1100,
-            height: 500,
-            physics: {
-            default: 'arcade',
-            arcade: { gravity: { y: 300 }, debug: false }
-            },
-            scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
-        };
-
-        const game = new Phaser.Game(config);
-        initControlManager();
-
-        // === Tilt toggle ===
-        const tiltToggle = document.getElementById('tilt-toggle');
-        if (tiltToggle) {
-            const savedMode = localStorage.getItem('controlMode');
-            if (savedMode === 'tilt') tiltToggle.checked = true;
-            tiltToggle.addEventListener('change', () => {
-            const useTilt = tiltToggle.checked;
-            localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
-            window.dispatchEvent(
-                new CustomEvent('bdp-toggle-tilt', {
-                detail: { mode: useTilt ? 'tilt' : 'joystick' },
-                    })
-                );
-            });
-        }
-        })();
-    </script>
-
-    <script>
-        // === Keep onscreen-controls sized to the canvas ===
-        (function attachControlSizer() {
-            const container = document.getElementById('game-container');
-            const controls  = document.getElementById('onscreen-controls');
-
-            if (!container || !controls) return;
-
-            const resizeControls = () => {
-            // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
-            const landscape = window.innerWidth > window.innerHeight;
-            if (landscape) {
-                const w = container.clientWidth;                // actual canvas box width
-                const target = Math.min(w - 24, 1000);          // match CSS calc/max
-                controls.style.width = target + 'px';
-                controls.style.left  = '50%';
-                controls.style.transform = 'translateX(-50%)';
-            } else {
-                // reset and let CSS manage portrait (75%)
-                controls.style.width = '';
-                controls.style.left = '';
-                controls.style.transform = '';
-            }
-        };
-
-            // Run on load + resize + orientation changes
-            window.addEventListener('load', resizeControls);
-            window.addEventListener('resize', resizeControls);
-            window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
-
-            // If Phaser adjusts after a tick, recalc once more
-            setTimeout(resizeControls, 300);
-            })();
-
-            // === Stop touch scrolling from stealing joystick/attack input ===
-            (function hardenTouch() {
-                const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
-
-                const bind = (el) => {
-                if (!el) return;
-                el.addEventListener('touchstart', stop, { passive: false });
-                el.addEventListener('touchmove',  stop, { passive: false });
-                el.addEventListener('touchend',   (e)=>e.stopPropagation(), { passive: false });
-                el.addEventListener('gesturestart', stop, { passive: false });
-                };
-
-                bind(document.getElementById('joystick-area'));
-                bind(document.getElementById('attack-button'));
-            })();
-
-            // === (Optional but recommended) Show/hide mobile controls on desktop ===
-            (function toggleDesktopUI() {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (!isMobile) {
-                document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-                document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-                document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-                }
-            })();
-    </script>
-
-    <script>
-        function setVh(){document.documentElement.style.setProperty('--vh',window.innerHeight*0.01+'px');}
-        window.addEventListener('resize',setVh);
-        window.addEventListener('orientationchange',()=>setTimeout(setVh,400));
-        setVh();
-    </script>
-
+    function setVh(){
+      document.documentElement.style.setProperty('--vh',window.innerHeight*0.01+'px');
+    }
+    window.addEventListener('resize',setVh);
+    window.addEventListener('orientationchange',()=>setTimeout(setVh,400));
+    setVh();
+  </script>
 </body>
 </html>
