@@ -28,289 +28,321 @@
     </script>
 
     <style>
-    /* === LOGO & TITLE === */
-    #logo-title-container {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-top: 10px;
-    width: 100%;
-    }
-
-    #logo {
-    height: auto;
-    max-width: 25vw;
-    }
-
-    @media screen and (max-width: 768px) {
-    #logo { max-width: 40vw; }
-    }
-
-    @media screen and (max-width: 480px) {
-    #logo { max-width: 50vw; }
-    }
-
-    #title {
-    color: red;
-    font-family: 'Nosifer', cursive;
-    font-size: 6vw;
-    font-style: italic;
-    max-width: 90%;
-    text-align: center;
-    text-shadow: 4px 4px 5px black;
-    word-wrap: break-word;
-    }
-
-    @media screen and (max-width: 768px) {
-    #title { font-size: 8vw; }
-    }
-
-    @media screen and (max-width: 480px) {
-    #title { font-size: 10vw; }
-    }
-
-    /* === GLOBAL BODY === */
-    body {
-    align-items: center;
-    background-color: #121212;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Arial', sans-serif;
-    height: auto;
-    justify-content: flex-start;
-    margin: 0;
-    overscroll-behavior: none;
-    overflow: auto;
-    touch-action: pinch-zoom pan-y;
-    }
-
-    /* === WARNING BOX === */
-    #warning {
-    background-color: rgba(255, 0, 0, 0.1);
-    border: 2px solid red;
-    border-radius: 8px;
-    color: red;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 20px auto;
-    max-width: 80%;
-    padding: 10px;
-    text-align: center;
-    }
-
-    /* === MAIN CONTAINER === */
-    #main-container {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: center;
-    width: 100%;
-    }
-
-    /* === UI CONTAINER === */
-    #ui-container {
-    align-items: center;
-    background: linear-gradient(90deg, #222, #333);
-    border: 2px solid #555;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-    box-sizing: border-box;
-    display: inline-block;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    max-width: 1100px;
-    padding: 10px;
-    text-align: center;
-    width: 90%;
-    }
-
-    #ui-container h2,
-    #ui-container h3 {
-    margin: 10px auto;
-    }
-
-    #ui-container ul {
-    display: inline-block;
-    text-align: center;
-    }
-
-    /* === STATUS DISPLAYS === */
-    #health-bar-container,
-    #enemy-count {
-    align-items: center;
-    background: rgba(50, 50, 50, 0.8);
-    border-radius: 8px;
-    color: #fff;
-    display: flex;
-    font-size: 16px;
-    font-weight: bold;
-    justify-content: center;
-    margin: 2px;
-    padding: 8px 15px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-    width: 96%;
-    }
-
-    #score-display {
-    align-items: center;
-    background: rgba(50, 50, 50, 0.8);
-    border-radius: 8px;
-    color: gold;
-    display: flex;
-    font-family: 'Metal Mania', cursive;
-    font-size: 18px;
-    font-weight: bold;
-    justify-content: center;
-    margin: 2px;
-    padding: 8px 15px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-    width: 96%;
-    }
-
-    /* === HEALTH BARS === */
-    #health-bar,
-    #boss-health-bar {
-    background-color: #770000;
-    border: 2px solid #444;
-    border-radius: 12px;
-    height: 20px;
-    overflow: hidden;
-    width: 75%;
-    }
-
-    #health-bar { margin-right: 2px; }
-    #boss-health-bar { margin-left: 8px; }
-
-    #health-bar-inner,
-    #boss-health-bar-inner {
-    background-color: #00aa00;
-    height: 100%;
-    transition: width 0.3s ease-in-out;
-    width: 100%;
-    }
-
-    #boss-health-bar-container {
-    align-items: center;
-    background: rgba(50, 50, 50, 0.8);
-    border-radius: 8px;
-    color: #fff;
-    display: flex;
-    font-size: 16px;
-    font-weight: bold;
-    justify-content: center;
-    margin: 2px;
-    padding: 8px 15px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-    width: 96%;
-    }
-
-    /* === GAME CONTAINER === */
-    /* Ensure the game area can anchor absolutely-positioned children */
-    #game-container {
-    position: relative;            /* ⬅ important */
-    width: 100%;
-    max-width: 1100px;
-    aspect-ratio: 1100 / 500;
-    margin: 0 auto;
-    border-radius: 10px;
-    border: 2px solid #555;
-    background: linear-gradient(180deg, #111, #222);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
-    overflow: hidden;              /* keeps controls inside the rounded edge */
-    }
-
-    /* === ONSCREEN CONTROLS === */
-    /* Default: controls sit under the canvas in portrait */
-    #onscreen-controls {
-            position: relative;
-            width: 75%; /* 75% of the game screen width */
-            margin: 2px auto; /* Center horizontally */
-            display: flex;
-            justify-content: space-between; /* Space Out Completely */
-            align-items: center;
-            padding: 2px;
-            padding-left: 2px;
-            padding-right: 2px;
-            margin-top: -2px;
-            border-style: solid;
-            background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-            border-radius: 12px;
-            border: 2px solid #555;
-            align-items: center;
+        /* === LOGO & TITLE === */
+        #logo-title-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 10px;
+        width: 100%;
         }
 
-    /* Landscape (phones/tablets): lock controls to bottom INSIDE the game container */
-    @media screen and (orientation: landscape) and (max-width: 1024px) {
-    #onscreen-controls {
-        position: absolute;          /* ⬅ anchor to #game-container */
+        #logo {
+        height: auto;
+        max-width: 25vw;
+        }
+
+        @media screen and (max-width: 768px) {
+        #logo { max-width: 40vw; }
+        }
+
+        @media screen and (max-width: 480px) {
+        #logo { max-width: 50vw; }
+        }
+
+        #title {
+        color: red;
+        font-family: 'Nosifer', cursive;
+        font-size: 6vw;
+        font-style: italic;
+        max-width: 90%;
+        text-align: center;
+        text-shadow: 4px 4px 5px black;
+        word-wrap: break-word;
+        }
+
+        @media screen and (max-width: 768px) {
+        #title { font-size: 8vw; }
+        }
+
+        @media screen and (max-width: 480px) {
+        #title { font-size: 10vw; }
+        }
+
+        /* === GLOBAL BODY === */
+        body {
+        align-items: center;
+        background-color: #121212;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Arial', sans-serif;
+        height: auto;
+        justify-content: flex-start;
+        margin: 0;
+        overscroll-behavior: none;
+        overflow: auto;
+        touch-action: pinch-zoom pan-y;
+        }
+
+        /* === WARNING BOX === */
+        #warning {
+        background-color: rgba(255, 0, 0, 0.1);
+        border: 2px solid red;
+        border-radius: 8px;
+        color: red;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 20px auto;
+        max-width: 80%;
+        padding: 10px;
+        text-align: center;
+        }
+
+        /* === MAIN CONTAINER === */
+        #main-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        width: 100%;
+        }
+
+        /* === UI CONTAINER === */
+        #ui-container {
+        align-items: center;
+        background: linear-gradient(90deg, #222, #333);
+        border: 2px solid #555;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        box-sizing: border-box;
+        display: inline-block;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        max-width: 1100px;
+        padding: 10px;
+        text-align: center;
+        width: 90%;
+        }
+
+        #ui-container h2,
+        #ui-container h3 {
+        margin: 10px auto;
+        }
+
+        #ui-container ul {
+        display: inline-block;
+        text-align: center;
+        }
+
+        /* === STATUS DISPLAYS === */
+        #health-bar-container,
+        #enemy-count {
+        align-items: center;
+        background: rgba(50, 50, 50, 0.8);
+        border-radius: 8px;
+        color: #fff;
+        display: flex;
+        font-size: 16px;
+        font-weight: bold;
+        justify-content: center;
+        margin: 2px;
+        padding: 8px 15px;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        width: 96%;
+        }
+
+        #score-display {
+        align-items: center;
+        background: rgba(50, 50, 50, 0.8);
+        border-radius: 8px;
+        color: gold;
+        display: flex;
+        font-family: 'Metal Mania', cursive;
+        font-size: 18px;
+        font-weight: bold;
+        justify-content: center;
+        margin: 2px;
+        padding: 8px 15px;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        width: 96%;
+        }
+
+        /* === HEALTH BARS === */
+        #health-bar,
+        #boss-health-bar {
+        background-color: #770000;
+        border: 2px solid #444;
+        border-radius: 12px;
+        height: 20px;
+        overflow: hidden;
+        width: 75%;
+        }
+
+        #health-bar { margin-right: 2px; }
+        #boss-health-bar { margin-left: 8px; }
+
+        #health-bar-inner,
+        #boss-health-bar-inner {
+        background-color: #00aa00;
+        height: 100%;
+        transition: width 0.3s ease-in-out;
+        width: 100%;
+        }
+
+        #boss-health-bar-container {
+        align-items: center;
+        background: rgba(50, 50, 50, 0.8);
+        border-radius: 8px;
+        color: #fff;
+        display: flex;
+        font-size: 16px;
+        font-weight: bold;
+        justify-content: center;
+        margin: 2px;
+        padding: 8px 15px;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        width: 96%;
+        }
+
+        /* === GAME CONTAINER === */
+        #game-container {
+        position: relative;
+        width: 100%;
+        max-width: 1100px;
+        aspect-ratio: 1100 / 500;
+        margin: 0 auto;
+        border-radius: 10px;
+        border: 2px solid #555;
+        background: linear-gradient(180deg, #111, #222);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+        overflow: hidden;
+        }
+
+        /* === ONSCREEN CONTROLS === */
+        #onscreen-controls {
+        position: relative;
+        width: 75%;
+        margin: 2px auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2px;
+        padding-left: 2px;
+        padding-right: 2px;
+        margin-top: -2px;
+        border-style: solid;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 12px;
+        border: 2px solid #555;
+        align-items: center;
+        }
+
+        /* Enhanced center-stack design */
+        #center-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        }
+
+        /* Clean tilt toggle style under fullscreen button */
+        #tilt-toggle-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        background: linear-gradient(180deg, #333, #555);
+        border: 2px solid #777;
+        border-radius: 6px;
+        padding: 4px 8px;
+        cursor: pointer;
+        user-select: none;
+        }
+
+        #tilt-toggle-label input {
+        margin-right: 5px;
+        }
+
+        @media screen and (max-width: 768px) {
+        #center-controls { gap: 2px; }
+        #tilt-toggle-label { font-size: 10px; padding: 3px 6px; }
+        }
+
+        /* Landscape controls adjustment */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+        #onscreen-controls {
+        position: absolute;
         left: 50%;
         bottom: 12px;
         transform: translateX(-50%);
-        width: calc(100% - 24px);    /* follow canvas width with a tiny gutter */
-        max-width: 1000px;           /* hard cap so buttons don’t stretch too far */
+        width: calc(100% - 24px);
+        max-width: 1000px;
         background: rgba(0,0,0,0.55);
         border: 2px solid #444;
         padding: 8px 12px;
         justify-content: space-around;
-    }
-    }
-
-    /* Joystick container */
-    #joystick-area {
-            position: relative;
-            width: 125px;
-            height: 100px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #555 50%, #333 100%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-            touch-action: none;
-            margin-top: -10px;
+        }
         }
 
-    #joystick-area:hover {
+        /* Joystick container */
+        #joystick-area {
+        position: relative;
+        width: 125px;
+        height: 100px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #555 50%, #333 100%);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        touch-action: none;
+        margin-top: -10px;
+        }
+
+        #joystick-area:hover {
         background: linear-gradient(180deg, #555, #777);
         transform: scale(1.05);
-    }
-
-    /* Joystick knob */
-    #joystick-knob {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(180deg, #777, #444);
-            position: absolute;
-            top: 50%; /* Centers the knob vertically */
-            left: 50%; /* Centers the knob horizontally */
-            transform: translate(-50%, -50%); /* Offsets by half the width/height */
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
-            transition: transform 0.1s ease;
         }
 
-    /* Joystick label (mobile only) */
-    #joystick {
-        display: none;
-    }
-    @media screen and (max-width: 768px) {
+        /* Joystick knob */
+        #joystick-knob {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #777, #444);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+        transition: transform 0.1s ease;
+        }
+
+        /* Joystick label (mobile only) */
         #joystick {
-            align-items: center;
-            color: white;
-            display: block;
-            font-size: 10px;
-            justify-content: center;
-            text-align: center;
+        display: none;
         }
-    }
+        @media screen and (max-width: 768px) {
+        #joystick {
+        align-items: center;
+        color: white;
+        display: block;
+        font-size: 10px;
+        justify-content: center;
+        text-align: center;
+        }
+        }
 
-    /* Small smoothing so the joystick feels “snapped” */
-    #joystick-area { transition: transform 0.2s ease; }
-    #joystick-area:hover { transform: scale(1.05); }
+        /* Smooth joystick feel */
+        #joystick-area { transition: transform 0.2s ease; }
+        #joystick-area:hover { transform: scale(1.05); }
 
-    /* Attack button styling */
-    #attack-button {
+        /* Attack button styling */
+        #attack-button {
         align-items: center;
         background: linear-gradient(180deg, #333, #555);
         border: none;
@@ -327,18 +359,18 @@
         text-transform: uppercase;
         transition: all 0.2s ease;
         width: 100px;
-    }
-    #attack-button:hover {
+        }
+        #attack-button:hover {
         background: linear-gradient(180deg, #555, #777);
         transform: scale(1.05);
-    }
-    #attack-button:active {
+        }
+        #attack-button:active {
         background: #999;
         transform: scale(1);
-    }
+        }
 
-    /* Fullscreen button (mobile only) */
-    #mobile-fullscreen-button {
+        /* Fullscreen button (mobile only) */
+        #mobile-fullscreen-button {
         background-color: black;
         border: 2px solid white;
         border-radius: 6px;
@@ -354,384 +386,354 @@
         text-align: center;
         width: 80px;
         transition: all 0.2s ease;
-    }
-    #mobile-fullscreen-button:hover {
+        }
+        #mobile-fullscreen-button:hover {
         background-color: #222;
         transform: scale(1.05);
-    }
-    @media screen and (max-width: 768px) {
+        }
+        @media screen and (max-width: 768px) {
         #mobile-fullscreen-button { display: flex; }
-    }
+        }
 
+        /* === BUTTONS === */
+        .control-button {
+        background: linear-gradient(180deg, #333, #555);
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        padding: 10px 15px;
+        text-transform: uppercase;
+        transition: all 0.2s ease;
+        }
 
-    /* === BUTTONS === */
-    .control-button {
-    background: linear-gradient(180deg, #333, #555);
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    padding: 10px 15px;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-    }
+        .control-button:hover {
+        background: linear-gradient(180deg, #555, #777);
+        transform: scale(1.05);
+        }
 
-    .control-button:hover {
-    background: linear-gradient(180deg, #555, #777);
-    transform: scale(1.05);
-    }
+        .control-button:active {
+        background: #999;
+        transform: scale(1);
+        }
 
-    .control-button:active {
-    background: #999;
-    transform: scale(1);
-    }
+        /* === CONTENT SECTIONS === */
+        .enemy-info,
+        .character-info {
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #555;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        margin: 20px auto;
+        padding: 10px;
+        text-align: center;
+        }
 
-    #attack-button {
-    align-items: center;
-    background: linear-gradient(180deg, #333, #555);
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    font-size: 14px;
-    font-weight: bold;
-    height: 100px;
-    justify-content: center;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-    width: 100px;
-    }
+        .enemy-image {
+        margin-bottom: 10px;
+        max-width: 100px;
+        }
 
-    #attack-button:hover {
-    background: linear-gradient(180deg, #555, #777);
-    transform: scale(1.05);
-    }
+        .character-info img {
+        height: auto;
+        margin-bottom: 15px;
+        max-width: 150px;
+        }
 
-    #attack-button:active {
-    background: #999;
-    transform: scale(1);
-    }
+        .character-info h3 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        }
 
-    /* === CONTENT SECTIONS (Enemies, Characters, Info) === */
-    .enemy-info,
-    .character-info {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #555;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    margin: 20px auto;
-    padding: 10px;
-    text-align: center;
-    }
+        .character-info p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 5px 0;
+        }
 
-    .enemy-image {
-    margin-bottom: 10px;
-    max-width: 100px;
-    }
+        .character-info button {
+        background: linear-gradient(180deg, #333, #555);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 15px;
+        padding: 10px 20px;
+        transition: transform 0.2s ease, background 0.2s ease;
+        }
 
-    .character-info img {
-    height: auto;
-    margin-bottom: 15px;
-    max-width: 150px;
-    }
+        .character-info button:hover {
+        background: linear-gradient(180deg, #555, #777);
+        transform: scale(1.05);
+        }
 
-    .character-info h3 {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    }
+        /* === BHILLION DOLLAR FOOTER === */
+        #bhilliondollar {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 30px auto;
+        max-width: 600px;
+        padding: 20px;
+        text-align: center;
+        }
 
-    .character-info p {
-    font-size: 16px;
-    line-height: 1.5;
-    margin: 5px 0;
-    }
+        #bhilliondollar button {
+        background: linear-gradient(180deg, #333, #555);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 10px;
+        padding: 10px 20px;
+        transition: transform 0.2s ease, background 0.2s ease;
+        }
 
-    .character-info button {
-    background: linear-gradient(180deg, #333, #555);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 15px;
-    padding: 10px 20px;
-    transition: transform 0.2s ease, background 0.2s ease;
-    }
+        #bhilliondollar button:hover {
+        background: linear-gradient(180deg, #555, #777);
+        transform: scale(1.05);
+        }
 
-    .character-info button:hover {
-    background: linear-gradient(180deg, #555, #777);
-    transform: scale(1.05);
-    }
+        #bhilliondollar button:active {
+        background: #999;
+        transform: scale(1);
+        }
 
-    /* === BHILLION DOLLAR FOOTER === */
-    #bhilliondollar {
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    font-size: 16px;
-    line-height: 1.5;
-    margin: 30px auto;
-    max-width: 600px;
-    padding: 20px;
-    text-align: center;
-    }
+        /* === FULLSCREEN + MOBILE === */
+        #fullscreen {
+        align-items: center;
+        background: black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2px;
+        transition: all 0.3s ease-in-out;
+        width: 100%;
+        }
 
-    #bhilliondollar button {
-    background: linear-gradient(180deg, #333, #555);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 10px;
-    padding: 10px 20px;
-    transition: transform 0.2s ease, background 0.2s ease;
-    }
+        canvas {
+        height: 100%;
+        width: 100%;
+        touch-action: none;
+        }
 
-    #bhilliondollar button:hover {
-    background: linear-gradient(180deg, #555, #777);
-    transform: scale(1.05);
-    }
+        #mobile-fullscreen-button {
+        background-color: black;
+        border: 2px solid white;
+        border-radius: 5px;
+        color: white;
+        display: none;
+        font-size: 8px;
+        height: 40px;
+        justify-content: center;
+        margin: 5px;
+        padding: 5px;
+        text-align: center;
+        width: 60px;
+        }
 
-    #bhilliondollar button:active {
-    background: #999;
-    transform: scale(1);
-    }
+        @media screen and (max-width: 768px) {
+        #mobile-fullscreen-button { display: block; }
+        }
 
-    /* === FULLSCREEN + MOBILE === */
-    #fullscreen {
-    align-items: center;
-    background: black;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2px;
-    transition: all 0.3s ease-in-out;
-    width: 100%;
-    }
+        /* === IOS PROMPT === */
+        #ios-prompt {
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 10px;
+        bottom: 15px;
+        color: white;
+        display: none;
+        font-size: 16px;
+        left: 50%;
+        max-width: 350px;
+        padding: 12px 16px;
+        position: fixed;
+        text-align: center;
+        transform: translateX(-50%);
+        width: 90%;
+        z-index: 9999;
+        }
 
-    canvas {
-    height: 100%;
-    width: 100%;
-    touch-action: none;
-    }
+        #ios-prompt img {
+        height: 16px;
+        vertical-align: middle;
+        width: 16px;
+        }
 
-    #mobile-fullscreen-button {
-    background-color: black;
-    border: 2px solid white;
-    border-radius: 5px;
-    color: white;
-    display: none;
-    font-size: 8px;
-    height: 40px;
-    justify-content: center;
-    margin: 5px;
-    padding: 5px;
-    text-align: center;
-    width: 60px;
-    }
+        #dismiss-ios-prompt {
+        background: red;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 8px;
+        padding: 6px 12px;
+        }
 
-    @media screen and (max-width: 768px) {
-    #mobile-fullscreen-button { display: block; }
-    }
+        /* === ADS === */
+        #ad-container {
+        background: rgba(0, 0, 0, 0.2);
+        border: 2px solid #555;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        margin: 20px auto;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 10px;
+        text-align: center;
+        }
 
-    /* === IOS PROMPT === */
-    #ios-prompt {
-    background: rgba(0, 0, 0, 0.9);
-    border-radius: 10px;
-    bottom: 15px;
-    color: white;
-    display: none;
-    font-size: 16px;
-    left: 50%;
-    max-width: 350px;
-    padding: 12px 16px;
-    position: fixed;
-    text-align: center;
-    transform: translateX(-50%);
-    width: 90%;
-    z-index: 9999;
-    }
+        #ad-container ins {
+        display: block;
+        height: 280px;
+        margin: 10px auto;
+        max-width: 100%;
+        width: 336px;
+        }
 
-    #ios-prompt img {
-    height: 16px;
-    vertical-align: middle;
-    width: 16px;
-    }
-
-    #dismiss-ios-prompt {
-    background: red;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 8px;
-    padding: 6px 12px;
-    }
-
-    /* === ADS === */
-    #ad-container {
-    background: rgba(0, 0, 0, 0.2);
-    border: 2px solid #555;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    margin: 20px auto;
-    max-width: 100%;
-    overflow: hidden;
-    padding: 10px;
-    text-align: center;
-    }
-
-    #ad-container ins {
-    display: block;
-    height: 280px;
-    margin: 10px auto;
-    max-width: 100%;
-    width: 336px;
-    }
-
-    @media screen and (max-width: 768px) {
-    #ad-container ins {
+        @media screen and (max-width: 768px) {
+        #ad-container ins {
         height: auto !important;
         width: 100% !important;
-    }
-    }
+        }
+        }
 
-    /* === DESCRIPTION SCROLL === */
-    #descriptions {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
-    border-radius: 10px;
-    color: #fff;
-    max-height: 600px;
-    overflow-y: auto;
-    padding: 15px;
-    scrollbar-color: gold #222;
-    scrollbar-width: thin;
-    }
+        /* === DESCRIPTION SCROLL === */
+        #descriptions {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid #444;
+        border-radius: 10px;
+        color: #fff;
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 15px;
+        scrollbar-color: gold #222;
+        scrollbar-width: thin;
+        }
 
-    @media (max-width: 768px) {
-    #descriptions { max-height: 400px; }
-    }
+        @media (max-width: 768px) {
+        #descriptions { max-height: 400px; }
+        }
 
-    #toggleDescriptions {
-    background: gold;
-    border: none;
-    border-radius: 6px;
-    color: black;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: bold;
-    margin-top: 10px;
-    padding: 6px 12px;
-    transition: all 0.3s ease;
-    }
+        #toggleDescriptions {
+        background: gold;
+        border: none;
+        border-radius: 6px;
+        color: black;
+        cursor: pointer;
+        display: inline-block;
+        font-weight: bold;
+        margin-top: 10px;
+        padding: 6px 12px;
+        transition: all 0.3s ease;
+        }
 
-    #toggleDescriptions:hover { background: #ffda44; }
+        #toggleDescriptions:hover { background: #ffda44; }
 
-    /* === INFO SECTIONS === */
-    .info-section {
-    margin: 30px auto;
-    max-width: 1100px;
-    text-align: center;
-    width: 100%;
-    }
+        /* === INFO SECTIONS === */
+        .info-section {
+        margin: 30px auto;
+        max-width: 1100px;
+        text-align: center;
+        width: 100%;
+        }
 
-    .info-section h2 {
-    color: gold;
-    font-family: 'Metal Mania', cursive;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 5px black;
-    }
+        .info-section h2 {
+        color: gold;
+        font-family: 'Metal Mania', cursive;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 5px black;
+        }
 
-    /* === SCROLLING CARDS === */
-    .horizontal-scroll {
-    background: rgba(0, 0, 0, 0.6);
-    border: 2px solid #444;
-    border-radius: 10px;
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding: 10px;
-    scroll-behavior: smooth;
-    scrollbar-color: gold #222;
-    scrollbar-width: thin;
-    }
+        /* === SCROLLING CARDS === */
+        .horizontal-scroll {
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid #444;
+        border-radius: 10px;
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding: 10px;
+        scroll-behavior: smooth;
+        scrollbar-color: gold #222;
+        scrollbar-width: thin;
+        }
 
-    .horizontal-scroll::-webkit-scrollbar {
-    height: 10px;
-    }
+        .horizontal-scroll::-webkit-scrollbar {
+        height: 10px;
+        }
 
-    .horizontal-scroll::-webkit-scrollbar-thumb {
-    background: gold;
-    border-radius: 10px;
-    }
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+        background: gold;
+        border-radius: 10px;
+        }
 
-    .horizontal-scroll::-webkit-scrollbar-track {
-    background: #222;
-    }
+        .horizontal-scroll::-webkit-scrollbar-track {
+        background: #222;
+        }
 
-    .character-card,
-    .enemy-card {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid #555;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-    color: white;
-    flex: 0 0 300px;
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.2s ease;
-    }
+        .character-card,
+        .enemy-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #555;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        color: white;
+        flex: 0 0 300px;
+        padding: 15px;
+        text-align: center;
+        transition: transform 0.2s ease;
+        }
 
-    .character-card:hover,
-    .enemy-card:hover { transform: scale(1.05); }
+        .character-card:hover,
+        .enemy-card:hover { transform: scale(1.05); }
 
-    .character-card img,
-    .enemy-card img {
-    border-radius: 8px;
-    height: auto;
-    margin-bottom: 10px;
-    width: 150px;
-    }
+        .character-card img,
+        .enemy-card img {
+        border-radius: 8px;
+        height: auto;
+        margin-bottom: 10px;
+        width: 150px;
+        }
 
-    .character-card button {
-    background: gold;
-    border: none;
-    border-radius: 8px;
-    color: black;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 10px;
-    padding: 8px 14px;
-    transition: all 0.2s ease;
-    }
+        .character-card button {
+        background: gold;
+        border: none;
+        border-radius: 8px;
+        color: black;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+        padding: 8px 14px;
+        transition: all 0.2s ease;
+        }
 
-    .character-card button:hover { background: #ffda44; }
+        .character-card button:hover { background: #ffda44; }
 
-    /* === MOBILE OVERLAY === */
-    canvas { touch-action: none; }
+        /* === MOBILE OVERLAY === */
+        canvas { touch-action: none; }
 
-    @media (min-width: 1025px) {
-    #mobile-ui { display: none; }
-    }
+        @media (min-width: 1025px) {
+        #mobile-ui { display: none; }
+        }
     </style>
 
     <!-- Meta Pixel Code -->
@@ -754,6 +756,12 @@
     <!-- End Meta Pixel Code -->
 </head>
 
+    <div id="warning">
+        <strong>Warning!</strong><br>
+        Updates will be continuing soon!
+        </div>
+
+<body>
     <!-- iOS Prompt & Warning -->
     <div id="ios-prompt">
         <p><strong>Add Turbo Negro to your home screen for fullscreen mode!</strong></p>
@@ -765,14 +773,8 @@
         <button id="dismiss-ios-prompt">Dismiss</button>
     </div>
 
-    <div id="warning">
-        <strong>Warning!</strong><br>
-        Updates will be continuing soon!
-        </div>
-
-
-<body>
     <div id="mobile-ui"></div>
+
     <div id="main-container">
         <!-- UI and Game Container -->
         <div id="ui-container">
@@ -822,27 +824,26 @@
                 <div id="game-container">
                     <!-- On-Screen Controls (anchored to this container in landscape) -->
                     <div id="onscreen-controls">
-                        <div id="joystick-area">
-                            <h3 id="joystick">Joystick</h3>
-                            <div id="joystick-knob"></div>
+                        <!-- LEFT: Joystick -->
+                        <div id="joystick-wrap">
+                            <div id="joystick-area">
+                                <h3 id="joystick">Joystick</h3>
+                                <div id="joystick-knob"></div>
+                            </div>
                         </div>
 
-                        <!-- 🌀 Tilt Toggle Inline -->
-                        <div id="tilt-toggle-container" style="
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            color: gold;
-                            font-family: 'Metal Mania', cursive;
-                            font-size: 13px;">
-                            <label for="tilt-toggle">Tilt:</label>
-                            <input type="checkbox" id="tilt-toggle" style="width: 18px; height: 18px; cursor: pointer;">
+                        <!-- CENTER: Fullscreen + Tilt Toggle -->
+                        <div id="center-controls">
+                            <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+                            <label id="tilt-toggle-label">
+                                <input type="checkbox" id="tilt-toggle">
+                                Tilt
+                            </label>
                         </div>
 
-                        <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+                        <!-- RIGHT: Attack -->
                         <button id="attack-button">Attack</button>
-                        </div>
-
+                    </div>
                 </div>
 
                 <div id="ad-container">
@@ -998,98 +999,97 @@
         });
     </script>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
-        <script>
-            (async () => {
-            // === Dynamically import your scenes and utilities ===
-            const StartMenu = (await import('./src/scenes/startMenu.js')).default;
-            const CharacterSelect = (await import('./src/scenes/characterSelect.js')).default;
-            const Level1 = (await import('./src/scenes/level1.js')).default;
-            const Level2 = (await import('./src/scenes/level2.js')).default;
-            const VictoryScene = (await import('./src/scenes/victoryScene.js')).default;
-            const { initControlManager } = await import('./utils/ControlManager.js');
+    <script>
+        (async () => {
+        // === Dynamically import your scenes and utilities ===
+        const StartMenu = (await import('./src/scenes/startMenu.js')).default;
+        const CharacterSelect = (await import('./src/scenes/characterSelect.js')).default;
+        const Level1 = (await import('./src/scenes/level1.js')).default;
+        const Level2 = (await import('./src/scenes/level2.js')).default;
+        const VictoryScene = (await import('./src/scenes/victoryScene.js')).default;
+        const { initControlManager } = await import('./utils/ControlManager.js');
 
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            // Hide onscreen UI for desktop
-            if (!isMobile) {
-                document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-                document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-                document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-            }
+        // Hide onscreen UI for desktop
+        if (!isMobile) {
+            document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+            document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+            document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+        }
 
-            // === Phaser config (Phaser is global from CDN) ===
-            const config = {
-                type: Phaser.AUTO,
-                parent: 'game-container',
-                scale: {
-                mode: Phaser.Scale.FIT,
-                autoCenter: Phaser.Scale.CENTER_BOTH,
-                },
-                width: 1100,
-                height: 500,
-                physics: {
-                default: 'arcade',
-                arcade: { gravity: { y: 300 }, debug: false }
-                },
-                scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
-            };
+        // === Phaser config (Phaser is global from CDN) ===
+        const config = {
+            type: Phaser.AUTO,
+            parent: 'game-container',
+            scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            },
+            width: 1100,
+            height: 500,
+            physics: {
+            default: 'arcade',
+            arcade: { gravity: { y: 300 }, debug: false }
+            },
+            scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
+        };
 
-            const game = new Phaser.Game(config);
-            initControlManager();
+        const game = new Phaser.Game(config);
+        initControlManager();
 
-            // === Tilt toggle ===
-            const tiltToggle = document.getElementById('tilt-toggle');
-            if (tiltToggle) {
-                const savedMode = localStorage.getItem('controlMode');
-                if (savedMode === 'tilt') tiltToggle.checked = true;
-                tiltToggle.addEventListener('change', () => {
-                const useTilt = tiltToggle.checked;
-                localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
-                window.dispatchEvent(
-                    new CustomEvent('bdp-toggle-tilt', {
-                    detail: { mode: useTilt ? 'tilt' : 'joystick' },
+        // === Tilt toggle ===
+        const tiltToggle = document.getElementById('tilt-toggle');
+        if (tiltToggle) {
+            const savedMode = localStorage.getItem('controlMode');
+            if (savedMode === 'tilt') tiltToggle.checked = true;
+            tiltToggle.addEventListener('change', () => {
+            const useTilt = tiltToggle.checked;
+            localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
+            window.dispatchEvent(
+                new CustomEvent('bdp-toggle-tilt', {
+                detail: { mode: useTilt ? 'tilt' : 'joystick' },
                     })
                 );
-                });
+            });
+        }
+        })();
+    </script>
+
+    <script>
+        // === Keep onscreen-controls sized to the canvas ===
+        (function attachControlSizer() {
+            const container = document.getElementById('game-container');
+            const controls  = document.getElementById('onscreen-controls');
+
+            if (!container || !controls) return;
+
+            const resizeControls = () => {
+            // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
+            const landscape = window.innerWidth > window.innerHeight;
+            if (landscape) {
+                const w = container.clientWidth;                // actual canvas box width
+                const target = Math.min(w - 24, 1000);          // match CSS calc/max
+                controls.style.width = target + 'px';
+                controls.style.left  = '50%';
+                controls.style.transform = 'translateX(-50%)';
+            } else {
+                // reset and let CSS manage portrait (75%)
+                controls.style.width = '';
+                controls.style.left = '';
+                controls.style.transform = '';
             }
-            })();
-        </script>
+        };
 
-        <script>
-            // === Keep onscreen-controls sized to the canvas ===
-            (function attachControlSizer() {
-                const container = document.getElementById('game-container');
-                const controls  = document.getElementById('onscreen-controls');
+            // Run on load + resize + orientation changes
+            window.addEventListener('load', resizeControls);
+            window.addEventListener('resize', resizeControls);
+            window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
 
-                if (!container || !controls) return;
-
-                const resizeControls = () => {
-                // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
-                const landscape = window.innerWidth > window.innerHeight;
-                if (landscape) {
-                    const w = container.clientWidth;                // actual canvas box width
-                    const target = Math.min(w - 24, 1000);          // match CSS calc/max
-                    controls.style.width = target + 'px';
-                    controls.style.left  = '50%';
-                    controls.style.transform = 'translateX(-50%)';
-                } else {
-                    // reset and let CSS manage portrait (75%)
-                    controls.style.width = '';
-                    controls.style.left = '';
-                    controls.style.transform = '';
-                }
-                };
-
-                // Run on load + resize + orientation changes
-                window.addEventListener('load', resizeControls);
-                window.addEventListener('resize', resizeControls);
-                window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
-
-                // If Phaser adjusts after a tick, recalc once more
-                setTimeout(resizeControls, 300);
+            // If Phaser adjusts after a tick, recalc once more
+            setTimeout(resizeControls, 300);
             })();
 
             // === Stop touch scrolling from stealing joystick/attack input ===
@@ -1117,6 +1117,6 @@
                 document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
                 }
             })();
-        </script>
-    </body>
+    </script>
+</body>
 </html>
