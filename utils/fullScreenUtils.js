@@ -1,12 +1,15 @@
 // utils/fullScreenUtils.js
-// ✅ Hybrid version — Bhillion Dollar original logic + proper game-container fullscreen focus
+// ✅ Bhillion Dollar Hybrid Version — optimized for fullscreen HUD + bottom controls positioning
 
 export function addFullscreenButton(scene) {
-    const fullscreenElement = document.getElementById('game-container'); // ⬅️ changed target
+    const fullscreenElement = document.getElementById('game-container');
     if (!fullscreenElement) {
         console.error("⚠️ Game container not found!");
         return;
     }
+
+    const hud = document.getElementById('hud-wrapper');
+    const onscreenControls = document.getElementById('onscreen-controls');
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -21,7 +24,7 @@ export function addFullscreenButton(scene) {
             toggleFullscreen(fullscreenElement);
             setTimeout(() => {
                 adjustScreenForLandscapeFullscreen();
-                restoreOriginalUI();
+                positionHUDandControls();
             }, 400);
         });
     }
@@ -39,7 +42,7 @@ export function addFullscreenButton(scene) {
             toggleFullscreen(fullscreenElement);
             setTimeout(() => {
                 adjustScreenForLandscapeFullscreen();
-                restoreOriginalUI();
+                positionHUDandControls();
             }, 400);
         });
 
@@ -61,10 +64,10 @@ export function addFullscreenButton(scene) {
         if (mobileFullscreenButton) mobileFullscreenButton.style.display = "none";
     }
 
-    // === Listeners ===
+    // === EVENT LISTENERS ===
     window.addEventListener("resize", () => {
         adjustScreenForLandscapeFullscreen();
-        restoreOriginalUI();
+        positionHUDandControls();
     });
 
     window.addEventListener("orientationchange", () => {
@@ -72,21 +75,15 @@ export function addFullscreenButton(scene) {
         resetPlayerIfNeeded();
         setTimeout(() => {
             adjustScreenForLandscapeFullscreen();
-            restoreOriginalUI();
+            positionHUDandControls();
             if (window.game && window.game.scale) {
                 window.game.scale.resize(window.innerWidth, window.innerHeight);
             }
         }, 400);
     });
 
-    document.addEventListener("fullscreenchange", () => {
-        adjustScreenForLandscapeFullscreen();
-        restoreOriginalUI();
-    });
-    document.addEventListener("webkitfullscreenchange", () => {
-        adjustScreenForLandscapeFullscreen();
-        restoreOriginalUI();
-    });
+    document.addEventListener("fullscreenchange", positionHUDandControls);
+    document.addEventListener("webkitfullscreenchange", positionHUDandControls);
 }
 
 // === CORE HELPERS ===
@@ -102,6 +99,7 @@ function toggleFullscreen(element) {
     }
 }
 
+// === MAIN RESPONSIVE HANDLER ===
 function adjustScreenForLandscapeFullscreen() {
     const fullscreenElement = document.getElementById('game-container');
     if (!fullscreenElement) return;
@@ -123,10 +121,6 @@ function adjustScreenForLandscapeFullscreen() {
         fullscreenElement.style.justifyContent = "center";
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.overflow = "hidden";
-
-        if (window.game && window.game.scale) {
-            window.game.scale.resize(window.innerWidth, window.innerHeight);
-        }
     } else if (isMobile && isLandscape) {
         fullscreenElement.style.position = "fixed";
         fullscreenElement.style.top = "0";
@@ -151,20 +145,55 @@ function adjustScreenForLandscapeFullscreen() {
         fullscreenElement.style.alignItems = "center";
         fullscreenElement.style.zIndex = "";
     }
+
+    if (window.game && window.game.scale) {
+        window.game.scale.resize(window.innerWidth, window.innerHeight);
+    }
 }
 
-function restoreOriginalUI() {
-    const onscreenControls = document.getElementById('onscreen-controls');
-    if (!onscreenControls) return;
+// === HUD & CONTROLS POSITIONING ===
+function positionHUDandControls() {
+    const hud = document.getElementById('hud-wrapper');
+    const controls = document.getElementById('onscreen-controls');
+    const fullscreenElement = document.getElementById('game-container');
 
-    onscreenControls.style.display = "flex";
-    onscreenControls.style.position = "relative";
-    onscreenControls.style.bottom = "auto";
-    onscreenControls.style.left = "auto";
-    onscreenControls.style.transform = "none";
-    onscreenControls.style.zIndex = "10";
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (isFullscreen) {
+        if (hud) {
+            hud.style.position = "absolute";
+            hud.style.top = "10px";
+            hud.style.left = "50%";
+            hud.style.transform = "translateX(-50%)";
+            hud.style.width = "90%";
+            hud.style.zIndex = "10000";
+        }
+        if (controls) {
+            controls.style.position = "absolute";
+            controls.style.bottom = "12px";
+            controls.style.left = "50%";
+            controls.style.transform = "translateX(-50%)";
+            controls.style.width = "90%";
+            controls.style.maxWidth = "1000px";
+            controls.style.zIndex = "10000";
+        }
+    } else {
+        if (hud) {
+            hud.style.position = "static";
+            hud.style.transform = "none";
+            hud.style.zIndex = "";
+        }
+        if (controls) {
+            controls.style.position = "relative";
+            controls.style.bottom = "auto";
+            controls.style.left = "auto";
+            controls.style.transform = "none";
+            controls.style.zIndex = "10";
+        }
+    }
 }
 
+// === PLAYER RESET ===
 function resetPlayerIfNeeded() {
     if (window.game && window.game.scene) {
         const currentScene = window.game.scene.getScenes(true)[0];
