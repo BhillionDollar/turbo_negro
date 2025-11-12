@@ -127,10 +127,8 @@
 
     /* === ONSCREEN CONTROLS === */
     #onscreen-controls {
-    position:absolute;
-    bottom:12px;
-    left:50%;
-    transform:translateX(-50%);
+    position:relative;
+    margin:10px auto 0 auto;
     width:90%;
     max-width:1000px;
     display:flex;
@@ -143,6 +141,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.8);
     z-index:10;
     }
+
 
     /* Center control stack */
     #center-controls {
@@ -249,19 +248,24 @@
           </div>
         </div>
 
-        <div id="game-container">
-          <div id="onscreen-controls">
-            <div id="joystick-wrap">
-              <div id="joystick-area"><div id="joystick-knob"></div></div>
-            </div>
-            <div id="center-controls">
-              <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-              <label id="tilt-toggle-label"><input type="checkbox" id="tilt-toggle" /> Tilt</label>
-            </div>
-            <button id="attack-button">Attack</button>
-          </div>
+        <div id="game-container"></div>
+
+        <!-- === ONSCREEN CONTROLS BELOW GAME SCREEN === -->
+        <div id="onscreen-controls">
+        <div id="joystick-wrap">
+            <div id="joystick-area"><div id="joystick-knob"></div></div>
         </div>
-      </div>
+
+        <div id="center-controls">
+            <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+            <label id="tilt-toggle-label">
+            <input type="checkbox" id="tilt-toggle" /> Tilt
+            </label>
+        </div>
+
+        <button id="attack-button">Attack</button>
+        </div>
+
 
       <div id="ad-container">
         <ins class="adsbygoogle"
