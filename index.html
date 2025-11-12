@@ -1001,125 +1001,122 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
-    <script>
-        (async () => {
-        // === Dynamically import your scenes and utilities ===
-        const StartMenu = (await import('./src/scenes/startMenu.js')).default;
-        const CharacterSelect = (await import('./src/scenes/characterSelect.js')).default;
-        const Level1 = (await import('./src/scenes/level1.js')).default;
-        const Level2 = (await import('./src/scenes/level2.js')).default;
-        const VictoryScene = (await import('./src/scenes/victoryScene.js')).default;
-        const { initControlManager } = await import('./utils/ControlManager.js');
+        <script>
+            (async () => {
+            // === Dynamically import your scenes and utilities ===
+            const StartMenu = (await import('./src/scenes/startMenu.js')).default;
+            const CharacterSelect = (await import('./src/scenes/characterSelect.js')).default;
+            const Level1 = (await import('./src/scenes/level1.js')).default;
+            const Level2 = (await import('./src/scenes/level2.js')).default;
+            const VictoryScene = (await import('./src/scenes/victoryScene.js')).default;
+            const { initControlManager } = await import('./utils/ControlManager.js');
 
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        // Hide onscreen UI for desktop
-        if (!isMobile) {
-            document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-            document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-            document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-        }
+            // Hide onscreen UI for desktop
+            if (!isMobile) {
+                document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+                document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+                document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+            }
 
-        // === Phaser config (Phaser is global from CDN) ===
-        const config = {
-            type: Phaser.AUTO,
-            parent: 'game-container',
-            scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            },
-            width: 1100,
-            height: 500,
-            physics: {
-            default: 'arcade',
-            arcade: { gravity: { y: 300 }, debug: false }
-            },
-            scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
-        };
+            // === Phaser config (Phaser is global from CDN) ===
+            const config = {
+                type: Phaser.AUTO,
+                parent: 'game-container',
+                scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                },
+                width: 1100,
+                height: 500,
+                physics: {
+                default: 'arcade',
+                arcade: { gravity: { y: 300 }, debug: false }
+                },
+                scene: [StartMenu, CharacterSelect, Level1, Level2, VictoryScene],
+            };
 
-        const game = new Phaser.Game(config);
-        initControlManager();
+            const game = new Phaser.Game(config);
+            initControlManager();
 
-        // === Tilt toggle ===
-        const tiltToggle = document.getElementById('tilt-toggle');
-        if (tiltToggle) {
-            const savedMode = localStorage.getItem('controlMode');
-            if (savedMode === 'tilt') tiltToggle.checked = true;
-            tiltToggle.addEventListener('change', () => {
-            const useTilt = tiltToggle.checked;
-            localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
-            window.dispatchEvent(
-                new CustomEvent('bdp-toggle-tilt', {
-                detail: { mode: useTilt ? 'tilt' : 'joystick' },
-                })
-            );
-            });
-        }
-        })();
-    </script>
+            // === Tilt toggle ===
+            const tiltToggle = document.getElementById('tilt-toggle');
+            if (tiltToggle) {
+                const savedMode = localStorage.getItem('controlMode');
+                if (savedMode === 'tilt') tiltToggle.checked = true;
+                tiltToggle.addEventListener('change', () => {
+                const useTilt = tiltToggle.checked;
+                localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
+                window.dispatchEvent(
+                    new CustomEvent('bdp-toggle-tilt', {
+                    detail: { mode: useTilt ? 'tilt' : 'joystick' },
+                    })
+                );
+                });
+            }
+            })();
+        </script>
 
+        <script>
+            // === Keep onscreen-controls sized to the canvas ===
+            (function attachControlSizer() {
+                const container = document.getElementById('game-container');
+                const controls  = document.getElementById('onscreen-controls');
 
-    <script>
-    // === Keep onscreen-controls sized to the canvas ===
-    (function attachControlSizer() {
-        const container = document.getElementById('game-container');
-        const controls  = document.getElementById('onscreen-controls');
+                if (!container || !controls) return;
 
-        if (!container || !controls) return;
+                const resizeControls = () => {
+                // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
+                const landscape = window.innerWidth > window.innerHeight;
+                if (landscape) {
+                    const w = container.clientWidth;                // actual canvas box width
+                    const target = Math.min(w - 24, 1000);          // match CSS calc/max
+                    controls.style.width = target + 'px';
+                    controls.style.left  = '50%';
+                    controls.style.transform = 'translateX(-50%)';
+                } else {
+                    // reset and let CSS manage portrait (75%)
+                    controls.style.width = '';
+                    controls.style.left = '';
+                    controls.style.transform = '';
+                }
+                };
 
-        const resizeControls = () => {
-        // In portrait, we leave width to CSS (75%); in landscape we ensure it follows the canvas box.
-        const landscape = window.innerWidth > window.innerHeight;
-        if (landscape) {
-            const w = container.clientWidth;                // actual canvas box width
-            const target = Math.min(w - 24, 1000);          // match CSS calc/max
-            controls.style.width = target + 'px';
-            controls.style.left  = '50%';
-            controls.style.transform = 'translateX(-50%)';
-        } else {
-            // reset and let CSS manage portrait (75%)
-            controls.style.width = '';
-            controls.style.left = '';
-            controls.style.transform = '';
-        }
-        };
+                // Run on load + resize + orientation changes
+                window.addEventListener('load', resizeControls);
+                window.addEventListener('resize', resizeControls);
+                window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
 
-        // Run on load + resize + orientation changes
-        window.addEventListener('load', resizeControls);
-        window.addEventListener('resize', resizeControls);
-        window.addEventListener('orientationchange', () => setTimeout(resizeControls, 150));
+                // If Phaser adjusts after a tick, recalc once more
+                setTimeout(resizeControls, 300);
+            })();
 
-        // If Phaser adjusts after a tick, recalc once more
-        setTimeout(resizeControls, 300);
-    })();
+            // === Stop touch scrolling from stealing joystick/attack input ===
+            (function hardenTouch() {
+                const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
 
-    // === Stop touch scrolling from stealing joystick/attack input ===
-    (function hardenTouch() {
-        const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
+                const bind = (el) => {
+                if (!el) return;
+                el.addEventListener('touchstart', stop, { passive: false });
+                el.addEventListener('touchmove',  stop, { passive: false });
+                el.addEventListener('touchend',   (e)=>e.stopPropagation(), { passive: false });
+                el.addEventListener('gesturestart', stop, { passive: false });
+                };
 
-        const bind = (el) => {
-        if (!el) return;
-        el.addEventListener('touchstart', stop, { passive: false });
-        el.addEventListener('touchmove',  stop, { passive: false });
-        el.addEventListener('touchend',   (e)=>e.stopPropagation(), { passive: false });
-        el.addEventListener('gesturestart', stop, { passive: false });
-        };
+                bind(document.getElementById('joystick-area'));
+                bind(document.getElementById('attack-button'));
+            })();
 
-        bind(document.getElementById('joystick-area'));
-        bind(document.getElementById('attack-button'));
-    })();
-
-    // === (Optional but recommended) Show/hide mobile controls on desktop ===
-    (function toggleDesktopUI() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobile) {
-        document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
-        }
-    })();
-    </script>
-
-
+            // === (Optional but recommended) Show/hide mobile controls on desktop ===
+            (function toggleDesktopUI() {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (!isMobile) {
+                document.getElementById('onscreen-controls')?.style.setProperty('display', 'none', 'important');
+                document.getElementById('attack-button')?.style.setProperty('display', 'none', 'important');
+                document.getElementById('joystick-area')?.style.setProperty('display', 'none', 'important');
+                }
+            })();
+        </script>
     </body>
 </html>
