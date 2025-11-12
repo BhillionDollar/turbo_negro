@@ -1,13 +1,9 @@
 // scenes/level1.js
 import { addFullscreenButton } from '../../utils/fullScreenUtils.js';
 import { setupMobileControls } from '../../utils/mobileControls.js';
-import { applyJoystickForce } from '../../utils/joystickUtils.js';
-
 import TurboNegro from '../characters/fighters/TurboNegro.js';
 import ReReMarie from '../characters/fighters/ReReMarie.js';
 import MardiGrasZombie from '../characters/enemies/MardiGrasZombie.js';
-import CD from '../projectiles/cd/CD.js';
-
 
 export default class Level1 extends Phaser.Scene {
   constructor() {
@@ -19,7 +15,7 @@ export default class Level1 extends Phaser.Scene {
     this.currentScore = 0;
   }
 
-  // === UI Updates ===
+  // === UI UPDATES ===
   updateHealthUI() {
     const hp = (this.player.health / this.player.maxHealth) * 100;
     document.getElementById('health-bar-inner').style.width = `${hp}%`;
@@ -39,60 +35,64 @@ export default class Level1 extends Phaser.Scene {
     this.updateScoreUI();
   }
 
-  // === Preload Assets ===
+  // === PRELOAD ===
   preload() {
+    // ✅ Fighters & enemies
     TurboNegro.preload(this);
     ReReMarie.preload(this);
     MardiGrasZombie.preload?.(this);
-    CD.preload?.(this); // ✅ Preload projectile
 
+    // ✅ Level + UI assets
     this.load.image('level1Background', 'assets/levels/BackGrounds/Level1.png');
     this.load.image('balcony', 'assets/levels/Platforms/Balcony.png');
     this.load.image('gameOver', 'assets/UI/gameOver.png');
     this.load.image('levelComplete', 'assets/UI/levelComplete.png');
     this.load.image('healthPack', 'assets/characters/pickups/HealthPack.png');
 
+    // ✅ Audio
     this.load.audio('level1Music', 'assets/Audio/LevelMusic/mp3/BlownMoneyAudubonPark.mp3');
     this.load.audio('playerHit', 'assets/Audio/SoundFX/mp3/playerHit.mp3');
     this.load.audio('playerProjectileFire', 'assets/Audio/SoundFX/mp3/playerprojectilefire.mp3');
     this.load.audio('mardiGrasZombieHit', 'assets/Audio/SoundFX/mp3/MardiGrasZombieHit.mp3');
   }
 
-  // === Create Scene ===
+  // === CREATE ===
   create() {
     const { width, height } = this.scale;
 
-    // 🎭 Register animations first
+    // ✅ Register fighter animations before creating the player
     TurboNegro.registerAnimations(this);
     ReReMarie.registerAnimations(this);
 
-    // 🎵 Music + background
+    // === BACKGROUND + AUDIO ===
     this.input.once('pointerdown', () => this.sound.context.resume());
     this.add.image(width / 2, height / 2, 'level1Background').setDisplaySize(width, height);
     this.levelMusic = this.sound.add('level1Music', { loop: true, volume: 0.5 });
     this.levelMusic.play();
 
-    // 🔊 Sound Effects
+    // === SFX ===
     this.playerHitSFX = this.sound.add('playerHit', { volume: 0.6 });
     this.playerProjectileFireSFX = this.sound.add('playerProjectileFire', { volume: 0.6 });
     this.mardiGrasZombieHitSFX = this.sound.add('mardiGrasZombieHit', { volume: 0.6 });
 
-    // 🧱 Platforms
+    // === PLATFORMS ===
     this.platforms = this.physics.add.staticGroup();
-    this.platforms
+    const ground = this.platforms
       .create(width / 2, height - 10, null)
       .setDisplaySize(width, 20)
       .setVisible(false)
       .refreshBody();
+
     const balcony = this.platforms.create(width / 2, height - 350, 'balcony').refreshBody();
     balcony.body.setSize(280, 10).setOffset((balcony.displayWidth - 280) / 2, balcony.displayHeight - 75);
 
-    // 🕹 Player
+    // === PLAYER ===
     const spawnY = height - 100;
     this.player =
       this.selectedCharacter === 'ReReMarie'
         ? new ReReMarie(this, 150, spawnY)
         : new TurboNegro(this, 150, spawnY);
+
     this.add.existing(this.player);
     this.physics.add.existing(this.player);
     this.player.setCollideWorldBounds(true);
@@ -100,33 +100,34 @@ export default class Level1 extends Phaser.Scene {
     this.player.body.setOffset(this.player.width * 0.3, this.player.height * 0.2);
     this.physics.add.collider(this.player, this.platforms);
 
-    // 🧟‍♂️ Groups
+    // === GROUPS ===
     this.enemies = this.physics.add.group();
     this.healthPacks = this.physics.add.group();
-    this.projectiles = this.physics.add.group(); // ✅ Used for joystick/mobile fire
+    this.projectiles = this.player.projectiles;
 
-    // 🔁 Collisions
+    // === COLLISIONS ===
     this.physics.add.collider(this.enemies, this.platforms);
     this.physics.add.collider(this.healthPacks, this.platforms);
     this.physics.add.overlap(this.player, this.enemies, (p, e) => p.handlePlayerEnemyCollision(p, e));
     this.physics.add.overlap(this.player, this.healthPacks, (p, h) => p.handlePlayerHealthPackCollision(p, h));
     this.physics.add.overlap(this.projectiles, this.enemies, (proj, e) => proj.onHit?.(e));
 
-    // 🎥 Camera
+    // === CAMERA (Locked View) ===
     this.cameras.main.setBounds(0, 0, width, height);
     this.cameras.main.stopFollow();
     this.cameras.main.setScroll(0, 0);
     this.cameras.main.setZoom(1);
     this.cameras.main.centerOn(width / 2, height / 2);
 
-    // 🧠 UI
+    // === UI INIT ===
     this.totalEnemiesDefeated = 0;
     this.updateHealthUI();
     this.updateEnemyCountUI();
     this.updateScoreUI();
 
-    // ☄️ Enemy Spawning
+    // === ENEMY GRAVITY + SPAWN TIMERS ===
     this.enemyGravity = 150;
+
     this.enemySpawnTimer = this.time.addEvent({
       delay: 1500,
       callback: this.spawnEnemy,
@@ -140,48 +141,26 @@ export default class Level1 extends Phaser.Scene {
       callback: () => {
         if (this.enemySpawnTimer.delay > 400) this.enemySpawnTimer.delay -= 100;
         if (this.enemyGravity < 1000) this.enemyGravity += 100;
+
         this.enemies.children.iterate((z) => {
           if (z && z.body) z.body.setAcceleration(0, this.enemyGravity);
         });
       },
     });
 
-    // 📱 Mobile Setup
+    // === CONTROLS ===
     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      setupMobileControls(this, this.player); // 🟢 includes attack button binding
+      setupMobileControls(this, this.player);
     }
 
-    // ⛶ Fullscreen Button
     addFullscreenButton(this);
   }
 
-  // === Update Loop ===
   update() {
     if (this.player?.update) this.player.update();
-    applyJoystickForce(this, this.player, { speed: 180 }); // ✅ Movement with joystick
   }
 
-  // === Manual Player Fire (for joystick/mobile button) ===
-  playerAttack() {
-    if (!this.player || !this.player.active) return;
-
-    const direction = this.player.flipX ? -1 : 1;
-    const x = this.player.x + direction * 20;
-    const y = this.player.y;
-
-    const projectile = new CD(this, x, y, direction);
-    this.projectiles.add(projectile);
-
-    if (this.sound) {
-      try {
-        this.sound.play('playerProjectileFire');
-      } catch (e) {
-        console.warn('Sound play failed:', e);
-      }
-    }
-  }
-
-  // === Spawn Enemies ===
+  // === ENEMY SPAWNING ===
   spawnEnemy() {
     if (this.enemies.countActive(true) >= 3) return;
 
@@ -209,23 +188,30 @@ export default class Level1 extends Phaser.Scene {
     this.physics.add.collider(pack, this.platforms);
   }
 
-  // === Win or Lose ===
+  // === LEVEL COMPLETE ===
   levelComplete() {
     console.log("🎉 Level Complete!");
-    this.levelMusic?.stop();
-    this.enemySpawnTimer?.remove();
+    if (this.levelMusic) { this.levelMusic.stop(); this.levelMusic.destroy(); }
+    if (this.enemySpawnTimer) this.enemySpawnTimer.remove();
+
     this.enemies.clear(true, true);
     this.projectiles.clear(true, true);
 
     const { width, height } = this.scale;
-    const completeImg = this.add.image(width / 2, height / 2, 'levelComplete')
+    const completeImg = this.add
+      .image(width / 2, height / 2, 'levelComplete')
       .setOrigin(0.5)
       .setAlpha(0)
       .setDepth(20);
 
-    this.tweens.add({ targets: completeImg, alpha: 1, duration: 1000, ease: 'Sine.easeInOut' });
-    const proceed = () => this.scene.start('VictoryScene');
+    this.tweens.add({
+      targets: completeImg,
+      alpha: 1,
+      duration: 1000,
+      ease: 'Sine.easeInOut',
+    });
 
+    const proceed = () => this.scene.start('VictoryScene');
     this.time.delayedCall(1200, () => {
       this.input.keyboard.once('keydown-SPACE', proceed);
       this.input.once('pointerdown', proceed);
@@ -234,20 +220,27 @@ export default class Level1 extends Phaser.Scene {
 
   gameOver() {
     console.log("💀 Game Over!");
-    this.levelMusic?.stop();
-    this.enemySpawnTimer?.remove();
+    if (this.levelMusic) { this.levelMusic.stop(); this.levelMusic.destroy(); }
+    if (this.enemySpawnTimer) this.enemySpawnTimer.remove();
+
     this.enemies.clear(true, true);
     this.projectiles.clear(true, true);
 
     const { width, height } = this.scale;
-    const gameOverImg = this.add.image(width / 2, height / 2, 'gameOver')
+    const gameOverImg = this.add
+      .image(width / 2, height / 2, 'gameOver')
       .setOrigin(0.5)
       .setAlpha(0)
       .setDepth(20);
 
-    this.tweens.add({ targets: gameOverImg, alpha: 1, duration: 1000, ease: 'Sine.easeInOut' });
-    const restart = () => this.scene.restart();
+    this.tweens.add({
+      targets: gameOverImg,
+      alpha: 1,
+      duration: 1000,
+      ease: 'Sine.easeInOut',
+    });
 
+    const restart = () => this.scene.restart();
     this.time.delayedCall(1200, () => {
       this.input.keyboard.once('keydown-SPACE', restart);
       this.input.once('pointerdown', restart);
