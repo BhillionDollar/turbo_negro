@@ -125,41 +125,39 @@
       position:relative; overflow:hidden;
     }
 
-    /* === ONSCREEN CONTROLS === */
+    /* === ONSCREEN CONTROLS UNDER GAME SCREEN === */
     #onscreen-controls {
-    position:relative;
-    margin:10px auto 0 auto;
-    width:90%;
-    max-width:1000px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:rgba(0,0,0,0.6);
-    border:2px solid #555;
-    border-radius:12px;
-    padding:6px 10px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.8);
-    z-index:10;
+      position:relative;
+      margin:10px auto 0 auto;
+      width:90%;
+      max-width:1000px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:rgba(0,0,0,0.6);
+      border:2px solid #555;
+      border-radius:12px;
+      padding:6px 10px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.8);
+      z-index:10;
     }
-
 
     /* Center control stack */
     #center-controls {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
     }
 
     /* Landscape tweak for mobile */
     @media(orientation:landscape) and (max-width:1024px){
-    #onscreen-controls{
+      #onscreen-controls{
         width:calc(100% - 24px);
         padding:8px 12px;
+      }
     }
-    }
-
 
     #tilt-toggle-label {
       display:flex; align-items:center; justify-content:center;
@@ -206,6 +204,16 @@
       background:rgba(0,0,0,.2);border:2px solid #555;border-radius:10px;
       box-shadow:0 4px 6px rgba(0,0,0,.4);padding:10px;overflow:hidden;
     }
+
+    /* (Optional basic layout for info sections) */
+    .info-section{margin:20px auto;max-width:1000px;text-align:left;}
+    .horizontal-scroll{display:flex;overflow-x:auto;gap:16px;padding:10px 0;}
+    .character-card,.enemy-card{
+      min-width:220px;max-width:260px;
+      background:#1d1d1d;border-radius:10px;padding:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,.7);text-align:center;
+    }
+    .character-card img,.enemy-card img{max-width:100%;border-radius:6px;}
   </style>
 
   <!-- === PHASER LIBRARY === -->
@@ -217,8 +225,10 @@
 </head>
 
 <body>
+  <!-- TOP WARNING -->
   <div id="warning"><strong>Warning!</strong><br>Updates will be continuing soon!</div>
 
+  <!-- iOS ADD-TO-HOME PROMPT -->
   <div id="ios-prompt">
     <p><strong>Add Turbo Negro to your home screen for fullscreen mode!</strong></p>
     <p>Tap the <strong>Share</strong> button
@@ -228,45 +238,61 @@
     <button id="dismiss-ios-prompt">Dismiss</button>
   </div>
 
+  <!-- Placeholder for any dynamic mobile overlays -->
+  <div id="mobile-ui"></div>
+
   <div id="main-container">
     <div id="ui-container">
 
+      <!-- LOGO + TITLE -->
       <div id="logo-title-container">
         <img id="logo" src="assets/Logo/TurboNegro.png" alt="Turbo Negro Logo" />
         <h1 id="title">Saves The French Quarter!</h1>
       </div>
 
+      <!-- GAME AREA + HUD -->
       <div id="fullscreen">
         <div id="hud-wrapper">
           <div id="health-bar-container">
-            Health:<div id="health-bar"><div id="health-bar-inner"></div></div>
+            Health:
+            <div id="health-bar">
+              <div id="health-bar-inner"></div>
+            </div>
           </div>
           <div id="enemy-count">Enemies Left: 0</div>
           <div id="score-display">Score: 0</div>
           <div id="boss-health-bar-container" style="display:none;">
-            Boss Health:<div id="boss-health-bar"><div id="boss-health-bar-inner"></div></div>
+            Boss Health:
+            <div id="boss-health-bar">
+              <div id="boss-health-bar-inner"></div>
+            </div>
           </div>
         </div>
 
+        <!-- PHASER GAME CANVAS -->
         <div id="game-container"></div>
 
-        <!-- === ONSCREEN CONTROLS BELOW GAME SCREEN === -->
+        <!-- ONSCREEN CONTROLS BELOW GAME SCREEN -->
         <div id="onscreen-controls">
-        <div id="joystick-wrap">
-            <div id="joystick-area"><div id="joystick-knob"></div></div>
-        </div>
+          <div id="joystick-wrap">
+            <div id="joystick-area">
+              <div id="joystick-knob"></div>
+            </div>
+          </div>
 
-        <div id="center-controls">
+          <div id="center-controls">
             <button id="mobile-fullscreen-button">[ fullscreen ]</button>
             <label id="tilt-toggle-label">
-            <input type="checkbox" id="tilt-toggle" /> Tilt
+              <input type="checkbox" id="tilt-toggle" /> Tilt
             </label>
+          </div>
+
+          <button id="attack-button">Attack</button>
         </div>
 
-        <button id="attack-button">Attack</button>
-        </div>
+      </div> <!-- end #fullscreen -->
 
-
+      <!-- ADS -->
       <div id="ad-container">
         <ins class="adsbygoogle"
           style="display:block; text-align:center;"
@@ -275,20 +301,31 @@
           data-ad-format="rectangle"
           data-full-width-responsive="true"></ins>
       </div>
+      <script>
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
 
+      <!-- INSTRUCTIONS (FULL VERSION) -->
       <div id="instructions">
         <h2>Game Instructions:</h2>
+
         <h3>Mobile Controls:</h3>
         <ul>
-          <li><strong>Tilt</strong> left or right to move.</li>
-          <li><strong>Swipe up</strong> to jump.</li>
-          <li><strong>Tap attack</strong> or game screen to strike.</li>
+          <li><strong>Tilt</strong> your device left or right to move in that direction.</li>
+          <li><strong>Swipe</strong> up anywhere on the screen to jump.</li>
+          <li><strong>Tap</strong> the attack button or <strong>Tap</strong> anywhere on the game screen to attack and defeat enemies.</li>
+          <li><strong>Tap</strong> Game Screen to move to the next level upon Level Completion.</li>
+          <li><strong>Tap</strong> Game Screen to restart level upon Game Over.</li>
         </ul>
+
         <h3>Desktop Controls:</h3>
         <ul>
-          <li>Use <strong>Arrow Keys</strong> to move/jump.</li>
-          <li>Press <strong>SPACEBAR</strong> to attack or continue.</li>
+          <li>Use the <strong>Arrow Keys</strong> to move left or right and jump.</li>
+          <li>Press the <strong>SPACEBAR</strong> to attack enemies.</li>
+          <li>Press <strong>SPACEBAR</strong> to move to the next level upon Level Completion.</li>
+          <li>Press <strong>SPACEBAR</strong> to restart current level upon Game Over.</li>
         </ul>
+
         <div class="ad-container-secondary">
           <ins class="adsbygoogle"
             style="display:block; text-align:center;"
@@ -297,12 +334,41 @@
             data-ad-format="rectangle"
             data-full-width-responsive="true"></ins>
         </div>
+
+        <h3>📲 How to Enable Fullscreen on iOS:</h3>
+        <p><strong>To play Turbo Negro in fullscreen mode on iPhone/iPad, follow these steps:</strong></p>
+        <ol>
+          <li><strong>Open Safari</strong> and go to <strong>https://turbonegrogame.netlify.app/</strong>.</li>
+          <li><strong>Tap the Share Button</strong>
+            <img src="assets/Logo/apple-share-icon.png" alt="Share" width="20" height="20">
+            in the browser bar, next to the web address.
+          </li>
+          <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+          <li><strong>Rename it (optional)</strong> and tap <strong>"Add"</strong> in the top right corner.</li>
+          <li><strong>Find the Turbo Negro icon</strong> on your home screen and tap it to open.</li>
+          <li>The game will <strong>now launch in fullscreen mode!</strong> 🎉</li>
+        </ol>
+        <p>🚨 <strong>Note:</strong> If you've already added the game to your home screen but still see the Safari browser bar,
+          <strong>delete it</strong> from your home screen and repeat these steps.</p>
+        <p><strong>Tips:</strong></p>
+        <ul>
+          <li>Avoid obstacles and defeat enemies to progress through levels.</li>
+          <li>Keep an eye on your health bar and the number of enemies left.</li>
+          <li>Master your timing for attacks and jumps to avoid taking damage.</li>
+          <li>You can not attack with the attack button while using the joystick due to touch screen limitations
+            <small>...but you can tap the game screen</small></li>
+          <li><small>...you can also enter fullscreen on mobile/touch screen devices by turning your device from portrait mode to landscape mode while on the game's website...</small></li>
+        </ul>
       </div>
 
+      <!-- SECOND WARNING -->
       <div id="warning">
-        Warning!<br>Mobile devices may block tilt permissions; use joystick instead.
+        Warning!<br>
+        iOS and Android users may not have the proper permissions for the tilt-to-move function to work.<br>
+        In that case, please use the joystick for movement.
       </div>
 
+      <!-- CHARACTER PROFILES -->
       <div class="info-section">
         <h2>🎮 Character Profiles</h2>
         <div class="horizontal-scroll">
@@ -311,28 +377,68 @@
             <h3><strong>Brandon Joseph Hillard</strong></h3>
             <p><strong>Birthdate:</strong> September 9th, 1993</p>
             <p><strong>Nicknames:</strong> Turbo Negro</p>
-            <p><strong>Origin:</strong> Born in New Orleans East; attacked while visiting the French Quarter.</p>
-            <p><strong>Attack:</strong> Shoots unlimited CD projectiles.</p>
-            <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">Read Lore</button>
+            <p><strong>Origin:</strong> Born and raised in New Orleans East. A father, brother, husband — attacked by the infected while visiting the French Quarter.</p>
+            <p><strong>Attacks:</strong> Shoots unlimited CD projectiles.</p>
+            <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">
+              Read Turbo Negro Lore
+            </button>
+          </div>
+          <!-- Future characters can go here -->
+        </div>
+      </div>
+
+      <!-- ENEMIES -->
+      <div class="info-section">
+        <h2>💀 Enemy Descriptions & Attack Patterns</h2>
+        <div class="horizontal-scroll">
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie">
+            <h3>Mardi Gras Zombie</h3>
+            <p>A colorful zombie that walks toward the player and attacks.</p>
+            <p><strong>Origin:</strong> Corrupted by Dark Matter after eating King Cake before festival season.</p>
+          </div>
+
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton">
+            <h3>Trumpet Skeleton</h3>
+            <p>Leaps toward the player, then runs blindly in that direction.</p>
+            <p><strong>Origin:</strong> Corrupted by Dark Matter after seeking attention before mastering their craft.</p>
+          </div>
+
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp">
+            <h3>Mardi Gras Blimp</h3>
+            <p>Flies across the screen firing plastic beads from above.</p>
+            <p><strong>Origin:</strong> Corrupted parade blimp throwing beads too hard for too long.</p>
+          </div>
+
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion">
+            <h3>Beignet Minion</h3>
+            <p>Walks and shoots beignets at the player to infect them.</p>
+            <p><strong>Origin:</strong> Dark Matter from too many Cafe Du Monde beignets.</p>
+          </div>
+
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster">
+            <h3>Beignet Monster</h3>
+            <p>A heavier, stronger enemy that patrols aimlessly.</p>
+            <p><strong>Origin:</strong> Consumed excessive Dark Matter beignets — now roams the Quarter endlessly.</p>
+          </div>
+
+          <div class="enemy-card">
+            <img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss">
+            <h3>Beignet Boss</h3>
+            <p>The final boss — summons minions and fires projectiles.</p>
+            <p><strong>Origin:</strong> Ate the legendary “W” beignet meant for Jameis Winston. Fueled by chaos.</p>
           </div>
         </div>
       </div>
 
-      <div class="info-section">
-        <h2>💀 Enemy Descriptions & Attack Patterns</h2>
-        <div class="horizontal-scroll">
-          <div class="enemy-card"><img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie"><h3>Mardi Gras Zombie</h3><p>Walks toward the player.</p></div>
-          <div class="enemy-card"><img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton"><h3>Trumpet Skeleton</h3><p>Leaps then runs blindly.</p></div>
-          <div class="enemy-card"><img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp"><h3>Mardi Gras Blimp</h3><p>Flies overhead firing beads.</p></div>
-          <div class="enemy-card"><img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion"><h3>Beignet Minion</h3><p>Shoots beignets to infect.</p></div>
-          <div class="enemy-card"><img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster"><h3>Beignet Monster</h3><p>Heavy patrol enemy.</p></div>
-          <div class="enemy-card"><img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss"><h3>Beignet Boss</h3><p>Summons minions, fires projectiles.</p></div>
-        </div>
-      </div>
+    </div> <!-- end #ui-container -->
+  </div> <!-- end #main-container -->
 
-    </div>
-  </div>
-
+  <!-- PHASER & GAME INIT -->
   <script type="module">
     import { addFullscreenButton } from './utils/fullScreenUtils.js';
     import { initControlManager } from './utils/ControlManager.js';
@@ -359,21 +465,23 @@
     };
 
     const game=new Phaser.Game(config);
+    window.game = game;
     initControlManager();
     window.addEventListener('load',()=>addFullscreenButton(window.game?.scene?.getScenes(true)[0]));
   </script>
 
   <script>
+    // Adjust onscreen controls width relative to game container (no centering hacks)
     (function attachControlSizer(){
       const c=document.getElementById('game-container');
       const o=document.getElementById('onscreen-controls');
       if(!c||!o)return;
       const resize=()=>{
-        const land=window.innerWidth>window.innerHeight;
-        if(land){
-          const w=c.clientWidth;const target=Math.min(w-24,1000);
-          o.style.width=target+'px';o.style.left='50%';o.style.transform='translateX(-50%)';
-        }else{o.style.width='';o.style.left='';o.style.transform='';}
+        const w=c.clientWidth || 0;
+        if(w){
+          const target=Math.min(w,1000);
+          o.style.width=target+'px';
+        }
       };
       window.addEventListener('resize',resize);
       window.addEventListener('orientationchange',()=>setTimeout(resize,150));
@@ -381,6 +489,7 @@
       setTimeout(resize,300);
     })();
 
+    // Prevent touch scrolling interference
     (function hardenTouch(){
       const stop=e=>{e.preventDefault();e.stopPropagation();};
       ['joystick-area','attack-button'].forEach(id=>{
@@ -394,6 +503,7 @@
       });
     })();
 
+    // iOS viewport fix
     function setVh(){
       document.documentElement.style.setProperty('--vh',window.innerHeight*0.01+'px');
     }
