@@ -46,168 +46,535 @@
 
   <!-- === STYLES === -->
   <style>
-    :root { --vh: 100%; }
+        /* Container for logo and title */
+        #logo-title-container {
+            display: flex;
+            flex-direction: column; /* Stack logo above title */
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px; /* Adjust spacing */
+        }
 
-    body {
-      margin:0; background:#121212; color:#fff;
-      display:flex; flex-direction:column; align-items:center;
-      justify-content:flex-start; font-family:Arial,sans-serif;
-      height:auto; overflow:auto; overscroll-behavior:none;
-      touch-action:pinch-zoom pan-y;
-    }
+        /* Style for the logo */
+        #logo {
+            max-width: 25vw; /* Scale based on viewport width */
+            height: auto;
+        }
 
-    #logo-title-container {
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      width:100%; margin-top:10px;
-    }
-    #logo { max-width:25vw; height:auto; }
-    @media(max-width:768px){ #logo{max-width:40vw;} }
-    @media(max-width:480px){ #logo{max-width:50vw;} }
-    #title {
-      font-family:'Nosifer',cursive; font-style:italic;
-      font-size:6vw; color:red; text-shadow:4px 4px 5px black;
-      text-align:center; word-wrap:break-word; max-width:90%;
-    }
-    @media(max-width:768px){#title{font-size:8vw;}}
-    @media(max-width:480px){#title{font-size:10vw;}}
+        /* Adjust logo size for smaller screens */
+        @media screen and (max-width: 768px) {
+            #logo {
+                max-width: 40vw;
+            }
+        }
 
-    #warning {
-      background:rgba(255,0,0,.1); border:2px solid red; border-radius:8px;
-      color:red; font:700 18px/1.4 'Courier New',monospace;
-      text-align:center; padding:10px; margin:20px auto; max-width:80%;
-    }
+        @media screen and (max-width: 480px) {
+            #logo {
+                max-width: 50vw;
+            }
+        }
 
-    #main-container { display:flex; flex-direction:column; align-items:center; width:100%; }
+        /* Adjust title styling */
+        #title {
+            font-style: italic;
+            font-family: 'Nosifer', cursive;
+            font-size: 6vw;
+            color: red;
+            text-shadow: 4px 4px 5px black;
+            text-align: center;
+            word-wrap: break-word;
+            max-width: 90%;
+        }
 
-    #ui-container {
-      background:linear-gradient(90deg,#222,#333);
-      border:2px solid #555; border-radius:8px;
-      box-shadow:0 4px 8px rgba(0,0,0,.6);
-      box-sizing:border-box; width:90%; max-width:1100px;
-      padding:10px; text-align:center; margin-bottom:10px;
-    }
+        /* Adjust font size for smaller screens */
+        @media screen and (max-width: 768px) {
+            #title {
+                font-size: 8vw;
+            }
+        }
 
-    #fullscreen {
-      position:relative;
-      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-      background:black; width:100%;
-      height:calc(var(--vh,1vh)*100);
-      overflow:hidden; transition:all .3s ease-in-out;
-    }
-    #hud-wrapper {
-      width:100%; max-width:1100px;
-      display:flex; flex-direction:column; align-items:center;
-      justify-content:flex-start; padding-top:6px; z-index:5;
-    }
+        @media screen and (max-width: 480px) {
+            #title {
+                font-size: 10vw;
+            }
+        }
+ 
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Change from center to flex-start */
+            height: auto; /* Allow the content to define height */
+            overflow: auto; /* Enable scrolling */
+            touch-action: pinch-zoom pan-y; /* Allow zooming and vertical scrolling */
+            overscroll-behavior: none; /* Prevent overscrolling (e.g., bouncing on iOS) */
+        }
 
-    #health-bar-container,#enemy-count,#score-display,#boss-health-bar-container {
-      display:flex; align-items:center; justify-content:center;
-      background:rgba(50,50,50,.8); border-radius:8px; color:#fff;
-      font-size:16px; font-weight:700;
-      padding:8px 15px; margin:2px; width:96%;
-      text-shadow:1px 1px 4px rgba(0,0,0,.8);
-    }
-    #score-display { color:gold;font-family:'Metal Mania',cursive;font-size:18px; }
+        #warning {
+            color: red; /* Makes the text red */
+            font-family: 'Courier New', Courier, monospace; /* Sets a unique, monospaced font */
+            font-size: 18px; /* Adjust the font size as needed */
+            font-weight: bold; /* Makes the text bold */
+            text-align: center; /* Centers the text horizontally */
+            margin: 20px auto; /* Adds space around the text and centers it */
+            padding: 10px; /* Adds padding for better readability */
+            background-color: rgba(255, 0, 0, 0.1); /* Adds a light red background */
+            border: 2px solid red; /* Adds a red border for emphasis */
+            border-radius: 8px; /* Rounds the corners of the background */
+            max-width: 80%; /* Limits the width of the text block */
+        }
 
-    #health-bar,#boss-health-bar {
-      background:#770000; border:2px solid #444; border-radius:12px;
-      height:20px; width:75%; overflow:hidden;
-    }
-    #health-bar-inner,#boss-health-bar-inner {
-      height:100%; width:100%; background:#00aa00; transition:width .3s ease-in-out;
-    }
+        /* Main Container */
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
 
-    #game-container {
-      width:100%; max-width:1100px; aspect-ratio:1100/500;
-      border:2px solid #555; border-radius:10px;
-      background:linear-gradient(180deg,#111,#222);
-      box-shadow:0 4px 12px rgba(0,0,0,.8);
-      position:relative; overflow:hidden;
-    }
+        /* UI Container Styling */
+        #ui-container {
+            display: inline-block;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1100px;
+            padding: 10px;
+            box-sizing: border-box;
+            background: linear-gradient(90deg, #222, #333);
+            border: 2px solid #555;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-    /* === ONSCREEN CONTROLS === */
-    #onscreen-controls {
-    position:absolute;
-    bottom:12px;
-    left:50%;
-    transform:translateX(-50%);
-    width:90%;
-    max-width:1000px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:rgba(0,0,0,0.6);
-    border:2px solid #555;
-    border-radius:12px;
-    padding:6px 10px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.8);
-    z-index:10;
-    }
+        #ui-container h2, #ui-container h3 {
+            margin: 10px auto;
+        } 
 
-    /* Center control stack */
-    #center-controls {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    }
+        #ui-container ul {
+            display: inline-block; /* To center the lists */
+            text-align:center
+        }
 
-    /* Landscape tweak for mobile */
-    @media(orientation:landscape) and (max-width:1024px){
-    #onscreen-controls{
-        width:calc(100% - 24px);
-        padding:8px 12px;
-    }
-    }
+        #health-bar-container, #enemy-count {
+            display: flex;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 8px 15px;
+            background: rgba(50, 50, 50, 0.8);
+            border-radius: 8px;
+            color: #fff;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            width: 96%;
+            margin: 2px;
+        }
+
+        #health-bar {
+            width: 75%;
+            height: 20px;
+            background-color: #770000;
+            border-radius: 12px;
+            border: 2px solid #444;
+            overflow: hidden;
+            margin-right: 2px;
+        }
+
+        #health-bar-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #00aa00;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 1100 / 500;
+            margin: 0 auto;
+            border-radius: 10px;
+            border: 2px solid #555;
+            background: linear-gradient(180deg, #111, #222);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #onscreen-controls {
+            position: relative;
+            width: 75%; /* 75% of the game screen width */
+            margin: 2px auto; /* Center horizontally */
+            display: flex;
+            justify-content: space-between; /* Space Out Completely */
+            align-items: center;
+            padding: 2px;
+            padding-left: 2px;
+            padding-right: 2px;
+            margin-top: -2px;
+            border-style: solid;
+            background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+            border-radius: 12px;
+            border: 2px solid #555;
+            align-items: center;
+        }
+
+        #joystick-area {
+            position: relative;
+            width: 125px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #555 50%, #333 100%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            touch-action: none;
+            margin-top: -10px;
+        }
+
+        #joystick-knob {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #777, #444);
+            position: absolute;
+            top: 50%; /* Centers the knob vertically */
+            left: 50%; /* Centers the knob horizontally */
+            transform: translate(-50%, -50%); /* Offsets by half the width/height */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+            transition: transform 0.1s ease;
+        }
+
+        #joystick {
+            display: none;
+        }
+
+        /* Show the joystick label only on mobile devices */
+        @media screen and (max-width: 768px) {
+            #joystick {
+                display: block;
+                text-align: center;
+                color: white;
+                font-size: 10px;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        #joystick-area:hover {
+            background: linear-gradient(180deg, #555, #777); /* Enhance hover effect */
+            transform: scale(1.05); /* Add slight scaling on hover */
+        }
+
+        .control-button {
+            background: linear-gradient(180deg, #333, #555);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .control-button:hover {
+            background: linear-gradient(180deg, #555, #777);
+            transform: scale(1.05);
+        }
+
+        .control-button:active {
+            background: #999;
+            transform: scale(1);
+        }
+
+        #attack-button {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #333, #555);
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s ease;
+        }
+
+        #attack-button:active {
+        background: #999;
+        transform: scale(1);
+        }
+
+        #attack-button:hover {
+            background: linear-gradient(180deg, #555, #777);
+            transform: scale(1.05);
+        }
+
+        .enemy-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+        border: 1px solid #555;
+        padding: 10px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.5);
+        }
+
+        .enemy-image {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .character-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        text-shadow: #111;
+        }
+
+        .character-info img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+
+        }
+
+        .character-info h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .character-info p {
+            margin: 5px 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .character-info button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(180deg, #333, #555);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .character-info button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(180deg, #555, #777);
+        }
+
+        #bhilliondollar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 30px auto;
+        padding: 20px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        max-width: 600px;
+        font-size: 16px;
+        line-height: 1.5;
+        }
+
+        #bhilliondollar button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(180deg, #333, #555);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        #bhilliondollar button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(180deg, #555, #777);
+        }
+
+        #bhilliondollar button:active {
+            transform: scale(1);
+            background: #999;
+        }
+
+        #fullscreen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center vertically */
+            align-items: center;    /* Center horizontally */
+            background: black;
+            transition: all 0.3s ease-in-out;
+            padding: 2px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #mobile-fullscreen-button {
+            display: none; /* Hidden by default */
+        }
+
+        @media screen and (max-width: 768px) {
+            #mobile-fullscreen-button {
+                display: block; /* Visible only for mobile screens */
+            }
+        }
+
+        #mobile-fullscreen-button {
+            width: 60px;
+            height: 40px;
+            font-size: 8px;
+            color: white;
+            background-color: black;
+            border: 2px solid white;
+            border-radius: 5px;
+            text-align: center;
+
+            padding: 5px;
+            margin: 5px;
+            justify-content: center;
+        }
+
+        body, #game-container, #onscreen-controls, canvas {
+            touch-action: manipulation; /* Prevents double-tap zoom but allows normal interactions */
+            -webkit-user-select: none; /* Prevents long-press text selection */
+        }
+
+        #ios-prompt {
+            display: none;
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            z-index: 9999;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        #ios-prompt img {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        #dismiss-ios-prompt {
+            background: red;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            margin-top: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #boss-health-bar-container {
+            display: flex;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 8px 15px;
+            background: rgba(50, 50, 50, 0.8);
+            border-radius: 8px;
+            color: #fff;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            width: 96%;
+            margin: 2px;
+        }
+
+        #boss-health-bar {
+            width: 75%;
+            height: 20px;
+            background-color: #770000;
+            border-radius: 12px;
+            border: 2px solid #444;
+            overflow: hidden;
+            margin-left: 8px;
+        }
+
+        #boss-health-bar-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #00aa00;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #ad-container {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2); /* Light background */
+            border: 2px solid #555;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            overflow: hidden; /* Prevents ad overflow */
+        }
+
+        /* Style for ad boxes */
+        #ad-container ins {
+            display: block;
+            margin: 10px auto;
+            width: 336px; /* Adjust size */
+            height: 280px;
+            max-width: 100%;
+        }
+
+        /* Make ads responsive */
+        @media screen and (max-width: 768px) {
+            #ad-container ins {
+                width: 100% !important;
+                height: auto !important;
+            }
+        }
 
 
-    #tilt-toggle-label {
-      display:flex; align-items:center; justify-content:center;
-      font:700 12px/1 Arial; color:#fff;
-      background:linear-gradient(180deg,#333,#555);
-      border:2px solid #777; border-radius:6px;
-      padding:4px 8px; cursor:pointer; user-select:none;
-    }
-    #tilt-toggle-label input{margin-right:5px;}
-
-    #joystick-area {
-      position:relative; width:125px; height:100px; border-radius:50%;
-      background:radial-gradient(circle,#555 50%,#333 100%);
-      box-shadow:0 4px 10px rgba(0,0,0,.8); touch-action:none;
-      transition:transform .2s ease; margin-top:-10px;
-    }
-    #joystick-knob {
-      width:40px; height:40px; border-radius:50%;
-      background:linear-gradient(180deg,#777,#444);
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      box-shadow:inset 0 2px 5px rgba(0,0,0,.6); transition:transform .1s ease;
-    }
-
-    #attack-button {
-      width:100px;height:100px;border-radius:50%;
-      background:linear-gradient(180deg,#333,#555);color:white;
-      display:flex;align-items:center;justify-content:center;
-      font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;
-      border:none;box-shadow:0 4px 6px rgba(0,0,0,.6);
-      cursor:pointer;transition:all .2s ease;
-    }
-
-    #mobile-fullscreen-button {
-      background:black;border:2px solid white;border-radius:6px;
-      color:white;font-size:10px;font-weight:bold;
-      height:50px;width:80px;margin:5px;
-      display:none;align-items:center;justify-content:center;
-      transition:all .2s ease;
-    }
-    @media(max-width:768px){#mobile-fullscreen-button{display:flex;}}
-
-    #ad-container, .ad-container-secondary {
-      text-align:center;margin:20px auto;max-width:100%;
-      background:rgba(0,0,0,.2);border:2px solid #555;border-radius:10px;
-      box-shadow:0 4px 6px rgba(0,0,0,.4);padding:10px;overflow:hidden;
-    }
-  </style>
+    </style>
 
   <!-- === PHASER LIBRARY === -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
