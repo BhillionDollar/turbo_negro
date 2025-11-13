@@ -269,29 +269,29 @@
           </div>
         </div>
 
-        <!-- PHASER GAME CANVAS -->
-        <div id="game-container"></div>
+        <div id="game-container">
 
-        <!-- ONSCREEN CONTROLS BELOW GAME SCREEN -->
+        <!-- === ONSCREEN CONTROLS (INSIDE GAME CONTAINER) === -->
         <div id="onscreen-controls">
-          <div id="joystick-wrap">
+            <div id="joystick-wrap">
             <div id="joystick-area">
-              <div id="joystick-knob"></div>
+                <div id="joystick-knob"></div>
             </div>
-          </div>
+            </div>
 
-          <div id="center-controls">
+            <div id="center-controls">
             <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-            <label id="tilt-toggle-label">
-              <input type="checkbox" id="tilt-toggle" /> Tilt
-            </label>
-          </div>
 
-          <button id="attack-button">Attack</button>
+            <!-- tilt only shows on mobile -->
+            <label id="tilt-toggle-label">
+                <input type="checkbox" id="tilt-toggle" /> Tilt
+            </label>
+            </div>
+
+            <button id="attack-button">Attack</button>
         </div>
 
-      </div> <!-- end #fullscreen -->
-
+        </div> <!-- end #game-container -->
       <!-- ADS -->
       <div id="ad-container">
         <ins class="adsbygoogle"
@@ -450,7 +450,8 @@
 
     const isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if(!isMobile){
-    ['onscreen-controls','attack-button','joystick-area','tilt-toggle-label'].forEach(id=>{
+    ['onscreen-controls','attack-button','joystick-area','tilt-toggle-label']
+    .forEach(id=>{
         document.getElementById(id)?.style.setProperty('display','none','important');
     });
     }
