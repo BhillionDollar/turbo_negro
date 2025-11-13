@@ -450,9 +450,9 @@
 
     const isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if(!isMobile){
-      ['onscreen-controls','attack-button','joystick-area'].forEach(id=>{
+    ['onscreen-controls','attack-button','joystick-area','tilt-toggle-label'].forEach(id=>{
         document.getElementById(id)?.style.setProperty('display','none','important');
-      });
+    });
     }
 
     const config={
@@ -464,10 +464,12 @@
       scene:[StartMenu,CharacterSelect,Level1,Level2,VictoryScene],
     };
 
-    const game=new Phaser.Game(config);
-    window.game = game;
+    const game = new Phaser.Game(config);
+    window.game = game; // ⬅️ expose to fullscreen utils / resetPlayerIfNeeded
     initControlManager();
-    window.addEventListener('load',()=>addFullscreenButton(window.game?.scene?.getScenes(true)[0]));
+    window.addEventListener('load', () =>
+    addFullscreenButton(window.game?.scene?.getScenes(true)[0])
+    );
   </script>
 
   <script>
