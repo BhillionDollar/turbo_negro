@@ -266,10 +266,8 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  update() {
-    // Disable BaseFighter animation logic on mobile (mobileControls handle movement)
-    if (this.scene.sys.game.device.input.touch) return;
-    // === Sync visual sprite with physics body ===
+    update() {
+    // === Sync visual sprite with physics body (MUST run on desktop + mobile) ===
     if (this.visual) {
       this.visual.x = this.x;
       this.visual.y = this.y;
@@ -299,4 +297,5 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
       this.land();
     }
   }
+
 }
