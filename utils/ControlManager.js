@@ -1,7 +1,7 @@
 // utils/ControlManager.js
 import { setupMobileControls } from './mobileControls.js';
 
-let _initialized = false; // Prevent double initialization across reloads
+let _initialized = false;
 let _debounceTimer = null;
 
 export function initControlManager() {
@@ -23,7 +23,7 @@ export function initControlManager() {
         tiltCheckbox.checked = savedMode === 'tilt';
     }
 
-    // === 2️⃣ Attach debounce-protected toggle ===
+    // === 2️⃣ Toggle with debounce ===
     if (tiltCheckbox) {
         tiltCheckbox.addEventListener('change', (e) => {
             clearTimeout(_debounceTimer);
@@ -31,20 +31,22 @@ export function initControlManager() {
                 const useTilt = e.target.checked;
                 localStorage.setItem('controlMode', useTilt ? 'tilt' : 'joystick');
 
+                // 🔥 correct payload for mobileControls.js
                 window.dispatchEvent(
                     new CustomEvent('bdp-toggle-tilt', {
-                        detail: { mode: useTilt ? 'tilt' : 'joystick' },
+                        detail: { enabled: useTilt }
                     })
                 );
 
                 console.log(`🎮 Control mode switched → ${useTilt ? 'TILT' : 'JOYSTICK'}`);
-            }, 250); // debounce delay (prevents double-fire)
+            }, 250);
         });
     }
 
-    // === 3️⃣ Initialize controls once game + player exist ===
+    // === 3️⃣ Initialize controls after scene + player are available ===
     const trySetup = () => {
         if (!window.game) return setTimeout(trySetup, 200);
+
         const scene = window.game.scene.getScenes(true)[0];
         const player = scene?.player;
         if (!scene || !player) return setTimeout(trySetup, 200);
@@ -54,17 +56,20 @@ export function initControlManager() {
     };
     trySetup();
 
-    // === 4️⃣ Listen for global mode toggle events ===
+    // === 4️⃣ Listen for tilt toggle WITHOUT re-initializing controls ===
     window.addEventListener('bdp-toggle-tilt', (e) => {
-        const mode = e.detail?.mode || 'joystick';
+        console.log("🔄 Received toggle event:", e.detail);
+
+        const enabled = !!e.detail?.enabled;
         const scene = window.game?.scene?.getScenes(true)[0];
         const player = scene?.player;
 
         if (!scene || !player) return;
-        console.log(`🔄 Applying control mode: ${mode}`);
 
-        // Re-init mobile controls to reflect mode change
-        setupMobileControls(scene, player);
+        console.log(`🔁 Applying control mode → ${enabled ? "TILT" : "JOYSTICK"}`);
+
+        // 🔥 Do NOT rerun setupMobileControls — let mobileControls.js handle switching cleanly
+        // mobileControls.js already listens for this event and handles switching modes.
     });
 
     console.log("✅ ControlManager initialized.");

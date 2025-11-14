@@ -188,6 +188,7 @@ export default class TurboNegro extends BaseFighter {
 
   update(){
     super.update();
+    if (this.scene.sys.game.device.input.touch) return;
     if (this.lockFacing) return;
 
     const { left, right, up } = this.cursors;
