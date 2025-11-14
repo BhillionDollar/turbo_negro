@@ -1,136 +1,60 @@
 // utils/tiltUtils.js
-// Tilt-based movement for mobile, with smooth animations and toggle support.
+// Smooth tilt → fighter movement only, no animations here
 
 let tiltEnabled = false;
 let tiltState = {
-  scene: null,
-  player: null,
-  initialized: false,
-  smoothedTilt: 0,
+    scene: null,
+    player: null,
+    initialized: false,
+    smoothedTilt: 0
 };
 
-// Public API: called once from mobileControls to wire deviceorientation.
 export function enableTiltControls(scene, player) {
-  tiltState.scene = scene;
-  tiltState.player = player;
+    tiltState.scene = scene;
+    tiltState.player = player;
 
-  if (tiltState.initialized) {
-    return;
-  }
-  tiltState.initialized = true;
+    if (tiltState.initialized) return;
+    tiltState.initialized = true;
 
-  window.addEventListener('deviceorientation', (event) => {
-    if (!tiltEnabled) return;
+    window.addEventListener('deviceorientation', (event) => {
+        if (!tiltEnabled) return;
 
-    const p = tiltState.player;
-    if (!p || !p.body) return;
+        const p = tiltState.player;
+        if (!p || !p.body) return;
 
-    let tilt;
-    const isLandscape = window.innerWidth > window.innerHeight;
-    const orientation = (screen.orientation && typeof screen.orientation.angle === 'number')
-      ? screen.orientation.angle
-      : window.orientation || 0;
-    const isClockwise = orientation === 90;
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const angle = screen.orientation?.angle ?? window.orientation ?? 0;
+        const clockwise = angle === 90;
 
-    // Use beta for landscape, gamma for portrait
-    tilt = isLandscape ? event.beta : event.gamma;
-    if (tilt == null) return;
+        let tilt = isLandscape ? event.beta : event.gamma;
+        if (tilt == null) return;
 
-    // === Sensitivity settings (Option 3: midpoint between aggressive and stable) ===
-    const maxTilt = isLandscape ? 35 : 75;   // degrees
-    const deadZone = 8;                      // degrees
-    const baseVelocity = 340;
-    const velocityMultiplier = isLandscape ? 1.3 : 1.4;
-    const smoothingFactor = 0.2;
+        // Option 3 midpoint sensitivity
+        const maxTilt = isLandscape ? 35 : 75;
+        const dead = 8;
+        const smoothing = 0.2;
 
-    // Clamp tilt
-    let t = Math.max(-maxTilt, Math.min(maxTilt, tilt));
+        tilt = Math.max(-maxTilt, Math.min(maxTilt, tilt));
+        if (isLandscape && !clockwise) tilt = -tilt;
 
-    // In landscape, invert tilt if device is rotated opposite
-    if (isLandscape && !isClockwise) {
-      t = -t;
-    }
+        tiltState.smoothedTilt += (tilt - tiltState.smoothedTilt)*smoothing;
+        const sm = tiltState.smoothedTilt;
 
-    // Smooth
-    tiltState.smoothedTilt += (t - tiltState.smoothedTilt) * smoothingFactor;
-    const smoothed = tiltState.smoothedTilt;
+        const abs = Math.abs(sm);
+        const onGround = p.body.blocked.down || p.body.touching.down;
 
-    const absTilt = Math.abs(smoothed);
-    const onGround = p.body.blocked.down || p.body.touching.down;
-
-    if (absTilt > deadZone) {
-      const intensity = (absTilt - deadZone) / (maxTilt - deadZone);
-      const velocity = intensity * baseVelocity * velocityMultiplier;
-
-      if (smoothed > 0) {
-        p.setVelocityX(velocity);
-        p.setFlipX(false);
-      } else {
-        p.setVelocityX(-velocity);
-        p.setFlipX(true);
-      }
-
-      // Walking animation while on ground
-      if (onGround) {
-        playStateAnim(p, 'walk', true);
-        p.mobileAnimState = 'walk';
-      }
-    } else {
-      // Inside dead zone: stop horizontal movement
-      p.setVelocityX(0);
-
-      if (onGround) {
-        playStateAnim(p, 'idle', true);
-        p.mobileAnimState = 'idle';
-      }
-    }
-  });
+        if (abs > dead) {
+            if (sm > 0) p.moveRight();
+            else p.moveLeft();
+        } else {
+            p.stopMoving();
+        }
+    });
 }
 
-// Public API: toggled from mobileControls based on UI.
-export function setTiltEnabled(enabled) {
-  tiltEnabled = !!enabled;
-  const p = tiltState.player;
-  if (!tiltEnabled && p && p.body) {
-    p.setVelocityX(0);
-    const onGround = p.body.blocked.down || p.body.touching.down;
-    if (onGround) {
-      playStateAnim(p, 'idle', true);
-      p.mobileAnimState = 'idle';
+export function setTiltEnabled(val) {
+    tiltEnabled = !!val;
+    if (!tiltEnabled && tiltState.player) {
+        tiltState.player.stopMoving();
     }
-  }
-}
-
-// === Helper: map logical state -> animation key per fighter ===
-function mapStateToAnim(player, state) {
-  const texKey = (player.texture && player.texture.key) || '';
-  const isTurbo = texKey.startsWith('turbo');
-  const isRere = texKey.startsWith('rere');
-
-  if (isTurbo) {
-    if (state === 'idle') return 'turboStanding';
-    if (state === 'walk') return 'turboWalk';
-    if (state === 'jump') return 'turboJump';
-  } else if (isRere) {
-    if (state === 'idle') return 'rereIdle';
-    if (state === 'walk') return 'rereWalk';
-    if (state === 'jump') return 'rereJump';
-  }
-
-  // Fallback to generic state name if a custom anim doesn't exist.
-  return state;
-}
-
-function playStateAnim(player, state, ignoreIfPlaying = true) {
-  const animKey = mapStateToAnim(player, state);
-  if (!animKey) return;
-
-  if (typeof player.playSafe === 'function') {
-    player.playSafe(animKey, ignoreIfPlaying);
-  } else if (player.anims) {
-    const current = player.anims.currentAnim?.key;
-    if (current !== animKey) {
-      player.play(animKey, ignoreIfPlaying);
-    }
-  }
 }

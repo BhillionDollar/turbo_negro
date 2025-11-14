@@ -1,161 +1,73 @@
 // utils/joystickUtils.js
-// Virtual joystick for mobile: computes joystickForce on the scene
-// and lets mobileControls decide how to move/animate the player.
+// Mobile joystick → fighter movement only (no animations here)
 
 export function setupJoystick(scene, player) {
-  const joystickArea = document.getElementById('joystick-area');
-  if (!joystickArea) {
-    console.warn('🕹️ Joystick area not found in DOM.');
-    return;
-  }
+    const area = document.getElementById('joystick-area');
+    if (!area) return;
 
-  let joystickKnob = document.getElementById('joystick-knob');
-  if (!joystickKnob) {
-    joystickKnob = document.createElement('div');
-    joystickKnob.id = 'joystick-knob';
-    joystickArea.appendChild(joystickKnob);
-  }
+    let knob = document.getElementById('joystick-knob');
+    if (!knob) {
+        knob = document.createElement('div');
+        knob.id = 'joystick-knob';
+        area.appendChild(knob);
+    }
 
-  let joystickStartX = 0;
-  let joystickStartY = 0;
+    let startX = 0, startY = 0;
+    const maxDist = 50;
 
-  const maxDistance = 50; // radius in px
+    area.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+        knob.style.transform = 'translate(-50%, -50%)';
+    });
 
-  joystickArea.addEventListener('touchstart', (event) => {
-    const touch = event.touches[0];
-    joystickStartX = touch.clientX;
-    joystickStartY = touch.clientY;
-    joystickKnob.style.transform = 'translate(-50%, -50%)';
-  });
+    area.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
 
-  joystickArea.addEventListener('touchmove', (event) => {
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - joystickStartX;
-    const deltaY = touch.clientY - joystickStartY;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        const clamp = Math.min(dist, maxDist);
 
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 1;
-    const clampedDistance = Math.min(distance, maxDistance);
+        const nx = (dx/dist)*clamp;
+        const ny = (dy/dist)*clamp;
 
-    const clampedX = (deltaX / distance) * clampedDistance;
-    const clampedY = (deltaY / distance) * clampedDistance;
+        knob.style.transform = `translate(calc(${nx}px - 50%), calc(${ny}px - 50%))`;
 
-    joystickKnob.style.transform = `translate(calc(${clampedX}px - 50%), calc(${clampedY}px - 50%))`;
+        scene.joystickForceX = nx/maxDist;
+        scene.joystickForceY = ny/maxDist;
+    });
 
-    scene.joystickForceX = clampedX / maxDistance;
-    scene.joystickForceY = clampedY / maxDistance;
-  });
+    area.addEventListener('touchend', () => {
+        knob.style.transform = 'translate(-50%, -50%)';
+        scene.joystickForceX = 0;
+        scene.joystickForceY = 0;
+        player.stopMoving();
+    });
 
-  joystickArea.addEventListener('touchend', () => {
-    joystickKnob.style.transform = 'translate(-50%, -50%)';
     scene.joystickForceX = 0;
     scene.joystickForceY = 0;
 
-    if (player && player.body) {
-      player.setVelocityX(0);
-      const onGround = player.body.blocked.down || player.body.touching.down;
-      if (onGround) {
-        playStateAnim(player, 'idle', true);
-        player.mobileAnimState = 'idle';
-      }
-    }
-  });
-
-  // Initialize joystick force values
-  scene.joystickForceX = 0;
-  scene.joystickForceY = 0;
-
-  // Reset joystick on orientation change
-  window.addEventListener('orientationchange', () => {
-    scene.joystickForceX = 0;
-    scene.joystickForceY = 0;
-    if (player && player.body) {
-      player.setVelocityX(0);
-      const onGround = player.body.blocked.down || player.body.touching.down;
-      if (onGround) {
-        playStateAnim(player, 'idle', true);
-        player.mobileAnimState = 'idle';
-      }
-    }
-  });
+    window.addEventListener('orientationchange', () => {
+        scene.joystickForceX = 0;
+        scene.joystickForceY = 0;
+        player.stopMoving();
+    });
 }
 
-// Called from mobileControls once per frame when control mode is 'joystick'
 export function applyJoystickForce(scene, player) {
-  if (!player || !player.body) return;
+    const fx = scene.joystickForceX || 0;
+    const fy = scene.joystickForceY || 0;
 
-  const forceX = scene.joystickForceX || 0;
-  const forceY = scene.joystickForceY || 0;
+    const moveL = fx < -0.1;
+    const moveR = fx > 0.1;
+    const jump = fy < -0.5;
+    const onGround = player.body.blocked.down || player.body.touching.down;
 
-  const movingLeft = forceX < -0.1;
-  const movingRight = forceX > 0.1;
-  const wantsJump = forceY < -0.5;
-  const onGround = player.body.blocked.down || player.body.touching.down;
+    if (moveL) player.moveLeft();
+    else if (moveR) player.moveRight();
+    else player.stopMoving();
 
-  // Horizontal movement
-  const speed = 200; // tuned for mobile
-  player.setVelocityX(forceX * speed);
-
-  if (movingLeft) {
-    player.setFlipX(true);
-  } else if (movingRight) {
-    player.setFlipX(false);
-  }
-
-  // Optional: joystick-up jump
-  if (wantsJump && onGround) {
-    player.setVelocityY(-500);
-    playStateAnim(player, 'jump', false);
-    player.mobileAnimState = 'jump';
-    return; // let jump anim play; state machine will pick up on next frame
-  }
-
-  // Animation state machine (Option B: smoothed / modern)
-  let nextState = player.mobileAnimState || 'idle';
-
-  if (!onGround) {
-    nextState = 'jump';
-  } else if (Math.abs(forceX) > 0.15) {
-    nextState = 'walk';
-  } else {
-    nextState = 'idle';
-  }
-
-  if (nextState !== player.mobileAnimState) {
-    playStateAnim(player, nextState, true);
-    player.mobileAnimState = nextState;
-  }
-}
-
-// === Helper: map logical state -> animation key per fighter ===
-function mapStateToAnim(player, state) {
-  const texKey = (player.texture && player.texture.key) || '';
-  const isTurbo = texKey.startsWith('turbo');
-  const isRere = texKey.startsWith('rere');
-
-  if (isTurbo) {
-    if (state === 'idle') return 'turboStanding';
-    if (state === 'walk') return 'turboWalk';
-    if (state === 'jump') return 'turboJump';
-  } else if (isRere) {
-    if (state === 'idle') return 'rereIdle';
-    if (state === 'walk') return 'rereWalk';
-    if (state === 'jump') return 'rereJump';
-  }
-
-  // Fallback to generic state name if a custom anim doesn't exist.
-  return state;
-}
-
-function playStateAnim(player, state, ignoreIfPlaying = true) {
-  const animKey = mapStateToAnim(player, state);
-  if (!animKey) return;
-
-  if (typeof player.playSafe === 'function') {
-    player.playSafe(animKey, ignoreIfPlaying);
-  } else if (player.anims) {
-    const current = player.anims.currentAnim?.key;
-    if (current !== animKey) {
-      player.play(animKey, ignoreIfPlaying);
-    }
-  }
+    if (jump && onGround) player.jump();
 }
