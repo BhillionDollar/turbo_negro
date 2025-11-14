@@ -857,18 +857,43 @@
 
                 <!-- On-Screen Controls -->
                 <div id="onscreen-controls">
+                    <div id="onscreen-controls">
+                    <!-- Left Side: Joystick -->
                     <div>
                         <div id="joystick-area">
                             <h3 id="joystick">Joystick</h3>
                             <div id="joystick-knob"></div>
                         </div>
-                        
                     </div>
-                    <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+
+                    <!-- Center Controls -->
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+
+                        <!-- Fullscreen Button -->
+                        <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+
+                        <!-- 🆕 Tilt Toggle Button -->
+                        <button id="tilt-toggle-button"
+                            style="
+                                width: 90px;
+                                height: 40px;
+                                font-size: 10px;
+                                color: white;
+                                background-color: black;
+                                border: 2px solid white;
+                                border-radius: 5px;
+                                text-align: center;
+                                padding: 5px;
+                                margin: 5px;
+                                cursor: pointer;
+                            ">
+                            Tilt: OFF
+                        </button>
+                    </div>
+                    <!-- Right Side: Attack -->
                     <button id="attack-button">Attack</button>
                 </div>
             </div>
-
             <div id="ad-container">
                 <ins class="adsbygoogle"
                     style="display:block; text-align:center;"
@@ -1149,6 +1174,25 @@
                 }
             });
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tiltButton = document.getElementById("tilt-toggle-button");
+
+            let tiltEnabled = false;
+
+            tiltButton.addEventListener("click", () => {
+                tiltEnabled = !tiltEnabled;
+
+                tiltButton.textContent = tiltEnabled ? "Tilt: ON" : "Tilt: OFF";
+
+                // Broadcast to mobileControls
+                window.dispatchEvent(new CustomEvent("bdp-toggle-tilt", {
+                    detail: { enabled: tiltEnabled }
+                }));
+            });
+        });
+        </script>
 
 </body>
 </html>
