@@ -1,130 +1,104 @@
 // utils/joystickUtils.js
-// Virtual joystick — unified 2025 version matching tilt sensitivity
-
-let state = {
-  scene: null,
-  player: null,
-  enabled: false,
-  forceX: 0,
-  forceY: 0,
-  dragging: false,
-  radius: 50,
-  knobEl: null,
-  areaEl: null,
-  attackBtn: null,
-};
-
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
-
-function setKnob(dx, dy) {
-  if (!state.knobEl) return;
-  const len = Math.hypot(dx, dy) || 1;
-  const k = Math.min(len, state.radius);
-  const nx = (dx / len) * k;
-  const ny = (dy / len) * k;
-  state.knobEl.style.transform = `translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
-}
-
-function resetKnob() {
-  if (state.knobEl) state.knobEl.style.transform = 'translate(-50%, -50%)';
-  state.forceX = 0;
-  state.forceY = 0;
-}
-
-function computeForces(e) {
-  const t = (e.touches && e.touches[0]) || e;
-  const rect = state.areaEl.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const dx = t.clientX - cx;
-  const dy = t.clientY - cy;
-  state.forceX = clamp(dx / state.radius, -1, 1);
-  state.forceY = clamp(dy / state.radius, -1, 1);
-  setKnob(dx, dy);
-}
+// ORIGINAL responsiveness + NEW animation mapping for TurboNegro/ReReMarie
 
 export function setupJoystick(scene, player) {
-  if (state.enabled) return;
-  state.scene = scene;
-  state.player = player;
-  state.areaEl = document.getElementById('joystick-area');
-  state.knobEl = document.getElementById('joystick-knob');
-  state.attackBtn = document.getElementById('attack-button');
+    const joystickArea = document.getElementById('joystick-area');
+    let joystickKnob = document.getElementById('joystick-knob');
 
-  if (!state.areaEl || !state.knobEl) {
-    console.warn('[joystickUtils] joystick DOM not found — skipping init');
-    return;
-  }
-
-  const activeOpts = { passive: false };
-  const onDown = (e) => {
-    state.dragging = true;
-    e.preventDefault();
-    computeForces(e);
-  };
-  const onMove = (e) => {
-    if (state.dragging) {
-      e.preventDefault();
-      computeForces(e);
+    if (!joystickKnob) {
+        joystickKnob = document.createElement('div');
+        joystickKnob.id = 'joystick-knob';
+        joystickArea.appendChild(joystickKnob);
     }
-  };
-  const onUp = (e) => {
-    if (!state.dragging) return;
-    e.preventDefault();
-    state.dragging = false;
-    resetKnob();
-  };
 
-  state.areaEl.addEventListener('pointerdown', onDown, activeOpts);
-  window.addEventListener('pointermove', onMove, activeOpts);
-  window.addEventListener('pointerup', onUp, activeOpts);
-  state.areaEl.addEventListener('touchstart', onDown, activeOpts);
-  window.addEventListener('touchmove', onMove, activeOpts);
-  window.addEventListener('touchend', onUp, activeOpts);
-  window.addEventListener('touchcancel', onUp, activeOpts);
+    let joystickStartX = 0;
+    let joystickStartY = 0;
+    let activeInterval;
 
-  if (state.attackBtn) {
-    state.attackBtn.addEventListener('click', () => {
-      if (player?.attack) player.attack();
+    joystickArea.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        joystickStartX = touch.clientX;
+        joystickStartY = touch.clientY;
+        joystickKnob.style.transform = `translate(-50%, -50%)`;
+
+        activeInterval = setInterval(() => applyJoystickForce(scene, player), 16);
     });
-  }
 
-  state.enabled = true;
+    joystickArea.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - joystickStartX;
+        const deltaY = touch.clientY - joystickStartY;
+
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        const maxDistance = 50;
+
+        const clampedX = (deltaX / distance) * Math.min(distance, maxDistance);
+        const clampedY = (deltaY / distance) * Math.min(distance, maxDistance);
+
+        joystickKnob.style.transform = `translate(calc(${clampedX}px - 50%), calc(${clampedY}px - 50%))`;
+
+        scene.joystickForceX = clampedX / maxDistance;
+        scene.joystickForceY = clampedY / maxDistance;
+    });
+
+    joystickArea.addEventListener('touchend', () => {
+        joystickKnob.style.transform = `translate(-50%, -50%)`;
+        scene.joystickForceX = 0;
+        scene.joystickForceY = 0;
+
+        playIdle(player);
+
+        clearInterval(activeInterval);
+    });
+
+    scene.joystickForceX = 0;
+    scene.joystickForceY = 0;
+
+    window.addEventListener("orientationchange", () => {
+        scene.joystickForceX = 0;
+        scene.joystickForceY = 0;
+        playIdle(player);
+    });
 }
 
-export function applyJoystickForce(scene, player, opts = {}) {
-  if (!state.enabled || !player?.body) return;
+export function applyJoystickForce(scene, player) {
+    if (!player || !player.body) return;
 
-  const speed = opts.speed ?? 180; // used for fallback
-  const dead = opts.deadzone ?? 0.12;
-  let fx = state.forceX;
-  if (Math.abs(fx) < dead) fx = 0;
+    const movingLeft = scene.joystickForceX < -0.1;
+    const movingRight = scene.joystickForceX > 0.1;
+    const isJumping = scene.joystickForceY < -0.5;
+    const onGround = player.body.blocked.down || player.body.touching.down;
 
-  if (fx > 0) {
-    if (typeof player.moveRight === 'function') {
-      player.moveRight();
-    } else {
-      player.setVelocityX(fx * speed);
+    player.setVelocityX(scene.joystickForceX * 160);
+
+    if (movingLeft) player.setFlipX(true);
+    if (movingRight) player.setFlipX(false);
+
+    if (isJumping && onGround) {
+        player.setVelocityY(-500);
+        playJump(player);
+    } else if ((movingLeft || movingRight) && onGround) {
+        playWalk(player);
+    } else if (onGround && scene.joystickForceX === 0) {
+        playIdle(player);
     }
-  } else if (fx < 0) {
-    if (typeof player.moveLeft === 'function') {
-      player.moveLeft();
-    } else {
-      player.setVelocityX(fx * speed);
-    }
-  } else {
-    if (typeof player.stopMoving === 'function') {
-      player.stopMoving();
-    } else {
-      player.setVelocityX(0);
-    }
-  }
 }
 
-export function destroyJoystick() {
-  if (!state.enabled) return;
-  resetKnob();
-  state.enabled = false;
+// === Animation Mappers ===
+function playIdle(player) {
+    const key = player.texture.key;
+    if (key.startsWith("turbo")) player.play("turboStanding", true);
+    else if (key.startsWith("rere")) player.play("rereIdle", true);
+}
+
+function playWalk(player) {
+    const key = player.texture.key;
+    if (key.startsWith("turbo")) player.play("turboWalk", true);
+    else if (key.startsWith("rere")) player.play("rereWalk", true);
+}
+
+function playJump(player) {
+    const key = player.texture.key;
+    if (key.startsWith("turbo")) player.play("turboJump", true);
+    else if (key.startsWith("rere")) player.play("rereJump", true);
 }
