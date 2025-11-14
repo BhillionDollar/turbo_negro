@@ -38,10 +38,11 @@ export async function enableTiltControls(scene, player) {
 
   const maxTilt = 30;      // degrees to clamp at
   const deadZone = 4;      // degrees to ignore minor jitter
-  const baseVelocity = 320; // base move speed in px/s
+  const baseVelocity = 320; // fallback move speed in px/s (if fighter helpers missing)
 
   const handleTilt = (event) => {
-    if (!_state.player?.body) return;
+    const player = _state.player;
+    if (!player?.body) return;
 
     // Landscape detection + orientation correction
     const isLandscape = window.innerWidth > window.innerHeight;
@@ -58,24 +59,35 @@ export async function enableTiltControls(scene, player) {
     const t = _state.smoothedTilt;
     const abs = Math.abs(t);
 
-    // Velocity & direction
-    let vx = 0;
-    if (abs > deadZone) {
-      const ratio = (abs - deadZone) / (maxTilt - deadZone);
-      vx = ratio * baseVelocity * Math.sign(t);
-    }
-    player.setVelocityX(vx);
+    const hasMoveLeft = typeof player.moveLeft === 'function';
+    const hasMoveRight = typeof player.moveRight === 'function';
+    const hasStopMoving = typeof player.stopMoving === 'function';
 
-    // Directional flip
-    if (vx > 0) player.setFlipX(false);
-    else if (vx < 0) player.setFlipX(true);
-
-    // Animation state (only when grounded)
-    const onGround = player.body.blocked.down || player.body.touching.down;
-    if (onGround) {
-      if (abs > deadZone) player.playSafe(`${player.texture.key}_walk`, true);
-      else player.playSafe(`${player.texture.key}_idle`, true);
+    if (abs <= deadZone) {
+      if (hasStopMoving) {
+        player.stopMoving();
+      } else {
+        player.setVelocityX(0);
+      }
+      return;
     }
+
+    const dir = Math.sign(t);
+
+    if (dir > 0) {
+      if (hasMoveRight) {
+        player.moveRight();
+      } else {
+        player.setVelocityX(baseVelocity);
+      }
+    } else if (dir < 0) {
+      if (hasMoveLeft) {
+        player.moveLeft();
+      } else {
+        player.setVelocityX(-baseVelocity);
+      }
+    }
+    // Animations are handled by BaseFighter movement helpers
   };
 
   _state.listener = handleTilt;

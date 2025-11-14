@@ -80,10 +80,35 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
 
   // === Normalize hitbox to visual size ===
   standardizeBodySize() {
-    const w = this.displayWidth || 50,
-      h = this.displayHeight || 150;
-    if (this.body?.setSize)
+    const w = this.displayWidth || 50;
+    const h = this.displayHeight || 150;
+    if (this.body?.setSize) {
       this.body.setSize(w * 0.5, h * 0.85).setOffset(w * 0.25, h * 0.15);
+    }
+  }
+
+  // === Animation mapping for mobile / shared controls ===
+  getMobileAnim(kind) {
+    const texKey = this.texture?.key || '';
+    const isTurbo = texKey.startsWith('turbo');
+    const isRere = texKey.startsWith('rere');
+
+    switch (kind) {
+      case 'idle':
+        if (isTurbo) return 'turboStanding';
+        if (isRere) return 'rereIdle';
+        return 'idle';
+      case 'walk':
+        if (isTurbo) return 'turboWalk';
+        if (isRere) return 'rereWalk';
+        return 'walk';
+      case 'jump':
+        if (isTurbo) return 'turboJump';
+        if (isRere) return 'rereJump';
+        return 'jump';
+      default:
+        return null;
+    }
   }
 
   // === Movement ===
@@ -91,34 +116,55 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
     this.setFlipX(true);
     this.isMoving = true;
     this.setAccelerationX(-this.acceleration);
-    this.playSafe(`${this.texture.key}_walk`, true);
+
+    const grounded =
+      this.body?.blocked?.down || this.body?.touching?.down || false;
+    const anim = this.getMobileAnim(grounded ? 'walk' : 'jump');
+    if (anim) this.playSafe(anim, true);
   }
 
   moveRight() {
     this.setFlipX(false);
     this.isMoving = true;
     this.setAccelerationX(this.acceleration);
-    this.playSafe(`${this.texture.key}_walk`, true);
+
+    const grounded =
+      this.body?.blocked?.down || this.body?.touching?.down || false;
+    const anim = this.getMobileAnim(grounded ? 'walk' : 'jump');
+    if (anim) this.playSafe(anim, true);
   }
 
   stopMoving() {
     this.isMoving = false;
     this.setAccelerationX(0);
     this.setDragX(this.deceleration);
-    this.playSafe(`${this.texture.key}_idle`, true);
+
+    const grounded =
+      this.body?.blocked?.down || this.body?.touching?.down || false;
+    const anim = this.getMobileAnim(grounded ? 'idle' : 'jump');
+    if (anim) this.playSafe(anim, true);
   }
 
   jump() {
-    if (this.body.onFloor() && !this.isJumping) {
+    if (this.body?.onFloor && this.body.onFloor() && !this.isJumping) {
       this.setVelocityY(-this.jumpPower);
       this.isJumping = true;
-      this.playSafe(`${this.texture.key}_jump`, true);
+      const anim = this.getMobileAnim('jump');
+      if (anim) this.playSafe(anim, true);
     }
   }
 
   land() {
     this.isJumping = false;
-    this.playSafe(`${this.texture.key}_idle`, true);
+    const anim = this.getMobileAnim('idle');
+    if (anim) this.playSafe(anim, true);
+  }
+
+  // === Generic attack wrapper for mobile / keyboard ===
+  attack() {
+    if (typeof this.fireProjectile === 'function') {
+      this.fireProjectile();
+    }
   }
 
   // === Damage + UI feedback ===
@@ -130,7 +176,7 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
     this.flashRed();
 
     // 🩸 Auto-trigger subclass hit reaction if it exists
-    if (typeof this.playHitReaction === "function") {
+    if (typeof this.playHitReaction === 'function') {
       this.playHitReaction();
     }
 
@@ -139,12 +185,12 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
       this.scene.updateHealthUI();
 
       // 🔴 Blink the health bar red briefly
-      const bar = document.getElementById("health-bar-inner");
+      const bar = document.getElementById('health-bar-inner');
       if (bar) {
         bar.style.transition =
-          "width 0.3s ease-in-out, background-color 0.2s ease";
-        bar.style.backgroundColor = "#ff0000";
-        setTimeout(() => (bar.style.backgroundColor = "#00aa00"), 300);
+          'width 0.3s ease-in-out, background-color 0.2s ease';
+        bar.style.backgroundColor = '#ff0000';
+        setTimeout(() => (bar.style.backgroundColor = '#00aa00'), 300);
       }
     }
 
@@ -162,12 +208,12 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
     if (this.scene.updateHealthUI) {
       this.scene.updateHealthUI();
 
-      const bar = document.getElementById("health-bar-inner");
+      const bar = document.getElementById('health-bar-inner');
       if (bar) {
         bar.style.transition =
-          "width 0.3s ease-in-out, background-color 0.2s ease";
-        bar.style.backgroundColor = "#00ff00";
-        setTimeout(() => (bar.style.backgroundColor = "#00aa00"), 300);
+          'width 0.3s ease-in-out, background-color 0.2s ease';
+        bar.style.backgroundColor = '#00ff00';
+        setTimeout(() => (bar.style.backgroundColor = '#00aa00'), 300);
       }
     }
 
@@ -192,7 +238,7 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
       .add.image(
         this.scene.scale.width / 2,
         this.scene.scale.height / 2,
-        "gameOver"
+        'gameOver'
       )
       .setOrigin(0.5)
       .setDepth(999);
@@ -206,7 +252,7 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   playSafe(anim, ignoreIfPlaying = true) {
-    if (!this.scene.anims.exists(anim)) return;
+    if (!anim || !this.scene.anims.exists(anim)) return;
     if (this.visual) {
       if (this.currentAnim !== anim) {
         this.visual.play(anim, ignoreIfPlaying);
@@ -247,7 +293,7 @@ export default class BaseFighter extends Phaser.Physics.Arcade.Sprite {
     }
 
     // === Detect landing ===
-    if (this.isJumping && this.body.onFloor()) {
+    if (this.isJumping && this.body?.onFloor && this.body.onFloor()) {
       this.land();
     }
   }

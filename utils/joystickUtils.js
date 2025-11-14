@@ -14,7 +14,9 @@ let state = {
   attackBtn: null,
 };
 
-function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
 
 function setKnob(dx, dy) {
   if (!state.knobEl) return;
@@ -57,9 +59,23 @@ export function setupJoystick(scene, player) {
   }
 
   const activeOpts = { passive: false };
-  const onDown = (e) => { state.dragging = true; e.preventDefault(); computeForces(e); };
-  const onMove = (e) => { if (state.dragging) { e.preventDefault(); computeForces(e); } };
-  const onUp = (e) => { if (!state.dragging) return; e.preventDefault(); state.dragging = false; resetKnob(); };
+  const onDown = (e) => {
+    state.dragging = true;
+    e.preventDefault();
+    computeForces(e);
+  };
+  const onMove = (e) => {
+    if (state.dragging) {
+      e.preventDefault();
+      computeForces(e);
+    }
+  };
+  const onUp = (e) => {
+    if (!state.dragging) return;
+    e.preventDefault();
+    state.dragging = false;
+    resetKnob();
+  };
 
   state.areaEl.addEventListener('pointerdown', onDown, activeOpts);
   window.addEventListener('pointermove', onMove, activeOpts);
@@ -81,22 +97,29 @@ export function setupJoystick(scene, player) {
 export function applyJoystickForce(scene, player, opts = {}) {
   if (!state.enabled || !player?.body) return;
 
-  const speed = opts.speed ?? 180; // 180 px/sec = tilt sensitivity 6
+  const speed = opts.speed ?? 180; // used for fallback
   const dead = opts.deadzone ?? 0.12;
   let fx = state.forceX;
   if (Math.abs(fx) < dead) fx = 0;
 
-  player.setVelocityX(fx * speed);
-  const grounded = player.body.blocked.down || player.body.touching.down;
-
   if (fx > 0) {
-    player.setFlipX(false);
-    if (grounded) player.playSafe(`${player.texture.key}_walk`, true);
+    if (typeof player.moveRight === 'function') {
+      player.moveRight();
+    } else {
+      player.setVelocityX(fx * speed);
+    }
   } else if (fx < 0) {
-    player.setFlipX(true);
-    if (grounded) player.playSafe(`${player.texture.key}_walk`, true);
+    if (typeof player.moveLeft === 'function') {
+      player.moveLeft();
+    } else {
+      player.setVelocityX(fx * speed);
+    }
   } else {
-    if (grounded) player.playSafe(`${player.texture.key}_idle`, true);
+    if (typeof player.stopMoving === 'function') {
+      player.stopMoving();
+    } else {
+      player.setVelocityX(0);
+    }
   }
 }
 

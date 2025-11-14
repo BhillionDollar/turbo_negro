@@ -1,12 +1,12 @@
 // utils/mobileControls.js
 // 🌀 Unified mobile controls — joystick, tilt, swipe-jump, tap attack, with live toggle support.
 
-import { setupJoystick, destroyJoystick } from './joystickUtils.js';
+import { setupJoystick, destroyJoystick, applyJoystickForce } from './joystickUtils.js';
 import { enableTiltControls, disableTiltControls } from './tiltUtils.js';
 
 export function setupMobileControls(scene, player) {
   // === Determine active control mode from storage ===
-  const mode = localStorage.getItem('controlMode') || 'joystick';
+  let mode = localStorage.getItem('controlMode') || 'joystick';
 
   // === Initial setup based on saved mode ===
   if (mode === 'tilt') {
@@ -26,28 +26,11 @@ export function setupMobileControls(scene, player) {
   stopScrollOnControl('joystick-area');
   stopScrollOnControl('attack-button');
 
-  // === Drive movement each frame (tilt modifies velocity directly) ===
+  // === Drive movement each frame (tilt modifies velocity/movement directly) ===
   const updateFromJoystick = () => {
     if (!player?.body || mode === 'tilt') return; // skip if tilt mode
-    const forceX = scene.joystickForceX || 0;
-    const forceY = scene.joystickForceY || 0;
-    const vx = forceX * 160;
-    player.setVelocityX(vx);
-
-    if (forceX < -0.1) player.setFlipX(true);
-    else if (forceX > 0.1) player.setFlipX(false);
-
-    const onGround = player.body.blocked.down || player.body.touching.down;
-    const wantJump = forceY > 0.55;
-
-    if (wantJump && onGround) {
-      player.setVelocityY(-500);
-      player.playSafe(`${player.texture.key}_jump`, true);
-    } else if (Math.abs(forceX) > 0.1 && onGround) {
-      player.playSafe(`${player.texture.key}_walk`, true);
-    } else if (onGround && Math.abs(forceX) <= 0.1) {
-      player.playSafe(`${player.texture.key}_idle`, true);
-    }
+    // Delegate to joystickUtils → BaseFighter movement helpers
+    applyJoystickForce(scene, player, { speed: 200, deadzone: 0.12 });
   };
 
   scene.events.on('update', updateFromJoystick);
@@ -58,6 +41,7 @@ export function setupMobileControls(scene, player) {
   // === Listen for ControlManager tilt toggle ===
   window.addEventListener('bdp-toggle-tilt', (e) => {
     const newMode = e.detail.mode;
+    mode = newMode;
     localStorage.setItem('controlMode', newMode);
 
     if (newMode === 'tilt') {
@@ -82,8 +66,17 @@ function setupSwipeJump(scene, player) {
     if (startY == null) return;
     const onGround = player.body?.blocked.down || player.body?.touching.down;
     if (p.y < startY - 50 && onGround) {
-      player.setVelocityY(-500);
-      player.playSafe(`${player.texture.key}_jump`, true);
+      if (typeof player.jump === 'function') {
+        player.jump();
+      } else {
+        player.setVelocityY(-500);
+        if (typeof player.getMobileAnim === 'function') {
+          const anim = player.getMobileAnim('jump');
+          if (anim) player.playSafe(anim, true);
+        } else if (player.playSafe) {
+          player.playSafe('jump', true);
+        }
+      }
     }
     startY = null;
   });
