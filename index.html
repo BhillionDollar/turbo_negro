@@ -1035,9 +1035,6 @@
         // import Level5 from './src/scenes/level5.js';
         // import BossFight from './src/scenes/bossFight.js';
         import VictoryScene from './src/scenes/victoryScene.js';
-        
-        import { setupJoystick } from './utils/joystickUtils.js';
-        import { enableTiltControls } from './utils/tiltUtils.js';
         import { addFullscreenButton } from './utils/fullScreenUtils.js';
 
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -1048,50 +1045,6 @@
             document.getElementById('joystick-area').style.display = 'none';
             document.getElementById('attack-button').style.display = 'none';
         }
-
-        // Initialize Tilt Controls
-        function initTiltControl() {
-            const handleTilt = (event) => {
-                if (event.gamma !== null) {
-                    const sensitivity = 2;
-                    const clampedGamma = Math.max(-30, Math.min(30, event.gamma));
-                    const velocityX = clampedGamma * sensitivity;
-
-                    if (typeof player !== 'undefined' && player.setVelocityX) {
-                        player.setVelocityX(velocityX);
-                    }
-                }
-            };
-            window.addEventListener('deviceorientation', handleTilt);
-        }
-
-        function initializeControls() {
-            if (isMobile && /iPhone/i.test(navigator.userAgent)) {
-                const enableTilt = confirm(
-                    "This game supports tilt controls for iPhone. Enable 'Motion & Orientation Access' in Safari settings. Use tilt controls?"
-                );
-                if (enableTilt && typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission) {
-                    DeviceMotionEvent.requestPermission()
-                        .then((response) => {
-                            if (response === 'granted') {
-                                console.log('Tilt controls enabled!');
-                                controlMode = 'tilt';
-                                initTiltControl();
-                            } else {
-                                alert('Tilt controls denied. Using joystick instead.');
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Error enabling tilt:', err);
-                            alert('Tilt controls unavailable. Using joystick.');
-                        });
-                } else {
-                    alert('Tilt controls not supported. Using joystick.');
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initializeControls);
 
         const config = {
             type: Phaser.AUTO,
