@@ -820,22 +820,15 @@
 
 <body>
     <div id="main-container">
-
-        <!-- ===================== -->
-        <!-- UI HEADER (OUTSIDE fullscreen) -->
-        <!-- ===================== -->
+        <!-- UI and Game Container -->
         <div id="ui-container">
             <div id="logo-title-container">
                 <img id="logo" src="assets/Logo/TurboNegro.png" alt="Turbo Negro Logo">
                 <h1 id="title">Saves The French Quarter!</h1>
             </div>
 
-            <!-- ===================== -->
-            <!-- FULLSCREEN GAME WRAPPER (ONLY GAME CONTENT ALLOWED HERE) -->
-            <!-- ===================== -->
             <div id="fullscreen">
 
-                <!-- ===== HUD ===== -->
                 <div id="health-bar-container">
                     Health:
                     <div id="health-bar">
@@ -861,6 +854,7 @@
 
                     <div id="enemy-count">Enemies Left: 0</div>
 
+                    <!-- 🟡 SCORE DISPLAY -->
                     <div id="score-display">Score: 0</div>
 
                     <div id="boss-health-bar-container" style="display: none;">
@@ -871,10 +865,10 @@
                     </div>
                 </div>
 
-                <!-- ===== GAME CANVAS ===== -->
+
                 <div id="game-container"></div>
 
-                <!-- ===== ONSCREEN CONTROLS ===== -->
+                <!-- On-Screen Controls -->
                 <div id="onscreen-controls">
 
                     <!-- LEFT: Joystick -->
@@ -883,24 +877,17 @@
                         <div id="joystick-knob"></div>
                     </div>
 
-                    <!-- RIGHT: Attack -->
+                    <!-- RIGHT: Attack Button -->
                     <button id="attack-button">Attack</button>
 
                 </div>
 
-                <!-- ===== Tilt + Fullscreen Buttons ===== -->
+                <!-- Tilt toggle & fullscreen OUTSIDE controls -->
                 <div style="margin-top: 10px; display:flex; justify-content:center; gap:10px;">
                     <button id="tilt-toggle">Tilt: OFF</button>
                     <button id="mobile-fullscreen-button">[ fullscreen ]</button>
                 </div>
 
-            </div> <!-- END fullscreen -->
-
-            <!-- ===================== -->
-            <!-- EVERYTHING BELOW IS OUTSIDE fullscreen -->
-            <!-- ===================== -->
-
-            <!-- Ads -->
             <div id="ad-container">
                 <ins class="adsbygoogle"
                     style="display:block; text-align:center;"
@@ -910,122 +897,131 @@
                     data-full-width-responsive="true">
                 </ins>
             </div>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+                <!-- Game Instructions -->
+                <div id="instructions"> 
+                    <h2>Game Instructions:</h2>
+                    <h3>Mobile Controls:</h3>
+                    <ul>
+                        <li><strong>Tilt</strong> your device left or right to move in that direction.</li>
+                        <li><strong>Swipe</strong> up anywhere on the screen to jump.</li>
+                        <li><strong>Tap</strong> the attack button or <strong>Tap</strong> anywhere on the game screen to attack and defeat enemies.</li>
+                        <li><strong>Tap</strong> Game Screen to Move to next level upon Level Completion</li>
+                        <li><strong>Tap</strong> Game Screen to restart level upon Game Over</li>
+                    </ul>
+                    <h3>Desktop Controls:</h3>
+                    <ul>
+                        <li>Use the <strong>Arrow Keys</strong> to move left or right and jump.</li>
+                        <li>Press the <strong>SPACEBAR</strong> to attack enemies.</li>
+                        <li>Press <strong>SPACEBAR</strong> to Move to next level upon Level Completion</li>
+                        <li>Press <strong>SPACEBAR</strong> to restart current level upon Game Over</li>
+                    </ul>
 
-            <!-- GAME INSTRUCTIONS -->
-            <div id="instructions">
-                <h2>Game Instructions:</h2>
-
-                <h3>Mobile Controls:</h3>
-                <ul>
-                    <li><strong>Tilt</strong> your device left or right to move.</li>
-                    <li><strong>Swipe up</strong> to jump.</li>
-                    <li><strong>Tap</strong> attack button or game screen to attack.</li>
-                    <li><strong>Tap</strong> game to advance levels or restart.</li>
-                </ul>
-
-                <h3>Desktop Controls:</h3>
-                <ul>
-                    <li><strong>Arrow Keys</strong> to move.</li>
-                    <li><strong>SPACEBAR</strong> to attack.</li>
-                    <li><strong>SPACEBAR</strong> to advance/restart after death.</li>
-                </ul>
-
-                <!-- Extra Ads -->
-                <div id="ad-container">
-                    <ins class="adsbygoogle"
-                        style="display:block; text-align:center;"
-                        data-ad-client="ca-pub-5144521343709974"
-                        data-ad-slot="7476734608"
-                        data-ad-format="rectangle"
-                        data-full-width-responsive="true">
-                    </ins>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    <h3>📲 How to Enable Fullscreen on iOS:</h3>
+                    <p><strong>To play Turbo Negro in fullscreen mode on iPhone/iPad, follow these steps:</strong></p>
+                    <ol>
+                        <li><strong>Open Safari</strong> and go to <strong>https://turbonegrogame.netlify.app/</strong>.</li>
+                        <li><strong>Tap the Share Button</strong> <img src="assets/Logo/apple-share-icon.png" alt="Share" width="20px" height="20px"> in the browser bar, next to the web address.</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+                        <li><strong>Rename it (optional)</strong> and tap <strong>"Add"</strong> in the top right corner.</li>
+                        <li><strong>Find the Turbo Negro icon</strong> on your home screen and tap it to open.</li>
+                        <li>The game will <strong>now launch in fullscreen mode!</strong> 🎉</li>
+                    </ol>
+                    <p>🚨 <strong>Note:</strong> If you've already added the game to your home screen but still see the Safari browser bar, <strong>delete it</strong> from your home screen and repeat these steps.</p>
+                    <p><strong>Tips:</strong></p>
+                    <ul>
+                        <li>Avoid obstacles and defeat enemies to progress through levels.</li>
+                        <li>Keep an eye on your health bar and the number of enemies left.</li>
+                        <li>Master your timing for attacks and jumps to avoid taking damage.</li>
+                        <li>You can not attack with the attack button while using the joystick due to touch screen limitations<small>...but you can tap the game screen</small></li>
+                        <li><small>...you can also enter fullscreen on mobile/touch screen devices by turning your device from portrait mode to landscape mode while on the game's website...</small></li>
+                    </ul>
                 </div>
-
-                <h3>📲 Fullscreen on iOS:</h3>
-                <p><strong>Add to Home Screen</strong> via Safari’s Share menu.</p>
-                <ol>
-                    <li>Open Safari → <strong>turbonegrogame.netlify.app</strong></li>
-                    <li>Tap Share → <strong>Add to Home Screen</strong></li>
-                </ol>
-
-                <p><strong>Tips:</strong></p>
-                <ul>
-                    <li>Avoid obstacles.</li>
-                    <li>Watch your health.</li>
-                    <li>Time your attacks.</li>
-                </ul>
-            </div>
-
-            <div id="warning">Warning!<br>
-                IOS/Android tilt requires permissions.<br>
-                If unavailable, use joystick instead.
-            </div>
-
-            <!-- CHARACTER PROFILES -->
-            <div class="info-section">
+                <div id="warning">Warning!<br>
+                    IOS and Android users may not have the proper permissions for the tilt to move function to work. <br>In that case, please, use joystick for movement.</div>
+                <!-- === CHARACTERS === -->
+                <div class="info-section">
                 <h2>🎮 Character Profiles</h2>
                 <div class="horizontal-scroll">
                     <div class="character-card">
-                        <img src="assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png" alt="Turbo Negro">
-                        <h3><strong>Brandon Joseph Hillard</strong></h3>
-                        <p><strong>Nicknames:</strong> Turbo Negro</p>
-                        <p><strong>Origin:</strong> New Orleans East</p>
-                        <p><strong>Attack:</strong> Unlimited CD projectiles</p>
-                        <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">
-                            Read Turbo Negro Lore
-                        </button>
+                    <img src="assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png" alt="Turbo Negro">
+                    <h3><strong>Brandon Joseph Hillard</strong></h3>
+                    <p><strong>Birthdate:</strong> September 9th, 1993</p>
+                    <p><strong>Nicknames:</strong> Turbo Negro</p>
+                    <p><strong>Origin:</strong> Born and raised in New Orleans East. A father, brother, husband — attacked by the infected while visiting the French Quarter.</p>
+                    <p><strong>Attacks:</strong> Shoots unlimited CD projectiles.</p>
+                    <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">
+                        Read Turbo Negro Lore
+                    </button>
                     </div>
+                    <!-- Add other characters here if needed later -->
                 </div>
-            </div>
+                </div>
 
-            <!-- ENEMIES -->
-            <div class="info-section">
+                <!-- === ENEMIES === -->
+                <div class="info-section">
                 <h2>💀 Enemy Descriptions & Attack Patterns</h2>
                 <div class="horizontal-scroll">
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png">
-                        <h3>Mardi Gras Zombie</h3>
-                        <p>Walks toward the player.</p>
+                    <img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie">
+                    <h3>Mardi Gras Zombie</h3>
+                    <p>A colorful zombie that walks toward the player and attacks.</p>
+                    <p><strong>Origin:</strong> Corrupted by Dark Matter after eating King Cake before festival season.</p>
                     </div>
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png">
-                        <h3>Trumpet Skeleton</h3>
-                        <p>Jumps then rushes blindly.</p>
+                    <img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton">
+                    <h3>Trumpet Skeleton</h3>
+                    <p>Leaps toward the player, then runs blindly in that direction.</p>
+                    <p><strong>Origin:</strong> Corrupted by Dark Matter after seeking attention before mastering their craft.</p>
                     </div>
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png">
-                        <h3>Mardi Gras Blimp</h3>
-                        <p>Flies overhead dropping projectiles.</p>
+                    <img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp">
+                    <h3>Mardi Gras Blimp</h3>
+                    <p>Flies across the screen firing plastic beads from above.</p>
+                    <p><strong>Origin:</strong> Corrupted parade blimp throwing beads too hard for too long.</p>
                     </div>
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png">
-                        <h3>Beignet Minion</h3>
-                        <p>Walks and shoots beignets.</p>
+                    <img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion">
+                    <h3>Beignet Minion</h3>
+                    <p>Walks and shoots beignets at the player to infect them.</p>
+                    <p><strong>Origin:</strong> Dark Matter from too many Cafe Du Monde beignets.</p>
                     </div>
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png">
-                        <h3>Beignet Monster</h3>
-                        <p>Heavy patrolling brute.</p>
+                    <img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster">
+                    <h3>Beignet Monster</h3>
+                    <p>A heavier, stronger enemy that patrols aimlessly.</p>
+                    <p><strong>Origin:</strong> Consumed excessive Dark Matter beignets — now roams the Quarter endlessly.</p>
                     </div>
 
                     <div class="enemy-card">
-                        <img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png">
-                        <h3>Beignet Boss</h3>
-                        <p>Summons minions + projectiles.</p>
+                    <img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss">
+                    <h3>Beignet Boss</h3>
+                    <p>The final boss — summons minions and fires projectiles.</p>
+                    <p><strong>Origin:</strong> Ate the legendary “W” beignet meant for Jameis Winston. Fueled by chaos.</p>
                     </div>
-
                 </div>
+                </div>
+        
             </div>
-
-        </div> <!-- END ui-container -->
-    </div> <!-- END main-container -->
-
+    </div>
 
     <!-- Phaser Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
