@@ -1,91 +1,115 @@
 // utils/tiltUtils.js
-// Option 1: EXCLUSIVE tilt mode. Either tilt OR joystick, never both.
+// Recreates original tilt behavior but exposes values for hybrid control:
+// - Orientation aware (beta in landscape, gamma in portrait)
+// - Smoothing
+// - Dead zone
+// - Portrait speed boost
+// Joystick can then amplify this tilt movement.
 
 let tiltState = {
-  scene: null,
-  player: null,
   enabled: false,
-  smoothedGamma: 0,
+  smoothedTilt: 0,
+  velX: 0,
+  direction: 0,           // -1 left, 1 right, 0 idle
+  adjustedVelocity: 0,    // max tilt speed for current orientation
   listener: null,
 };
 
+const SMOOTHING_FACTOR = 0.2; // original smoothing
+const DEAD_ZONE = 6;          // original dead zone
+const BASE_VELOCITY = 320;    // original base velocity
+
 function handleOrientation(event) {
-  if (!tiltState.enabled || !tiltState.player) return;
+  if (!tiltState.enabled) return;
 
-  const { gamma } = event; // left/right tilt
-  if (gamma == null) return;
+  // Determine orientation
+  const isLandscape = window.innerWidth > window.innerHeight;
+  const isClockwise = (screen.orientation && typeof screen.orientation.angle === 'number')
+    ? screen.orientation.angle === 90
+    : true; // fall back to normal
 
-  // Dead zone so tiny shakes don't move the player
-  const deadZone = 8; // degrees
-  if (Math.abs(gamma) < deadZone) {
-    tiltState.smoothedGamma = 0;
-  } else {
-    // Clamp tilt range
-    const maxTilt = 35;
-    const clamped = Math.max(-maxTilt, Math.min(maxTilt, gamma));
+  // Read tilt depending on orientation (original logic)
+  let rawTilt = isLandscape ? event.beta : event.gamma;
+  if (rawTilt == null) return;
 
-    // Basic smoothing
-    const alpha = 0.2; // lower = smoother/slower
-    tiltState.smoothedGamma =
-      tiltState.smoothedGamma + alpha * (clamped - tiltState.smoothedGamma);
+  // Normalize + clamp
+  const maxTilt = isLandscape ? 20 : 90;        // original ranges
+  const velocityMultiplier = isLandscape ? 1 : 1.75; // original portrait boost
+  const adjustedVelocity = BASE_VELOCITY * velocityMultiplier;
+
+  rawTilt = Math.max(-maxTilt, Math.min(maxTilt, rawTilt));
+
+  // Reverse in landscape if counter-clockwise (original behavior)
+  if (isLandscape && !isClockwise) {
+    rawTilt = -rawTilt;
   }
 
-  const maxTilt = 35;
-  const normalized = tiltState.smoothedGamma / maxTilt; // -1 → 1
+  // Exponential smoothing (original feel)
+  tiltState.smoothedTilt += (rawTilt - tiltState.smoothedTilt) * SMOOTHING_FACTOR;
+  const s = tiltState.smoothedTilt;
 
-  // Decide movement based on normalized tilt
-  const threshold = 0.15; // how much tilt before we move
+  let velX = 0;
+  let dir = 0;
 
-  if (normalized > threshold) {
-    // Move right
-    if (typeof tiltState.player.moveRight === 'function') {
-      tiltState.player.moveRight();
-    }
-  } else if (normalized < -threshold) {
-    // Move left
-    if (typeof tiltState.player.moveLeft === 'function') {
-      tiltState.player.moveLeft();
-    }
+  if (s > DEAD_ZONE) {
+    const factor = (s - DEAD_ZONE) / (maxTilt - DEAD_ZONE); // 0 → 1
+    velX = factor * adjustedVelocity;
+    dir = 1;
+  } else if (s < -DEAD_ZONE) {
+    const factor = (s + DEAD_ZONE) / (maxTilt - DEAD_ZONE); // 0 → -1
+    velX = factor * adjustedVelocity;
+    dir = -1;
   } else {
-    // Stop if inside dead zone
-    if (typeof tiltState.player.stopMoving === 'function') {
-      tiltState.player.stopMoving();
-    }
+    velX = 0;
+    dir = 0;
   }
+
+  tiltState.velX = velX;
+  tiltState.direction = dir;
+  tiltState.adjustedVelocity = adjustedVelocity;
 }
 
-/**
- * Call this once per scene when the player is created.
- */
-export function enableTiltControls(scene, player) {
-  tiltState.scene = scene;
-  tiltState.player = player;
+// === PUBLIC API =========================================================
 
+export function enableTiltControls(scene, player) {
+  // scene/player kept for compatibility, but movement is driven elsewhere
   if (!tiltState.listener) {
     tiltState.listener = handleOrientation;
     window.addEventListener('deviceorientation', tiltState.listener);
   }
+  tiltState.enabled = true;
 }
 
-/**
- * Turn tilt on/off from outside (mobileControls or the tilt toggle button).
- */
 export function setTiltEnabled(enabled) {
   tiltState.enabled = enabled;
 
-  // When disabling tilt, make sure we stop any leftover movement.
-  if (!enabled && tiltState.player && typeof tiltState.player.stopMoving === 'function') {
-    tiltState.player.stopMoving();
+  if (!enabled) {
+    // Reset tilt so we don't leave residual movement when toggling off
+    tiltState.smoothedTilt = 0;
+    tiltState.velX = 0;
+    tiltState.direction = 0;
+    tiltState.adjustedVelocity = 0;
   }
 }
 
-/**
- * Clean up when the scene shuts down.
- */
 export function disableTiltControls() {
   tiltState.enabled = false;
   if (tiltState.listener) {
     window.removeEventListener('deviceorientation', tiltState.listener);
     tiltState.listener = null;
   }
+  tiltState.smoothedTilt = 0;
+  tiltState.velX = 0;
+  tiltState.direction = 0;
+  tiltState.adjustedVelocity = 0;
+}
+
+// Main hook used by joystickUtils/applyJoystickForce
+export function getTiltInfo() {
+  return {
+    enabled: tiltState.enabled,
+    velX: tiltState.velX || 0,
+    direction: tiltState.direction || 0,
+    adjustedVelocity: tiltState.adjustedVelocity || 0,
+  };
 }
