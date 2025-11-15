@@ -828,44 +828,36 @@
             </div>
 
             <div id="fullscreen">
-
+                
                 <div id="health-bar-container">
-                    Health:
+                    Health: 
                     <div id="health-bar">
                         <div id="health-bar-inner"></div>
                     </div>
-
-                    <!-- iOS Share Button -->
+                    <!-- Add this button to your UI for iOS users -->
                     <button id="ios-share-button" style="
-                        display: none;
-                        width: 120px;
-                        height: 40px;
-                        font-size: 14px;
-                        color: white;
-                        background-color: #ffffff;
-                        border: 2px solid white;
-                        border-radius: 5px;
-                        text-align: center;
-                        padding: 5px;
-                        margin: 5px;
-                        cursor: pointer;">
-                        <img src="assets/Logo/apple-share-icon.png" alt="Share" width="20px" height="20px">
-                    </button>
-
+                    display: none; /* Hidden by default */
+                    width: 120px;
+                    height: 40px;
+                    font-size: 14px;
+                    color: white;
+                    background-color: #ffffff;
+                    border: 2px solid white;
+                    border-radius: 5px;
+                    text-align: center;
+                    padding: 5px;
+                    margin: 5px;
+                    cursor: pointer;
+                    "><img src="assets/Logo/apple-share-icon.png" alt="Share" width="20px" height="20px"></button>
                     <div id="enemy-count">Enemies Left: 0</div>
-
-                    <!-- 🟡 SCORE DISPLAY -->
-                    <div id="score-display">Score: 0</div>
-
                     <div id="boss-health-bar-container" style="display: none;">
                         Boss Health:
                         <div id="boss-health-bar">
                             <div id="boss-health-bar-inner"></div>
                         </div>
                     </div>
+                    
                 </div>
-
-
                 <div id="game-container"></div>
 
                 <!-- On-Screen Controls -->
@@ -887,6 +879,8 @@
                     <button id="tilt-toggle">Tilt: OFF</button>
                     <button id="mobile-fullscreen-button">[ fullscreen ]</button>
                 </div>
+
+            </div>
 
             <div id="ad-container">
                 <ins class="adsbygoogle"
@@ -952,75 +946,174 @@
                 </div>
                 <div id="warning">Warning!<br>
                     IOS and Android users may not have the proper permissions for the tilt to move function to work. <br>In that case, please, use joystick for movement.</div>
-                <!-- === CHARACTERS === -->
-                <div class="info-section">
-                <h2>🎮 Character Profiles</h2>
-                <div class="horizontal-scroll">
-                    <div class="character-card">
-                    <img src="assets/Characters/fighters/turbonegro/standing/Standingwithbackground.png" alt="Turbo Negro">
-                    <h3><strong>Brandon Joseph Hillard</strong></h3>
-                    <p><strong>Birthdate:</strong> September 9th, 1993</p>
-                    <p><strong>Nicknames:</strong> Turbo Negro</p>
-                    <p><strong>Origin:</strong> Born and raised in New Orleans East. A father, brother, husband — attacked by the infected while visiting the French Quarter.</p>
-                    <p><strong>Attacks:</strong> Shoots unlimited CD projectiles.</p>
-                    <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">
-                        Read Turbo Negro Lore
-                    </button>
+                <div id="descriptions">
+                    <h2>Character Description:</h2>
+                    <div class="character-info">
+                        <img src="assets/Characters/Character1/TurboNegroStanding/TurboNegroStanding1.png" alt="Negro Standing">
+                        <p><strong>Dennis Micheal Johnson Sr. (R.I.P.)</strong></p>
+                        <p><strong>Birthdate:</strong><br>July 9th, 1989</p>
+                        <p><strong>Nicknames:</strong><br>Cocky, Da Menace</p>
+                        <p><strong>Origin:</strong><br>New Orleans native. Born at Charity Hospital.<br>Born and raised in New Orleans East<br>Father. Brother. Husband.<br>Was visiting the legendary French Quarter when randomly attacked by the infected.</p>
+                        <p><strong>Attacks:</strong><br>Shoots an unlimited amount of CD projectiles.</p>
+                        <p>For more info about the Turbo Negro lore, click here:</p>
+                        <button onclick="window.open('https://bhilliondollar.com/the-tales-of-turbo-negro', '_blank')">The Tales Of Turbo Negro</button>
                     </div>
-                    <!-- Add other characters here if needed later -->
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <h2>Enemy Descriptions and Attack Patterns:</h2>
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/MardiGrasZombie.png" alt="Mardi Gras Zombie" class="enemy-image">
+                        <h3><strong>Mardi Gras Zombie</strong></h3>
+                        <p><Strong>Description:</Strong><br>A colorful zombie that walks towards the player to attack</p>
+                        <p><strong>Origin:</strong><br>Corrupted by Dark Matter from eating King Cake before festival season</p>
+                        <p><strong>Attack Pattern:</strong><br>Melee attack upon contact</p>
+                        <p><Strong>Behavior:</Strong><br>Slowly approaches the player and attacks directly. Can jump and change directions</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/TrumpetSkeleton.png" alt="Trumpet Skeleton" class="enemy-image">
+                        <h3><strong>Trumpet Skeleton</strong></h3>
+                        <p><strong>Description:</strong><br>A skeleton with a trumpet that jump towards the player blindly runs in the direction of the player</p>
+                        <p><strong>Origin:</strong><br>Corrupted by Dark Matter when seeking attention for their music before properly practicing</p>
+                        <p><strong>Attack Pattern:</strong><br>Spawns, lunges at character and then charges at the player</p>
+                        <p><strong>Behavior:</strong><br>Initially jumps at player then run blindly in the direction of the player. Does not change directions</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/MardiGrasBlimp.png" alt="Mardi Gras Blimp" class="enemy-image">
+                        <h3><strong>Mardi Gras Blimp</strong></h3>
+                        <p><strong>Description:</strong><br>A forgotten blimp from one of many parades passed...<br>from long ago...when blimps were cool...<br>hails to seek revenge upon our player by firing beads made of the hardest plastic known to man!</p>
+                        <p><strong>Origin:</strong><br>This blimp,<br>from one of the many Mardi Gras celebrations in the past,<br>has been corrupted by Dark Matter due to the excessive force in which they threw their beads!<br>...many children perished from atop their ladder/chair combo thingy's</p>
+                        <p><strong>Attack Pattern:</strong><br>Spawns, flies in an awkward manner while firing beads at the player!<br>Respawns in 5 seconds after it's destruction!</p>
+                        <p><strong>Behavior:</strong><br>Flies across the top of the screen!<br>Then down!<br>Then left!<br>Then up!<br>All while firing beads at the player!<br>Respawns in 5 seconds after destruction!<br>Destroy immediately for best chance at survival!!</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/Beignet_Minion.png" alt="Beignet Minion" class="enemy-image">
+                        <h3><strong>Beignet Minion</strong></h3>
+                        <p><Strong>Description:</Strong><br>Small enemy that shoots projectiles at the player</p>
+                        <p><strong>Origin:</strong><br>Corrupted by Dark Matter from eating too many Cafe Du Monde beignets<br>Now, fires beignets at will to infect others!</p>
+                        <p><Strong>Attack Pattern:</Strong><br>Walks across the game screen and shoots projectiles at the player</p>
+                        <p><strong>Behavior:</strong><br>Moves horizontally and actively targets the player!<br>Fires beignets at the player!<br>Player's projectiles destroy the beignet minion projectiles!</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/Beignet_Monster.png" alt="Beignet Monster" class="enemy-image">
+                        <h3><strong>Beignet Monster</strong></h3>
+                        <p><Strong>Description:</Strong><br>A larger enemy with 2 health that patrols an area</p>
+                        <p><strong>Origin:</strong><br>Corrupted by Dark Matter from eating too many Cafe Du Monde beignets<br>Now,<br>wanders aimlessly through the French Quarter randomly attacking others</p>
+                        <p><strong>Attack Pattern:</strong><br>Causes damage on contact with increased health and increased damage to player</p>
+                        <p><strong>Behavior:</strong><br>Patrols randomly and withstands multiple hits!<br><small>...doesnt seem to know that the player exists...</small><br>Destroy or stay out of the way!</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
+                    <div class="enemy-info">
+                        <img src="assets/Characters/Enemies/Beignet_Boss.png" alt="Beignet Boss" class="enemy-image">
+                        <h3><strong>Beignet Boss</strong></h3>
+                        <p><strong>Description:</strong><br>The final boss with various attack phases including firing beignets and spawning beignet monsters</p>
+                        <p><strong>Origin:</strong><br>Corrupted by Dark Matter from eating too many beignets from an unknown location!<br><small>(it wasn't Cafe Du Monde cause...i love Cafe Du Monde, so figure it out!)</small><br>Now, roams the area around Jackson Square seeking the ruin of souls<br><small>this thing also ate the "W" beignet made for the legendary Jameis Winston!<br>so, it's pretty tough</small></p>
+                        <p><strong>Attack Pattern:</strong><br>Shoots projectiles, summons minions, and has phase-based changes and teleports.</p>
+                        <p><strong>Behavior:</strong><br>Adjusts attack patterns and increases speed as its health decreases</p>
+                    </div>
+                    <div id="ad-container">
+                        <ins class="adsbygoogle"
+                            style="display:block; text-align:center;"
+                            data-ad-client="ca-pub-5144521343709974"
+                            data-ad-slot="7476734608"
+                            data-ad-format="rectangle"
+                            data-full-width-responsive="true">
+                        </ins>
+                    </div>
+                    
+                    
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    
                 </div>
-                </div>
-
-                <!-- === ENEMIES === -->
-                <div class="info-section">
-                <h2>💀 Enemy Descriptions & Attack Patterns</h2>
-                <div class="horizontal-scroll">
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/mardigraszombie/mardigraszombie.png" alt="Mardi Gras Zombie">
-                    <h3>Mardi Gras Zombie</h3>
-                    <p>A colorful zombie that walks toward the player and attacks.</p>
-                    <p><strong>Origin:</strong> Corrupted by Dark Matter after eating King Cake before festival season.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/trumpetskeleton/TrumpetSkeleton.png" alt="Trumpet Skeleton">
-                    <h3>Trumpet Skeleton</h3>
-                    <p>Leaps toward the player, then runs blindly in that direction.</p>
-                    <p><strong>Origin:</strong> Corrupted by Dark Matter after seeking attention before mastering their craft.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/mardigrasblimp/MardiGrasBlimp.png" alt="Mardi Gras Blimp">
-                    <h3>Mardi Gras Blimp</h3>
-                    <p>Flies across the screen firing plastic beads from above.</p>
-                    <p><strong>Origin:</strong> Corrupted parade blimp throwing beads too hard for too long.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetminion/Beignet_Minion.png" alt="Beignet Minion">
-                    <h3>Beignet Minion</h3>
-                    <p>Walks and shoots beignets at the player to infect them.</p>
-                    <p><strong>Origin:</strong> Dark Matter from too many Cafe Du Monde beignets.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetmonster/Beignet_Monster.png" alt="Beignet Monster">
-                    <h3>Beignet Monster</h3>
-                    <p>A heavier, stronger enemy that patrols aimlessly.</p>
-                    <p><strong>Origin:</strong> Consumed excessive Dark Matter beignets — now roams the Quarter endlessly.</p>
-                    </div>
-
-                    <div class="enemy-card">
-                    <img src="assets/Characters/enemies/beignetboss/Beignet_Boss.png" alt="Beignet Boss">
-                    <h3>Beignet Boss</h3>
-                    <p>The final boss — summons minions and fires projectiles.</p>
-                    <p><strong>Origin:</strong> Ate the legendary “W” beignet meant for Jameis Winston. Fueled by chaos.</p>
-                    </div>
-                </div>
-                </div>
-        
-            </div>
+        </div>
     </div>
 
     <!-- Phaser Library -->
