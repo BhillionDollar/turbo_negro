@@ -688,6 +688,19 @@
         .character-card button:hover {
             background: #ffda44;
         }
+
+        /* Hide tilt toggle by default */
+        #tilt-toggle {
+            display: none;
+        }
+
+        /* Show tilt toggle ONLY on mobile */
+        @media screen and (max-width: 768px) {
+            #tilt-toggle {
+                display: inline-block;
+            }
+        }
+
     </style>
 
     <!-- Meta Pixel Code -->
@@ -857,43 +870,24 @@
 
                 <!-- On-Screen Controls -->
                 <div id="onscreen-controls">
-                    <div id="onscreen-controls">
-                    <!-- Left Side: Joystick -->
-                    <div>
-                        <div id="joystick-area">
-                            <h3 id="joystick">Joystick</h3>
-                            <div id="joystick-knob"></div>
-                        </div>
+
+                    <!-- LEFT: Joystick -->
+                    <div id="joystick-area">
+                        <h3 id="joystick">Joystick</h3>
+                        <div id="joystick-knob"></div>
                     </div>
 
-                    <!-- Center Controls -->
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-
-                        <!-- Fullscreen Button -->
-                        <button id="mobile-fullscreen-button">[ fullscreen ]</button>
-
-                        <!-- 🆕 Tilt Toggle Button -->
-                        <button id="tilt-toggle-button"
-                            style="
-                                width: 90px;
-                                height: 40px;
-                                font-size: 10px;
-                                color: white;
-                                background-color: black;
-                                border: 2px solid white;
-                                border-radius: 5px;
-                                text-align: center;
-                                padding: 5px;
-                                margin: 5px;
-                                cursor: pointer;
-                            ">
-                            Tilt: OFF
-                        </button>
-                    </div>
-                    <!-- Right Side: Attack -->
+                    <!-- RIGHT: Attack Button -->
                     <button id="attack-button">Attack</button>
+
                 </div>
-            </div>
+
+                <!-- Tilt toggle & fullscreen OUTSIDE controls -->
+                <div style="margin-top: 10px; display:flex; justify-content:center; gap:10px;">
+                    <button id="tilt-toggle">Tilt: OFF</button>
+                    <button id="mobile-fullscreen-button">[ fullscreen ]</button>
+                </div>
+
             <div id="ad-container">
                 <ins class="adsbygoogle"
                     style="display:block; text-align:center;"
@@ -1176,23 +1170,35 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const tiltButton = document.getElementById("tilt-toggle-button");
+    document.addEventListener("DOMContentLoaded", function () {
+        const tiltButton = document.getElementById("tilt-toggle");
+        if (!tiltButton) return;
 
-            let tiltEnabled = false;
+        let tiltEnabled = false;
 
-            tiltButton.addEventListener("click", () => {
-                tiltEnabled = !tiltEnabled;
+        // Hide on non-mobile just in case CSS fails
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+        );
+        if (!isMobile) {
+        tiltButton.style.display = "none";
+        return;
+        }
 
-                tiltButton.textContent = tiltEnabled ? "Tilt: ON" : "Tilt: OFF";
+        tiltButton.addEventListener("click", () => {
+        tiltEnabled = !tiltEnabled;
+        tiltButton.textContent = tiltEnabled ? "Tilt: ON" : "Tilt: OFF";
 
-                // Broadcast to mobileControls
-                window.dispatchEvent(new CustomEvent("bdp-toggle-tilt", {
-                    detail: { enabled: tiltEnabled }
-                }));
-            });
+        // Broadcast to mobileControls / tiltUtils
+        window.dispatchEvent(
+            new CustomEvent("bdp-toggle-tilt", {
+            detail: { enabled: tiltEnabled },
+            })
+        );
         });
-        </script>
+    });
+    </script>
+
 
 </body>
 </html>
