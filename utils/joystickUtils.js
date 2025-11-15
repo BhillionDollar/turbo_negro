@@ -33,7 +33,6 @@ export function setupJoystick(scene, player) {
     scene.joystickForceY = 0;
 
     if (player) {
-      // Do NOT force idle here; final movement/anim handled in applyJoystickForce
       player.setVelocityX(0);
     }
   };
@@ -62,14 +61,10 @@ export function setupJoystick(scene, player) {
     scene.joystickForceY = clampedY / maxDist; // -1 → 1 (up = negative)
   });
 
-  area.addEventListener('touchend', () => {
-    resetJoystick();
-  });
+  area.addEventListener('touchend', resetJoystick);
 
-  // Orientation reset
   window.addEventListener('orientationchange', resetJoystick);
 
-  // Init
   scene.joystickForceX = 0;
   scene.joystickForceY = 0;
 }
@@ -86,41 +81,71 @@ export function applyJoystickForce(scene, player) {
   const tiltMax = tilt.adjustedVelocity || 0;
 
   let finalVelX = 0;
-  let facingDir = 0; // -1 left, 1 right
+  let steeringDir = 0; // -1 left, 1 right
 
+  // === JOYSTICK ACTIVE → joystick steering wins
+  const joystickActive = Math.abs(fx) > JOYSTICK_DEAD_ZONE;
+
+  // === HYBRID MOVEMENT (Tilt ON)
   if (tiltEnabled && tiltMax > 0) {
-    // 🎛 Tilt is base movement, joystick amplifies it
-    const amplifierStrength = AMPLIFIER_PERCENT * tiltMax; // 70% of tilt max speed
+    const amplifierStrength = AMPLIFIER_PERCENT * tiltMax;
     const joystickBoost = fx * amplifierStrength;
+
+    // Tilt is base movement
     finalVelX = tiltVelX + joystickBoost;
 
-    if (Math.abs(fx) > JOYSTICK_DEAD_ZONE) {
-      facingDir = fx > 0 ? 1 : -1;
+    if (joystickActive) {
+      steeringDir = fx > 0 ? 1 : -1;
     } else if (tiltVelX !== 0) {
-      facingDir = tiltVelX > 0 ? 1 : -1;
+      steeringDir = tiltVelX > 0 ? 1 : -1;
     }
+
   } else {
-    // 🎮 Tilt disabled → pure joystick control (original)
+    // === JOYSTICK ONLY MODE
     finalVelX = fx * JOYSTICK_SPEED;
 
-    if (Math.abs(fx) > JOYSTICK_DEAD_ZONE) {
-      facingDir = fx > 0 ? 1 : -1;
+    if (joystickActive) {
+      steeringDir = fx > 0 ? 1 : -1;
     }
   }
 
-  // Apply final horizontal velocity
+  // === Apply velocity
   player.setVelocityX(finalVelX);
 
-  // Facing
-  if (facingDir !== 0) {
-    player.setFlipX(facingDir < 0);
+  // ============================================================
+  // === FINAL FACING LOGIC (MOST IMPORTANT PART)
+  // joystick steering > tilt steering > do nothing
+  // ============================================================
+  if (joystickActive) {
+    // Joystick steering
+    player.setFlipX(steeringDir < 0);
+
+    if (typeof player._setFacing === 'function') {
+      player._setFacing(steeringDir);
+    } else {
+      player.lastDirection = steeringDir;
+    }
+
+  } else if (tiltEnabled && tilt.direction !== 0) {
+    // Tilt steering when joystick neutral
+    const tiltDir = tilt.direction;
+
+    player.setFlipX(tiltDir < 0);
+
+    if (typeof player._setFacing === 'function') {
+      player._setFacing(tiltDir);
+    } else {
+      player.lastDirection = tiltDir;
+    }
   }
+
+  // ============================================================
 
   const onGround =
     player.body.blocked.down || player.body.touching.down || false;
   const isMovingHoriz = Math.abs(finalVelX) > 5;
 
-  // Jump via joystick up
+  // === Jumping
   const wantsJump = fy < JUMP_THRESHOLD;
 
   if (wantsJump && onGround) {
@@ -128,33 +153,25 @@ export function applyJoystickForce(scene, player) {
       player.jump();
     } else {
       player.setVelocityY(-500);
-      const jumpAnim =
-        typeof player.getMobileAnim === 'function'
-          ? player.getMobileAnim('jump')
-          : 'jump';
-      if (jumpAnim) {
-        if (typeof player.playSafe === 'function') {
-          player.playSafe(jumpAnim, true);
-        } else if (player.anims) {
-          player.play(jumpAnim, true);
-        }
-      }
     }
     return;
   }
 
-  // Animations based on movement state
+  // === Animations
   let animKey = null;
+
   if (!onGround) {
     animKey =
       typeof player.getMobileAnim === 'function'
         ? player.getMobileAnim('jump')
         : 'jump';
+
   } else if (isMovingHoriz) {
     animKey =
       typeof player.getMobileAnim === 'function'
         ? player.getMobileAnim('walk')
         : 'walk';
+
   } else {
     animKey =
       typeof player.getMobileAnim === 'function'
