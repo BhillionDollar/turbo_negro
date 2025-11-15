@@ -27,10 +27,10 @@ export function setupMobileControls(scene, player) {
   // Swipe jump
   setupSwipeJump(scene, player);
 
-  // Tap anywhere to attack
+  // Tap anywhere to attack (full jump attack / ground attack animation)
   setupTapAttack(scene, player);
 
-  // Attack button
+  // Attack button (same attack behavior as tap)
   setupAttackButton(scene, player);
 
   // Hook into tilt toggle events from the UI (ControlManager / checkbox)
@@ -134,8 +134,8 @@ function setupSwipeJump(scene, player) {
 function setupTapAttack(scene, player) {
   scene.input.on('pointerdown', (p) => {
     if (!p.wasTouch) return; // Ensure it's a touch event
-    if (typeof player.attack === 'function') {
-      player.attack();
+    if (typeof player.fireProjectile === 'function') {
+      player.fireProjectile(); // 🔥 full attack (ground or jump)
     }
   });
 }
@@ -149,8 +149,8 @@ function setupAttackButton(scene, player) {
 
   const fire = (e) => {
     e.preventDefault();
-    if (typeof player.attack === 'function') {
-      player.attack();
+    if (typeof player.fireProjectile === 'function') {
+      player.fireProjectile(); // 🔥 full animated attack
     }
   };
 
