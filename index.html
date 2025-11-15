@@ -1170,34 +1170,37 @@
     </script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tiltButton = document.getElementById("tilt-toggle");
-        if (!tiltButton) return;
+        document.addEventListener("DOMContentLoaded", function () {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        let tiltEnabled = false;
+            const tiltButton = document.getElementById("tilt-toggle");
+            const mobileFullscreenButton = document.getElementById("mobile-fullscreen-button");
+            const controlsRow = tiltButton ? tiltButton.parentElement : null;
 
-        // Hide on non-mobile just in case CSS fails
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-        );
-        if (!isMobile) {
-        tiltButton.style.display = "none";
-        return;
-        }
+            // Hide tilt + fullscreen row entirely on desktop
+            if (!isMobile && controlsRow) {
+                controlsRow.style.display = "none";
+                return; // nothing else to do
+            }
 
-        tiltButton.addEventListener("click", () => {
-        tiltEnabled = !tiltEnabled;
-        tiltButton.textContent = tiltEnabled ? "Tilt: ON" : "Tilt: OFF";
+            if (!tiltButton) return;
 
-        // Broadcast to mobileControls / tiltUtils
-        window.dispatchEvent(
-            new CustomEvent("bdp-toggle-tilt", {
-            detail: { enabled: tiltEnabled },
-            })
-        );
+            let tiltEnabled = false;
+
+            tiltButton.addEventListener("click", () => {
+                tiltEnabled = !tiltEnabled;
+                tiltButton.textContent = tiltEnabled ? "Tilt: ON" : "Tilt: OFF";
+
+                // Let mobileControls.js know tilt is toggled
+                window.dispatchEvent(
+                    new CustomEvent("bdp-toggle-tilt", {
+                        detail: { enabled: tiltEnabled }
+                    })
+                );
+            });
         });
-    });
     </script>
+
 
 
 </body>

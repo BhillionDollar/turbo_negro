@@ -135,3 +135,19 @@ export function destroyJoystick(cleanupFn) {
     cleanupFn();
   }
 }
+
+export function applyJoystickForce(scene, player) {
+    const fx = scene.joystickForceX || 0;
+    const fy = scene.joystickForceY || 0;
+
+    const moveL = fx < -0.1;
+    const moveR = fx > 0.1;
+    const jump = fy < -0.5;
+    const onGround = player.body.blocked.down || player.body.touching.down;
+
+    if (moveL) player.moveLeft();
+    else if (moveR) player.moveRight();
+    else player.stopMoving();
+
+    if (jump && onGround) player.jump();
+}
